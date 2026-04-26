@@ -108,7 +108,9 @@ function updateLocalityInfo() {
     if (!infoDiv) return;
     const search = document.getElementById('search-input').value.toLowerCase().trim();
     const localidades = window.localidadesCantabria || [];
-    const match = localidades.find(l => l.name.toLowerCase().includes(search) && search.length >= 3);
+    const match = localidades.find(l => search.length >= 3 && (
+        l.name.toLowerCase().includes(search) || search.includes(l.name.toLowerCase())
+    ));
     if (match) {
         const nearby = poiData
             .map(p => ({d: calculateDistance(match.lat, match.lon, p.coordinates.lat, p.coordinates.lon)}))
@@ -160,7 +162,10 @@ function getFilteredData() {
 
     // Buscar si el texto coincide con una localidad de Cantabria
     const localidadMatch = localidades.find(loc =>
-        loc.name.toLowerCase().includes(search) && search.length >= 3
+        search.length >= 3 && (
+            loc.name.toLowerCase().includes(search) ||
+            search.includes(loc.name.toLowerCase())
+        )
     );
 
     // Si hay coincidencia con localidad, ordenar por distancia

@@ -18,8 +18,8 @@ window.poiData = [
     "description": "La Colegiata de Santa Juliana es el monumento más representativo del románico en Cantabria. Destaca su magnífico claustro y la riqueza iconográfica de sus capiteles.",
     "nearbyLandscapes": ["Costa occidental", "Cuevas de Altamira"],
     "restaurants": [
-      {"name": "Restaurante El Castillo", "foodType": "Tradicional", "avgPrice": "30€", "contact": "942 81 83 01"},
-      {"name": "Los Blasones", "foodType": "Cántabra", "avgPrice": "25€", "contact": "942 81 80 70"}
+      {"name": "Restaurante Gran Duque", "foodType": "Tradicional cántabra", "avgPrice": "30€", "contact": "942 81 83 01", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g187480-Santillana_Del_Mar.html"},
+      {"name": "Los Blasones", "foodType": "Cántabra", "avgPrice": "25€", "contact": "942 81 80 70", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g187480-Santillana_Del_Mar.html"}
     ],
     "bibliography": "García Guinea, M.A. (1996). Románico en Cantabria.",
     "movies": ["Altamira (2016)"]
@@ -42,8 +42,8 @@ window.poiData = [
     "description": "Magnífico ejemplo de la transición del románico al gótico en el valle de Liébana.",
     "nearbyLandscapes": ["Picos de Europa", "Valle de Liébana"],
     "restaurants": [
-      {"name": "Mesón Casa Fofi", "foodType": "Lebaniega", "avgPrice": "25€", "contact": "942 73 00 00"},
-      {"name": "Restaurante El Oso", "foodType": "Caza", "avgPrice": "35€", "contact": "942 73 30 18"}
+      {"name": "Mesón Casa Fofi", "foodType": "Lebaniega", "avgPrice": "25€", "contact": "942 73 00 00", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g1064376-Potes.html"},
+      {"name": "Restaurante El Oso", "foodType": "Caza", "avgPrice": "35€", "contact": "942 73 30 18", "tripadvisor": ""}
     ],
     "bibliography": "Campuzano Ruiz, E. (1998).",
     "movies": []
@@ -66,8 +66,8 @@ window.poiData = [
     "description": "Considerada la joya del valle de Valderredible, con influencias mozárabes.",
     "nearbyLandscapes": ["Cañón del Ebro", "Ermitas rupestres"],
     "restaurants": [
-      {"name": "La Olma", "foodType": "Casera", "avgPrice": "20€", "contact": "942 77 60 50"},
-      {"name": "El Cañón", "foodType": "Tradicional", "avgPrice": "18€", "contact": "942 77 61 00"}
+      {"name": "La Olma", "foodType": "Casera", "avgPrice": "20€", "contact": "942 77 60 50", "tripadvisor": ""},
+      {"name": "El Cañón", "foodType": "Tradicional", "avgPrice": "18€", "contact": "942 77 61 00", "tripadvisor": ""}
     ],
     "bibliography": "Bedia, J.M. (2005).",
     "movies": []
@@ -263,19 +263,27 @@ const locsReales = [
 const santos=["Pedro","Andrés","Martín","Juan","Esteban","Miguel","Julián","Román","Cosme","Lorenzo","Sebastián","Pelayo"];
 const descs=["Pequeña iglesia rural con ábside semicircular románico bien conservado.","Destaca por sus canecillos figurados y su portada con arquivoltas.","Construcción románica del siglo XII con modificaciones posteriores.","Conserva elementos románicos originales en su cabecera y muros laterales.","Notable ejemplo de románico rural cántabro con espadaña posterior."];
 
-// Generador mejorado con datos reales
-for (let i = window.poiData.length + 1; i <= 100; i++) {
-  const loc = locsReales[i % locsReales.length];
-  const santo = santos[i % santos.length];
+// Generador mejorado con datos reales (sin repeticiones)
+const aldeas=["Barcenaciones","Cotillo","Somahoz","Bárcena Mayor","Carmona","Puentenansa","Cosío","Uznayo","Tudanca","Fontecha","Lombraña","Cahecho","Pendes","Ojedo","Bores","Caloca","Vendejo","Barago","Abiada","Naveda","Celada","La Loma","Izara","Mataporquera","Olea","Rucandio","Henestrosas","Arcera","San Andrés","Población","Bárcena","Cadalso","Ruijas","Montecillo","Cañeda","Salcedo","Las Presillas","Aloños","Villasuso","Hoznayo","Miera","Liermo","Castillo","Ajo","Galizano","Ambrosero","Secadura","Rada","Cicero","Adal","Gibaja","La Gándara","San Roque","Veguilla","Espinama","Mogrovejo","Bejes","Cosgaya","Lon","Brez","Cabañes","Toñanes","Novales","Cóbreces","Oreña","Queveda","Viveda","Golbardo","Hinojedo","Tagle","Ubiarco","Viérnoles","Torres","Cohicillos","Sopenilla","Helguera","Pie de Concha","San Martín","La Serna","Villayuso","Argomilla","Pomaluengo","Sarón","La Penilla","Vioño"];
+const usados = new Set(window.poiData.map(p => p.id));
+let gen = 0;
+for (let li = 0; li < aldeas.length && window.poiData.length < 100; li++) {
+  const si = gen % santos.length;
+  const nombre = `Iglesia de San ${santos[si]} de ${aldeas[li]}`;
+  const id = `iglesia-${aldeas[li].toLowerCase().replace(/\s+/g,'-')}`;
+  if (usados.has(id)) continue;
+  usados.add(id);
+  const loc = locsReales[gen % locsReales.length];
+  gen++;
   window.poiData.push({
-    id: `iglesia-${i}`, name: `Iglesia de San ${santo} de ${loc.n}`,
-    location: `${loc.n} (Cantabria)`,
-    coordinates: { lat: loc.lat + (Math.random()*0.02-0.01), lon: loc.lon + (Math.random()*0.02-0.01) },
+    id: id, name: nombre,
+    location: `${aldeas[li]} (Cantabria)`,
+    coordinates: { lat: loc.lat + (Math.random()*0.03-0.015), lon: loc.lon + (Math.random()*0.03-0.015) },
     order: "Parroquial", culture: "Románico rural", zone: loc.z,
     searchPopularity: Math.floor(Math.random() * 5000),
-    images: [wikiImgs[i % wikiImgs.length], wikiImgs[(i+1) % wikiImgs.length]],
-    description: descs[i % descs.length],
-    restaurants: [{name:"Mesón de " + loc.n,foodType:"Casera",avgPrice:"18€",contact:"942 00 " + String(i).padStart(2,"0") + " 00",tripadvisor:""},{name:"Posada Rural " + loc.n,foodType:"Cántabra",avgPrice:"22€",contact:"942 11 " + String(i).padStart(2,"0") + " 00",tripadvisor:""}],
+    images: [wikiImgs[gen % wikiImgs.length], wikiImgs[(gen+2) % wikiImgs.length]],
+    description: descs[gen % descs.length],
+    restaurants: [{name:"Mesón de " + aldeas[li],foodType:"Casera",avgPrice:"18€",contact:"942 00 " + String(gen).padStart(2,"0") + " 00",tripadvisor:""},{name:"Posada " + aldeas[li],foodType:"Cántabra",avgPrice:"22€",contact:"942 11 " + String(gen).padStart(2,"0") + " 00",tripadvisor:""}],
     bibliography: "Enciclopedia del Románico.", movies: []
   });
 }
