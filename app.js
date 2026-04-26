@@ -476,13 +476,14 @@ function renderRestaurants() {
 let itineraryMap;
 function generateItinerary() {
     const zone = document.getElementById('itinerary-zone-select').value;
+    console.log("Generando itinerario para zona:", zone);
     if(!zone) { alert("Selecciona una zona primero."); return; }
 
     const zoneData = poiData.filter(p => p.zone === zone)
-        .sort((a, b) => (b.searchPopularity || 0) - (a.searchPopularity || 0))
-        .slice(0, 8);
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 6);
     
-    // Sort by Lat to make a logical path
+    // Ordenar por Latitud para que el recorrido tenga sentido geográfico (Norte-Sur o Sur-Norte)
     zoneData.sort((a, b) => a.coordinates.lat - b.coordinates.lat);
 
     if(zoneData.length < 3) {

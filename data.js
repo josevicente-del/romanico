@@ -10,9 +10,9 @@ window.poiData = [
     "zone": "Costa Occidental",
     "searchPopularity": 9800,
     "images": [
-      "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg&w=800",
-      "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Santillana_del_Mar._Colegiata_23.jpg&w=800",
-      "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Claustro_de_la_colegiata_de_Santa_Juliana.jpg&w=800"
+      "https://commons.wikimedia.org/w/thumb.php?f=Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg&w=800",
+      "https://commons.wikimedia.org/w/thumb.php?f=Santillana_del_Mar._Colegiata_23.jpg&w=800",
+      "https://commons.wikimedia.org/w/thumb.php?f=Claustro_de_la_colegiata_de_Santa_Juliana.jpg&w=800"
     ],
     "description": "La Colegiata de Santa Juliana es el monumento más representativo del románico en Cantabria. Destaca su magnífico claustro y la riqueza iconográfica de sus capiteles.",
     "nearbyLandscapes": ["Costa occidental", "Cuevas de Altamira"],
@@ -37,8 +37,8 @@ window.poiData = [
     "zone": "Liébana",
     "searchPopularity": 7500,
     "images": [
-      "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Iglesia_de_Santa_María_la_Real_de_Piasca.jpg&w=800",
-      "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Santa_María_de_Piasca_2.jpg&w=800"
+      "https://commons.wikimedia.org/w/thumb.php?f=Iglesia_de_Santa_María_la_Real_de_Piasca.jpg&w=800",
+      "https://commons.wikimedia.org/w/thumb.php?f=Santa_María_de_Piasca_2.jpg&w=800"
     ],
     "description": "Magnífico ejemplo de la transición del románico al gótico en el valle de Liébana.",
     "nearbyLandscapes": ["Picos de Europa", "Valle de Liébana"],
@@ -63,10 +63,8 @@ window.poiData = [
     "zone": "Valderredible",
     "searchPopularity": 6200,
     "images": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Colegiata_de_San_Mart%C3%ADn_de_Elines.jpg/800px-Colegiata_de_San_Mart%C3%ADn_de_Elines.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Claustro_Elines.jpg/800px-Claustro_Elines.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Abside_San_Martin_Elines.jpg/800px-Abside_San_Martin_Elines.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Interior_San_Martin_de_Elines.jpg/800px-Interior_San_Martin_de_Elines.jpg"
+      "https://commons.wikimedia.org/w/thumb.php?f=Colegiata_de_San_Martín_de_Elines.jpg&w=800",
+      "https://commons.wikimedia.org/w/thumb.php?f=Claustro_Elines.jpg&w=800"
     ],
     "description": "Considerada la joya del valle de Valderredible, con influencias mozárabes.",
     "nearbyLandscapes": ["Cañón del Ebro", "Ermitas rupestres"],
@@ -148,7 +146,7 @@ window.conventSweets = [
 // === Iglesias reales con imágenes de Wikipedia ===
 const iglesiasReales = [
   {id:"cervatos",name:"Colegiata de San Pedro de Cervatos",location:"Cervatos (Campoo de Enmedio)",lat:42.9876,lon:-4.0612,order:"Colegiata",culture:"Románico pleno",zone:"Campoo-Los Valles",pop:8500,
-    img:["https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Cervatos_Colegiata_de_San_Pedro_04.jpg&w=800","https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Colegiata_de_San_Pedro_de_Cervatos_(Cantabria).jpg&w=800"],
+    img:["https://commons.wikimedia.org/w/thumb.php?f=Cervatos_Colegiata_de_San_Pedro_04.jpg&w=800","https://commons.wikimedia.org/w/thumb.php?f=Colegiata_de_San_Pedro_de_Cervatos_(Cantabria).jpg&w=800"],
     desc:"Famosa por su rica decoración escultórica con escenas eróticas únicas en el románico español.",
     rest:[{name:"Brasería La Cabaña",foodType:"Carnes a la brasa",avgPrice:"28€",contact:"942 75 41 22",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g580282-Reinosa.html"},{name:"Ismano Gastrobar",foodType:"Tradicional gourmet",avgPrice:"35€",contact:"942 75 50 20",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g580282-Reinosa.html"}]},
   {id:"castaneda",name:"Colegiata de Santa Cruz de Castañeda",location:"Castañeda",lat:43.3127,lon:-3.8855,order:"Colegiata",culture:"Románico pleno",zone:"Valles Pasiegos",pop:7200,
@@ -192,11 +190,11 @@ const iglesiasReales = [
     desc:"Conserva elementos románicos originales en un entorno privilegiado junto al Palacio de Sobrellano.",
     rest:[{name:"Restaurante Adolfo",foodType:"Mariscos y pescados",avgPrice:"40€",contact:"942 72 00 33",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g187483-Comillas.html"},{name:"La Abacería de la Sal",foodType:"Productos locales",avgPrice:"20€",contact:"942 72 20 10",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g187483-Comillas.html"}]},
   {id:"retortillo",name:"Iglesia de Santa María de Retortillo",location:"Retortillo (Campoo de Enmedio)",lat:42.9690,lon:-4.0290,order:"Parroquial",culture:"Románico primitivo",zone:"Campoo-Los Valles",pop:4500,
-    img:["https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Iglesia_de_Retortillo_Cantabria.jpg&width=800"],
+    img:["https://commons.wikimedia.org/w/thumb.php?f=Iglesia_de_Retortillo_Cantabria.jpg&w=800"],
     desc:"Junto a las ruinas romanas de Julióbriga, fusión única de herencia romana y románica.",
     rest:[{name:"El Cid",foodType:"Cocina casera",avgPrice:"18€",contact:"942 75 20 00",tripadvisor:""},{name:"Avenida",foodType:"Menú del día",avgPrice:"12€",contact:"942 75 40 00",tripadvisor:""}]},
   {id:"santoña-puerto",name:"Iglesia de Santa María de Puerto",location:"Santoña",lat:43.4440,lon:-3.4575,order:"Parroquial",culture:"Románico pleno",zone:"Trasmiera",pop:9200,
-    img:["https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Monasterio_de_Santa_Mar%C3%ADa_de_Puerto_-_Santo%C3%B1a_-_01.jpg&width=800"],
+    img:["https://commons.wikimedia.org/w/thumb.php?f=Monasterio_de_Santa_María_de_Puerto_-_Santoña_-_01.jpg&w=800"],
     desc:"Antiguo monasterio benedictino del siglo XIII, uno de los templos más bellos de la costa.",
     rest:[
       {name:"El Langostino de Oro",foodType:"Mariscos",avgPrice:"40€",contact:"942 67 12 12",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g644329-Santona_Cantabria.html"},
@@ -256,12 +254,12 @@ window.localidadesCantabria = [
 
 // Imágenes reales de Wikipedia para iglesias generadas
 const wikiImgs = [
-  "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg&w=400",
-  "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Cervatos_Colegiata_de_San_Pedro_04.jpg&w=400",
-  "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Colegiata_de_Castañeda.jpg&w=400",
-  "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Santa_María_de_Lebeña.jpg&w=400",
-  "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Colegiata_de_San_Martín_de_Elines.jpg&w=400",
-  "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Santa_María_de_Bareyo.jpg&w=400"
+  "https://commons.wikimedia.org/w/thumb.php?f=Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg&w=400",
+  "https://commons.wikimedia.org/w/thumb.php?f=Cervatos_Colegiata_de_San_Pedro_04.jpg&w=400",
+  "https://commons.wikimedia.org/w/thumb.php?f=Colegiata_de_Castañeda.jpg&w=400",
+  "https://commons.wikimedia.org/w/thumb.php?f=Santa_María_de_Lebeña.jpg&w=400",
+  "https://commons.wikimedia.org/w/thumb.php?f=Colegiata_de_San_Martín_de_Elines.jpg&w=400",
+  "https://commons.wikimedia.org/w/thumb.php?f=Santa_María_de_Bareyo.jpg&w=400"
 ];
 
 // Localidades reales para el generador
