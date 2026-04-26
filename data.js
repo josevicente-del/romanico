@@ -10,16 +10,19 @@ window.poiData = [
     "zone": "Costa Occidental",
     "searchPopularity": 9800,
     "images": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg/800px-Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Santillana_del_Mar._Colegiata_23.jpg/800px-Santillana_del_Mar._Colegiata_23.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Claustro_de_la_colegiata_de_Santa_Juliana.jpg/800px-Claustro_de_la_colegiata_de_Santa_Juliana.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Santillana_del_Mar_Colegiata_interior.JPG/800px-Santillana_del_Mar_Colegiata_interior.JPG"
+      "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg&width=800",
+      "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Santillana_del_Mar._Colegiata_23.jpg&width=800",
+      "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Claustro_de_la_colegiata_de_Santa_Juliana.jpg&width=800"
     ],
     "description": "La Colegiata de Santa Juliana es el monumento más representativo del románico en Cantabria. Destaca su magnífico claustro y la riqueza iconográfica de sus capiteles.",
     "nearbyLandscapes": ["Costa occidental", "Cuevas de Altamira"],
     "restaurants": [
       {"name": "Restaurante Gran Duque", "foodType": "Tradicional cántabra", "avgPrice": "30€", "contact": "942 81 83 01", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g187480-Santillana_Del_Mar.html"},
-      {"name": "Los Blasones", "foodType": "Cántabra", "avgPrice": "25€", "contact": "942 81 80 70", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g187480-Santillana_Del_Mar.html"}
+      {"name": "El Pasaje de los Nobles", "foodType": "Gourmet", "avgPrice": "35€", "contact": "942 81 80 00", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g187480-Santillana_Del_Mar.html"},
+      {"name": "El Cantón", "foodType": "Tradicional", "avgPrice": "25€", "contact": "942 81 81 00", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g187480-Santillana_Del_Mar.html"},
+      {"name": "Parador de Santillana", "foodType": "Elegante", "avgPrice": "40€", "contact": "942 81 80 01", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g187480-Santillana_Del_Mar.html"},
+      {"name": "Los Blasones", "foodType": "Cántabra", "avgPrice": "25€", "contact": "942 81 80 70", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g187480-Santillana_Del_Mar.html"},
+      {"name": "El Bisonte Rojo", "foodType": "Fusión", "avgPrice": "30€", "contact": "942 81 82 00", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g187480-Santillana_Del_Mar.html"}
     ],
     "bibliography": "García Guinea, M.A. (1996). Románico en Cantabria.",
     "movies": ["Altamira (2016)"]
@@ -34,16 +37,18 @@ window.poiData = [
     "zone": "Liébana",
     "searchPopularity": 7500,
     "images": [
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Iglesia_de_Santa_Mar%C3%ADa_la_Real_de_Piasca.jpg/800px-Iglesia_de_Santa_Mar%C3%ADa_la_Real_de_Piasca.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Santa_Mar%C3%ADa_de_Piasca_2.jpg/800px-Santa_Mar%C3%ADa_de_Piasca_2.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Portada_de_Santa_Mar%C3%ADa_de_Piasca.jpg/800px-Portada_de_Santa_Mar%C3%ADa_de_Piasca.jpg",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Canecillos_Piasca.jpg/800px-Canecillos_Piasca.jpg"
+      "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Iglesia_de_Santa_Mar%C3%ADa_la_Real_de_Piasca.jpg&width=800",
+      "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Santa_Mar%C3%ADa_de_Piasca_2.jpg&width=800"
     ],
     "description": "Magnífico ejemplo de la transición del románico al gótico en el valle de Liébana.",
     "nearbyLandscapes": ["Picos de Europa", "Valle de Liébana"],
     "restaurants": [
+      {"name": "Asador Llorente", "foodType": "Carnes", "avgPrice": "35€", "contact": "942 73 01 55", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g1064376-Potes.html"},
+      {"name": "La Barrica de Potes", "foodType": "Cocido Lebaniego", "avgPrice": "25€", "contact": "942 73 21 00", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g1064376-Potes.html"},
       {"name": "Mesón Casa Fofi", "foodType": "Lebaniega", "avgPrice": "25€", "contact": "942 73 00 00", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g1064376-Potes.html"},
-      {"name": "Restaurante El Oso", "foodType": "Caza", "avgPrice": "35€", "contact": "942 73 30 18", "tripadvisor": ""}
+      {"name": "La Soldrería", "foodType": "Fusión", "avgPrice": "30€", "contact": "942 73 23 23", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g1064376-Potes.html"},
+      {"name": "El Cenador del Capitán", "foodType": "Gourmet", "avgPrice": "35€", "contact": "942 73 20 00", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g1064376-Potes.html"},
+      {"name": "Asador Bodega Aguilar", "foodType": "Carnes", "avgPrice": "30€", "contact": "942 73 00 01", "tripadvisor": "https://www.tripadvisor.es/Restaurant_Review-g1064376-Potes.html"}
     ],
     "bibliography": "Campuzano Ruiz, E. (1998).",
     "movies": []
@@ -187,9 +192,20 @@ const iglesiasReales = [
     desc:"Conserva elementos románicos originales en un entorno privilegiado junto al Palacio de Sobrellano.",
     rest:[{name:"Restaurante Adolfo",foodType:"Mariscos y pescados",avgPrice:"40€",contact:"942 72 00 33",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g187483-Comillas.html"},{name:"La Abacería de la Sal",foodType:"Productos locales",avgPrice:"20€",contact:"942 72 20 10",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g187483-Comillas.html"}]},
   {id:"retortillo",name:"Iglesia de Santa María de Retortillo",location:"Retortillo (Campoo de Enmedio)",lat:42.9690,lon:-4.0290,order:"Parroquial",culture:"Románico primitivo",zone:"Campoo-Los Valles",pop:4500,
-    img:["https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/Iglesia_de_Retortillo_Cantabria.jpg/800px-Iglesia_de_Retortillo_Cantabria.jpg"],
+    img:["https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Iglesia_de_Retortillo_Cantabria.jpg&width=800"],
     desc:"Junto a las ruinas romanas de Julióbriga, fusión única de herencia romana y románica.",
-    rest:[{name:"El Cid",foodType:"Cocina casera",avgPrice:"18€",contact:"942 75 20 00",tripadvisor:""},{name:"Avenida",foodType:"Menú del día",avgPrice:"12€",contact:"942 75 40 00",tripadvisor:""}]}
+    rest:[{name:"El Cid",foodType:"Cocina casera",avgPrice:"18€",contact:"942 75 20 00",tripadvisor:""},{name:"Avenida",foodType:"Menú del día",avgPrice:"12€",contact:"942 75 40 00",tripadvisor:""}]},
+  {id:"santoña-puerto",name:"Iglesia de Santa María de Puerto",location:"Santoña",lat:43.4440,lon:-3.4575,order:"Parroquial",culture:"Románico pleno",zone:"Trasmiera",pop:9200,
+    img:["https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Monasterio_de_Santa_Mar%C3%ADa_de_Puerto_-_Santo%C3%B1a_-_01.jpg&width=800"],
+    desc:"Antiguo monasterio benedictino del siglo XIII, uno de los templos más bellos de la costa.",
+    rest:[
+      {name:"El Langostino de Oro",foodType:"Mariscos",avgPrice:"40€",contact:"942 67 12 12",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g644329-Santona_Cantabria.html"},
+      {name:"Restaurante El Puerto",foodType:"Pescados",avgPrice:"30€",contact:"942 63 00 50",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g644329-Santona_Cantabria.html"},
+      {name:"Siete Villas",foodType:"Tradicional",avgPrice:"25€",contact:"942 66 04 22",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g644329-Santona_Cantabria.html"},
+      {name:"Don Pelayo",foodType:"Pescados",avgPrice:"30€",contact:"942 66 21 00",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g644329-Santona_Cantabria.html"},
+      {name:"Tasca La Marinera",foodType:"Tapas/Pescado",avgPrice:"20€",contact:"942 66 11 00",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g644329-Santona_Cantabria.html"},
+      {name:"As de Guía",foodType:"Fusión/Mar",avgPrice:"35€",contact:"942 66 25 35",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g644329-Santona_Cantabria.html"}
+    ]}
 ];
 
 // Convertir iglesias reales al formato estándar y añadirlas
@@ -199,8 +215,8 @@ iglesiasReales.forEach(ig => {
     coordinates: { lat: ig.lat, lon: ig.lon },
     order: ig.order, culture: ig.culture, zone: ig.zone,
     searchPopularity: ig.pop, images: ig.img,
-    description: ig.desc, restaurants: ig.rest,
-    bibliography: "Enciclopedia del Románico en Cantabria.", movies: []
+    description: ig.desc, restaurants: ig.rest || [],
+    bibliography: "García Guinea, M.A. 'El Románico en Cantabria'.", movies: []
   });
 });
 
@@ -240,12 +256,12 @@ window.localidadesCantabria = [
 
 // Imágenes reales de Wikipedia para iglesias generadas
 const wikiImgs = [
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg/400px-Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg",
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Cervatos_Colegiata_de_San_Pedro_04.jpg/400px-Cervatos_Colegiata_de_San_Pedro_04.jpg",
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Colegiata_de_Casta%C3%B1eda.jpg/400px-Colegiata_de_Casta%C3%B1eda.jpg",
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Santa_Mar%C3%ADa_de_Lebe%C3%B1a.jpg/400px-Santa_Mar%C3%ADa_de_Lebe%C3%B1a.jpg",
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Colegiata_de_San_Mart%C3%ADn_de_Elines.jpg/400px-Colegiata_de_San_Mart%C3%ADn_de_Elines.jpg",
-  "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Santa_Mar%C3%ADa_de_Bareyo.jpg/400px-Santa_Mar%C3%ADa_de_Bareyo.jpg"
+  "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg&width=400",
+  "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Cervatos_Colegiata_de_San_Pedro_04.jpg&width=400",
+  "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Colegiata_de_Casta%C3%B1eda.jpg&width=400",
+  "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Santa_Mar%C3%ADa_de_Lebe%C3%B1a.jpg&width=400",
+  "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Colegiata_de_San_Mart%C3%ADn_de_Elines.jpg&width=400",
+  "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Santa_Mar%C3%ADa_de_Bareyo.jpg&width=400"
 ];
 
 // Localidades reales para el generador

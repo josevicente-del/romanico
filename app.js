@@ -31,6 +31,7 @@ function initApp() {
     updateProgress();
     renderAgenda();
     renderRanking();
+    renderRestaurants();
     renderExtra();
 }
 
@@ -440,6 +441,35 @@ function updateDashboard() {
     }
     const last = contributions[contributions.length - 1];
     container.innerHTML = `<img src="${last.url}" style="width:100%; height:150px; object-fit:cover; border-radius:8px;"><div style="margin-top:5px; font-size:0.8rem;"><b>${last.user}</b> - ${last.date}</div>`;
+}
+
+function renderRestaurants() {
+    const container = document.getElementById('global-restaurants-container');
+    if (!container) return;
+    
+    const allRestaurants = [];
+    poiData.forEach(poi => {
+        if (poi.restaurants) {
+            poi.restaurants.forEach(r => {
+                allRestaurants.push({ ...r, poiName: poi.name, poiLocation: poi.location });
+            });
+        }
+    });
+
+    container.innerHTML = allRestaurants.map(r => `
+        <div class="card restaurant-card">
+            <div class="card-content">
+                <div style="display:flex; justify-content:space-between; align-items:start;">
+                    <h3 class="card-title">${r.name}</h3>
+                    <span class="tag" style="background:var(--accent); color:white;">${r.avgPrice}</span>
+                </div>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin:5px 0;">🍴 ${r.foodType}</p>
+                <p style="font-size:0.8rem; color:var(--primary); font-weight:600;">📍 Cerca de: ${r.poiName}</p>
+                <p style="font-size:0.8rem; color:var(--text-muted);">📞 ${r.contact}</p>
+                ${r.tripadvisor ? `<a href="${r.tripadvisor}" target="_blank" class="btn-auth" style="margin-top:10px; text-decoration:none; display:inline-block; font-size:0.8rem; background:#00aa6c; border:none; width:auto; padding:5px 15px;">🟢 TripAdvisor</a>` : ''}
+            </div>
+        </div>
+    `).join('');
 }
 
 // --- Un día Románico (Itinerario) ---
