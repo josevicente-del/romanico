@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1c3a6b">
+    <meta name="description" content="Descubre la riqueza del arte románico en Cantabria. Explora colegiatas, iglesias y rutas medievales con nuestra PWA interactiva. Turismo cultural y patrimonio histórico.">
+    <meta name="keywords" content="románico cantabria, turismo cantabria, iglesias románicas, colegiata santillana del mar, rutas medievales, patrimonio cantabria, arte medieval">
+    <meta name="author" content="Románico Cantabria">
+    <link rel="canonical" href="https://tu-dominio.com/index.html">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://tu-dominio.com/">
+    <meta property="og:title" content="Románico Cantabria | Guía Interactiva de Arte Medieval">
+    <meta property="og:description" content="Explora las joyas del románico en Cantabria: Santillana del Mar, Cervatos, San Martín de Elines y más.">
+    <meta property="og:image" content="https://tu-dominio.com/colegiata_santa_juliana_santillana_1777204517020.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://tu-dominio.com/">
+    <meta property="twitter:title" content="Románico Cantabria | Guía Interactiva">
+    <meta property="twitter:description" content="Descubre el patrimonio medieval de Cantabria con nuestra aplicación interactiva.">
+    <meta property="twitter:image" content="https://tu-dominio.com/colegiata_santa_juliana_santillana_1777204517020.png">
+
+    <title>Románico Cantabria | Guía Profesional de Turismo Románico</title>
+    
+    <!-- Structured Data (JSON-LD) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Románico Cantabria",
+      "url": "https://tu-dominio.com",
+      "description": "Aplicación para explorar el turismo románico en Cantabria con mapas, rutas e información detallada.",
+      "applicationCategory": "TravelApplication",
+      "genre": "Turismo Cultural",
+      "operatingSystem": "All",
+      "about": {
+        "@type": "Thing",
+        "name": "Arte Románico en Cantabria"
+      }
+    }
+    </script>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Google Fonts: Montserrat -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Intro Hero Animation -->
+    <div id="intro-hero" class="intro-container">
+        <div class="intro-overlay stress-bg">
+            <img src="atasco_trafico_estres_1777204502546.png" alt="Atasco" class="intro-img">
+            <div class="intro-text">¿Cansado de la ciudad?</div>
+        </div>
+        <div class="intro-overlay peace-bg">
+            <img src="colegiata_santa_juliana_santillana_1777204517020.png" alt="Colegiata" class="intro-img">
+            <div class="intro-text">Respira el Románico</div>
+        </div>
+        <button id="skip-intro">Entrar a la Experiencia</button>
+    </div>
+
+    <header class="magical-header">
+        <div class="header-top">
+            <div class="logo">
+                <span class="logo-text">Románico</span>
+                <span class="logo-sub">Cantabria</span>
+            </div>
+            <div class="user-stats">
+                <div class="stat-item">
+                    <span class="stat-icon">👁️</span>
+                    <span id="site-views">0</span>
+                    <span class="stat-label">Visitas</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🏰</span>
+                    <span id="visited-counter">0/0</span>
+                    <span class="stat-label">Explorado</span>
+                </div>
+                <button id="btn-login" class="btn-auth">Mi Cuenta</button>
+            </div>
+        </div>
+        <nav class="magical-nav">
+            <button class="nav-item active" data-view="list">Colección</button>
+            <button class="nav-item" data-view="map">Mapa Mágico</button>
+            <button class="nav-item" data-view="itinerary">Un día Románico</button>
+            <button class="nav-item" data-view="agenda">Agenda</button>
+            <button class="nav-item" data-view="ranking">Ranking Mágico</button>
+            <button class="nav-item" data-view="extra">Recetas y Dulces</button>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Portada -->
+        <section id="community-dashboard" class="dashboard-section">
+            <div class="dashboard-grid">
+                <div class="dashboard-card latest-upload">
+                    <h3>✨ Última Aportación</h3>
+                    <div id="last-photo-container"><p>Cargando...</p></div>
+                </div>
+                <div class="dashboard-card ventusky-weather">
+                    <h3>🌦️ Clima Cantabria</h3>
+                    <div class="ventusky-container">
+                        <iframe src="https://embed.ventusky.com/?p=43.26;-3.98;8&l=temperature-2m" width="100%" height="200" frameborder="0"></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Buscadores -->
+        <section class="controls-section">
+            <div class="search-group">
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="Buscar iglesia, localidad o ubicación...">
+                </div>
+                <div class="search-bar secondary-search">
+                    <input type="text" id="search-extra" placeholder="Buscar dónde comer o eventos...">
+                </div>
+            </div>
+            <div class="filters-scroll">
+                <select id="filter-zone"><option value="">Todas las Zonas</option></select>
+                <select id="filter-order"><option value="">Tipo</option></select>
+                <select id="sort-by">
+                    <option value="default">A-Z</option>
+                    <option value="popularity">Más Buscados</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Vistas -->
+        <section id="list-view" class="view-container active">
+            <div id="cards-container" class="magical-grid"></div>
+        </section>
+
+        <section id="map-view" class="view-container">
+            <div id="map"></div>
+        </section>
+
+        <section id="itinerary-view" class="view-container">
+            <div class="itinerary-panel">
+                <h2>🧭 Un día Románico</h2>
+                <p style="text-align:center; margin-bottom:20px;">Selecciona una zona para generar tu ruta personalizada de un día (10:00 - 18:30).</p>
+                <div style="display:flex; justify-content:center; gap:10px; margin-bottom:30px;">
+                    <select id="itinerary-zone-select" style="padding:10px 30px;"></select>
+                    <button id="btn-gen-itinerary" class="btn-primary" style="width:auto; padding:10px 30px;">Generar Ruta</button>
+                </div>
+                <div id="itinerary-results" style="display:none;">
+                    <div id="itinerary-map" style="height:350px; width:100%; border-radius:12px; margin-bottom:30px; box-shadow:var(--shadow);"></div>
+                    <div id="itinerary-timeline" class="timeline"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="agenda-view" class="view-container">
+            <div class="agenda-panel">
+                <h2>📅 Agenda Románica 2026</h2>
+                <div id="agenda-container" class="magical-grid"></div>
+            </div>
+        </section>
+
+        <section id="ranking-view" class="view-container">
+            <div class="ranking-panel">
+                <h2>🏆 Ranking Mágico: Iglesias más visitadas</h2>
+                <div id="church-ranking" class="ranking-list"></div>
+            </div>
+        </section>
+
+        <section id="extra-view" class="view-container">
+            <div class="extra-panel">
+                <h2>🥘 Sabores del Medievo</h2>
+                <div id="recipes-container" class="magical-grid"></div>
+                <h2 style="margin-top:40px;">🍬 Dulces de Convento</h2>
+                <div id="sweets-container" class="magical-grid"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modales -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content detail-content">
+            <span class="close-btn">&times;</span>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <div id="auth-modal" class="modal">
+        <div class="modal-content auth-content">
+            <span class="close-btn">&times;</span>
+            <div class="auth-tabs">
+                <button class="tab-btn active" data-tab="register">Registro</button>
+                <button class="tab-btn" data-tab="login">Login</button>
+            </div>
+            <form id="register-form" class="auth-form active">
+                <h3>Registro de Viajero</h3>
+                <div class="form-group"><label>Usuario</label><input type="text" id="reg-user" required></div>
+                <div class="form-group"><label>Email</label><input type="email" id="reg-email" required></div>
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <div class="pass-wrapper">
+                        <input type="password" id="reg-pass" required>
+                        <button type="button" class="toggle-pass">👁️</button>
+                    </div>
+                    <div id="pass-strength" class="strength-meter"></div>
+                </div>
+                <button type="submit" class="btn-primary">Registrar</button>
+                <div id="reg-status" class="status-msg"></div>
+            </form>
+            <form id="login-form" class="auth-form">
+                <h3>Bienvenido</h3>
+                <div class="form-group"><label>Email</label><input type="email" id="login-email" required></div>
+                <div class="form-group"><label>Contraseña</label><input type="password" id="login-pass" required></div>
+                <button type="submit" class="btn-primary">Entrar</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="upload-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>📸 Comparte tu Foto</h2>
+            <form id="upload-form">
+                <input type="hidden" id="upload-poi-id">
+                <div class="form-group"><label>Tu nombre</label><input type="text" id="upload-user" required></div>
+                <div class="form-group"><label>URL Imagen</label><input type="text" id="upload-url" required></div>
+                <button type="submit" class="btn-primary">Subir</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="magical-footer">
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>Románico Cantabria</h3>
+                <p>Tu guía interactiva para descubrir el patrimonio medieval y las iglesias románicas de Cantabria.</p>
+            </div>
+            <div class="footer-links">
+                <p>Explora: 
+                    <a href="#list-view">Colección</a> | 
+                    <a href="#map-view">Mapa</a> | 
+                    <a href="#itinerary-view">Rutas</a>
+                </p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Románico Cantabria - Turismo Cultural y Patrimonio</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

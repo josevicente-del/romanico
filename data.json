@@ -1,0 +1,71 @@
+[
+  {
+    "id": "colegiata-santillana",
+    "name": "Colegiata de Santa Juliana",
+    "location": "Santillana del Mar",
+    "coordinates": { "lat": 43.3908, "lon": -4.1081 },
+    "order": "Cluniacense",
+    "culture": "Románico pleno",
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg/800px-Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg"
+    ],
+    "description": "El monumento más importante del románico en Cantabria. Destaca su claustro y los capiteles.",
+    "nearbyLandscapes": ["Costa occidental", "Cuevas de Altamira"],
+    "restaurants": [
+      {
+        "name": "Restaurante El Castillo",
+        "foodType": "Tradicional cántabra",
+        "avgPrice": "25-35€",
+        "contact": "www.elcastillosantillana.com"
+      }
+    ],
+    "bibliography": "García Guinea, M.A. (1996). Románico en Cantabria.",
+    "movies": ["Altamira (2016)", "Aparece en varias series documentales"]
+  },
+  {
+    "id": "santa-maria-piasca",
+    "name": "Iglesia de Santa María",
+    "location": "Piasca (Cabezón de Liébana)",
+    "coordinates": { "lat": 43.1118, "lon": -4.5807 },
+    "order": "Benedictina",
+    "culture": "Románico tardío",
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Iglesia_de_Santa_Mar%C3%ADa_la_Real_de_Piasca.jpg/800px-Iglesia_de_Santa_Mar%C3%ADa_la_Real_de_Piasca.jpg"
+    ],
+    "description": "Ubicada en el valle de Liébana, destaca por la riqueza de la decoración escultórica de sus portadas y ábsides.",
+    "nearbyLandscapes": ["Picos de Europa", "Valle de Liébana"],
+    "restaurants": [
+      {
+        "name": "Mesón Casa Fofi",
+        "foodType": "Cocina lebaniega",
+        "avgPrice": "20-30€",
+        "contact": "Tel: 942 73 00 00"
+      }
+    ],
+    "bibliography": "Campuzano Ruiz, E. (1998). El románico en Liébana.",
+    "movies": []
+  },
+  {
+    "id": "san-martin-elines",
+    "name": "Colegiata de San Martín de Elines",
+    "location": "Valderredible",
+    "coordinates": { "lat": 42.8256, "lon": -3.8741 },
+    "order": "Cluniacense",
+    "culture": "Románico pleno con influencias mozárabes",
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Colegiata_de_San_Mart%C3%ADn_de_Elines.jpg/800px-Colegiata_de_San_Mart%C3%ADn_de_Elines.jpg"
+    ],
+    "description": "Una joya en el valle de Valderredible, destaca por sus arcos polilobulados y claustro primitivo.",
+    "nearbyLandscapes": ["Cañón del Ebro", "Ermitas rupestres de Valderredible"],
+    "restaurants": [
+      {
+        "name": "Restaurante La Olma",
+        "foodType": "Casera tradicional",
+        "avgPrice": "15-25€",
+        "contact": "Tel: 942 77 60 50"
+      }
+    ],
+    "bibliography": "Bedia, J.M. (2005). Iglesias románicas de Valderredible.",
+    "movies": ["La vida que te espera (2004) - Escenarios cercanos"]
+  }
+]
