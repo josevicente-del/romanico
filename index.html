@@ -122,7 +122,8 @@
         <section class="controls-section">
             <div class="search-group">
                 <div class="search-bar">
-                    <input type="text" id="search-input" placeholder="Buscar iglesia, localidad o ubicación...">
+                    <input type="text" id="search-input" list="localidades-list" placeholder="🔍 Buscar iglesia, localidad (ej: Potes, Reinosa, Comillas)...">
+                    <datalist id="localidades-list"></datalist>
                 </div>
                 <div class="search-bar secondary-search">
                     <input type="text" id="search-extra" placeholder="Buscar dónde comer o eventos...">
@@ -136,6 +137,7 @@
                     <option value="popularity">Más Buscados</option>
                 </select>
             </div>
+            <div id="locality-info" class="locality-info" style="display:none;"></div>
         </section>
 
         <!-- Vistas -->

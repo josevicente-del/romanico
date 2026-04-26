@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function initApp() {
     initFilters();
+    initLocalidades();
     initMap();
     renderList();
     updateProgress();
@@ -89,6 +90,36 @@ function initFilters() {
     });
 }
 
+// --- Poblar datalist de localidades para autocompletado ---
+function initLocalidades() {
+    const datalist = document.getElementById('localidades-list');
+    if (!datalist) return;
+    const localidades = window.localidadesCantabria || [];
+    localidades.forEach(loc => {
+        const opt = document.createElement('option');
+        opt.value = loc.name;
+        datalist.appendChild(opt);
+    });
+}
+
+// --- Mostrar info cuando se busca por localidad ---
+function updateLocalityInfo() {
+    const infoDiv = document.getElementById('locality-info');
+    if (!infoDiv) return;
+    const search = document.getElementById('search-input').value.toLowerCase().trim();
+    const localidades = window.localidadesCantabria || [];
+    const match = localidades.find(l => l.name.toLowerCase().includes(search) && search.length >= 3);
+    if (match) {
+        const nearby = poiData
+            .map(p => ({d: calculateDistance(match.lat, match.lon, p.coordinates.lat, p.coordinates.lon)}))
+            .filter(p => p.d <= 20).length;
+        infoDiv.style.display = 'block';
+        infoDiv.innerHTML = `📍 <strong>${match.name}</strong> (${match.comarca}) — <strong>${nearby}</strong> iglesias en 20 km`;
+    } else {
+        infoDiv.style.display = 'none';
+    }
+}
+
 // --- Map Logic Principal ---
 function initMap() {
     const mapEl = document.getElementById('map');
@@ -118,14 +149,36 @@ function renderMarkers() {
     });
 }
 
-// --- Buscador y Filtros Combinados ---
+// --- Buscador y Filtros Combinados con búsqueda por localidad ---
 function getFilteredData() {
     const zone = document.getElementById('filter-zone').value;
     const order = document.getElementById('filter-order').value;
     const searchInput = document.getElementById('search-input');
-    const search = searchInput ? searchInput.value.toLowerCase() : '';
+    const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
     const sort = document.getElementById('sort-by').value;
+    const localidades = window.localidadesCantabria || [];
 
+    // Buscar si el texto coincide con una localidad de Cantabria
+    const localidadMatch = localidades.find(loc =>
+        loc.name.toLowerCase().includes(search) && search.length >= 3
+    );
+
+    // Si hay coincidencia con localidad, ordenar por distancia
+    if (localidadMatch && search.length >= 3) {
+        return poiData
+            .map(poi => ({
+                ...poi,
+                distancia: calculateDistance(localidadMatch.lat, localidadMatch.lon, poi.coordinates.lat, poi.coordinates.lon)
+            }))
+            .filter(poi => {
+                const matchZone = !zone || poi.zone === zone;
+                const matchOrder = !order || poi.order === order;
+                return matchZone && matchOrder;
+            })
+            .sort((a, b) => a.distancia - b.distancia);
+    }
+
+    // Búsqueda normal por nombre, ubicación o zona
     return poiData.filter(poi => {
         const matchZone = !zone || poi.zone === zone;
         const matchOrder = !order || poi.order === order;
@@ -151,9 +204,13 @@ function renderList() {
         const isVisited = visited.has(poi.id);
         const card = document.createElement('div');
         card.className = `card ${isVisited ? 'visited' : ''}`;
+        // Mostrar distancia si existe (búsqueda por localidad)
+        const distHTML = poi.distancia !== undefined
+            ? `<span class="tag" style="background:#27ae60;color:white;">📍 ${poi.distancia.toFixed(1)} km</span>`
+            : '';
         card.innerHTML = `
             <div class="card-img-container">
-                <img src="${poi.images[0]}" alt="${poi.name}" onerror="this.src='calles_santillana_del_mar_1777204641643.png'">
+                <img src="${poi.images[0]}" alt="${poi.name}" onerror="this.src='colegiata_santa_juliana_santillana_1777204517020.png'">
             </div>
             <div class="card-content">
                 <h3 class="card-title">${poi.name}</h3>
@@ -161,6 +218,7 @@ function renderList() {
                 <div class="tags" style="margin-top:10px;">
                     <span class="tag">${poi.zone}</span>
                     <span class="tag" style="background:var(--accent); color:white;">${poi.order}</span>
+                    ${distHTML}
                 </div>
             </div>
         `;
@@ -205,6 +263,7 @@ function openDetail(poi) {
                         <span style="color:var(--accent)">${r.avgPrice}</span>
                     </div>
                     <div style="font-size:0.8rem; color:var(--text-muted)">${r.foodType} • 📞 ${r.contact}</div>
+                    ${r.tripadvisor ? `<a href="${r.tripadvisor}" target="_blank" style="display:inline-block;margin-top:5px;font-size:0.75rem;color:#00aa6c;font-weight:600;text-decoration:none;">🟢 Ver en TripAdvisor →</a>` : ''}
                 </div>
             `).join('') : '<p>No hay datos de restaurantes cercanos.</p>'}
         </div>
@@ -476,7 +535,7 @@ function setupEventListeners() {
     document.getElementById('filter-zone').addEventListener('change', () => { renderList(); renderMarkers(); });
     document.getElementById('filter-order').addEventListener('change', () => { renderList(); renderMarkers(); });
     document.getElementById('sort-by').addEventListener('change', () => { renderList(); renderMarkers(); });
-    document.getElementById('search-input').addEventListener('input', () => { renderList(); renderMarkers(); });
+    document.getElementById('search-input').addEventListener('input', () => { renderList(); renderMarkers(); updateLocalityInfo(); });
     document.getElementById('search-extra').addEventListener('input', () => { renderAgenda(); renderExtra(); });
 
     document.querySelectorAll('.close-btn').forEach(btn => {

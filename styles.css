@@ -570,6 +570,24 @@ select {
 }
 
 /* Footer */
+
+/* Banner de localidad encontrada */
+.locality-info {
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: #2e7d32;
+    border-left: 4px solid #27ae60;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Footer */
 .magical-footer {
     background: var(--primary);
     color: white;
