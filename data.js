@@ -10,9 +10,9 @@ window.poiData = [
     "zone": "Costa Occidental",
     "searchPopularity": 9800,
     "images": [
-      "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg&width=800",
-      "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Santillana_del_Mar._Colegiata_23.jpg&width=800",
-      "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Claustro_de_la_colegiata_de_Santa_Juliana.jpg&width=800"
+      "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg&w=800",
+      "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Santillana_del_Mar._Colegiata_23.jpg&w=800",
+      "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Claustro_de_la_colegiata_de_Santa_Juliana.jpg&w=800"
     ],
     "description": "La Colegiata de Santa Juliana es el monumento más representativo del románico en Cantabria. Destaca su magnífico claustro y la riqueza iconográfica de sus capiteles.",
     "nearbyLandscapes": ["Costa occidental", "Cuevas de Altamira"],
@@ -37,8 +37,8 @@ window.poiData = [
     "zone": "Liébana",
     "searchPopularity": 7500,
     "images": [
-      "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Iglesia_de_Santa_Mar%C3%ADa_la_Real_de_Piasca.jpg&width=800",
-      "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Santa_Mar%C3%ADa_de_Piasca_2.jpg&width=800"
+      "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Iglesia_de_Santa_María_la_Real_de_Piasca.jpg&w=800",
+      "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Santa_María_de_Piasca_2.jpg&w=800"
     ],
     "description": "Magnífico ejemplo de la transición del románico al gótico en el valle de Liébana.",
     "nearbyLandscapes": ["Picos de Europa", "Valle de Liébana"],
@@ -148,47 +148,47 @@ window.conventSweets = [
 // === Iglesias reales con imágenes de Wikipedia ===
 const iglesiasReales = [
   {id:"cervatos",name:"Colegiata de San Pedro de Cervatos",location:"Cervatos (Campoo de Enmedio)",lat:42.9876,lon:-4.0612,order:"Colegiata",culture:"Románico pleno",zone:"Campoo-Los Valles",pop:8500,
-    img:["https://upload.wikimedia.org/wikipedia/commons/thumb/e/e5/Cervatos_Colegiata_de_San_Pedro_04.jpg/800px-Cervatos_Colegiata_de_San_Pedro_04.jpg","https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Colegiata_de_San_Pedro_de_Cervatos_%28Cantabria%29.jpg/800px-Colegiata_de_San_Pedro_de_Cervatos_%28Cantabria%29.jpg"],
+    img:["https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Cervatos_Colegiata_de_San_Pedro_04.jpg&w=800","https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Colegiata_de_San_Pedro_de_Cervatos_(Cantabria).jpg&w=800"],
     desc:"Famosa por su rica decoración escultórica con escenas eróticas únicas en el románico español.",
     rest:[{name:"Brasería La Cabaña",foodType:"Carnes a la brasa",avgPrice:"28€",contact:"942 75 41 22",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g580282-Reinosa.html"},{name:"Ismano Gastrobar",foodType:"Tradicional gourmet",avgPrice:"35€",contact:"942 75 50 20",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g580282-Reinosa.html"}]},
   {id:"castaneda",name:"Colegiata de Santa Cruz de Castañeda",location:"Castañeda",lat:43.3127,lon:-3.8855,order:"Colegiata",culture:"Románico pleno",zone:"Valles Pasiegos",pop:7200,
-    img:["https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Colegiata_de_Casta%C3%B1eda.jpg/800px-Colegiata_de_Casta%C3%B1eda.jpg","https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Colegiata_de_Casta%C3%B1eda_%28exterior%29.jpg/800px-Colegiata_de_Casta%C3%B1eda_%28exterior%29.jpg"],
+    img:["https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Colegiata_de_Castañeda.jpg&w=800","https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Colegiata_de_Castañeda_(exterior).jpg&w=800"],
     desc:"Magnífica colegiata del siglo XII con excelente portada y capiteles historiados.",
     rest:[{name:"Restaurante Cenador de Amós",foodType:"Alta cocina",avgPrice:"85€",contact:"942 59 82 43",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g1064410-Villaverde_de_Pontones.html"},{name:"La Bicicleta",foodType:"Cántabra moderna",avgPrice:"30€",contact:"942 59 00 10",tripadvisor:""}]},
   {id:"bareyo",name:"Iglesia de Santa María de Bareyo",location:"Bareyo (Meruelo)",lat:43.4513,lon:-3.5679,order:"Parroquial",culture:"Románico pleno",zone:"Trasmiera",pop:5800,
-    img:["https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Santa_Mar%C3%ADa_de_Bareyo.jpg/800px-Santa_Mar%C3%ADa_de_Bareyo.jpg","https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Bareyo_Santa_Mar%C3%ADa_01.jpg/800px-Bareyo_Santa_Mar%C3%ADa_01.jpg"],
+    img:["https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Santa_María_de_Bareyo.jpg&w=800","https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Bareyo_Santa_María_01.jpg&w=800"],
     desc:"Iglesia románica del siglo XII con notable ábside semicircular y canecillos figurados.",
     rest:[{name:"El Langostino de Oro",foodType:"Mariscos",avgPrice:"40€",contact:"942 67 12 12",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g187484-Noja.html"},{name:"Restaurante El Puerto",foodType:"Pescados",avgPrice:"30€",contact:"942 63 00 50",tripadvisor:""}]},
   {id:"silio",name:"Iglesia de San Facundo y San Primitivo",location:"Silió (Molledo)",lat:43.1335,lon:-4.0470,order:"Parroquial",culture:"Románico pleno",zone:"Besaya",pop:6100,
-    img:["https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Iglesia_de_San_Facundo_y_San_Primitivo_%28Sili%C3%B3%29.jpg/800px-Iglesia_de_San_Facundo_y_San_Primitivo_%28Sili%C3%B3%29.jpg","https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Portada_de_Sili%C3%B3.jpg/800px-Portada_de_Sili%C3%B3.jpg"],
+    img:["https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Iglesia_de_San_Facundo_y_San_Primitivo_(Silió).jpg&w=800","https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Portada_de_Silió.jpg&w=800"],
     desc:"Destacada por su portada monumental con arquivoltas ricamente decoradas. Famosa por La Vijanera.",
     rest:[{name:"Mesón Los Corrales",foodType:"Casera",avgPrice:"20€",contact:"942 82 00 35",tripadvisor:""},{name:"Posada La Casuca",foodType:"Cántabra",avgPrice:"22€",contact:"942 82 01 10",tripadvisor:""}]},
   {id:"yermo",name:"Iglesia de Santa María de Yermo",location:"Yermo (Cartes)",lat:43.3180,lon:-4.0600,order:"Parroquial",culture:"Románico tardío",zone:"Besaya",pop:5500,
-    img:["https://upload.wikimedia.org/wikipedia/commons/thumb/7/76/Iglesia_de_Santa_Mar%C3%ADa_de_Yermo_%28Cantabria%29.jpg/800px-Iglesia_de_Santa_Mar%C3%ADa_de_Yermo_%28Cantabria%29.jpg","https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Yermo_portada.jpg/800px-Yermo_portada.jpg"],
+    img:["https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Iglesia_de_Santa_María_de_Yermo_(Cantabria).jpg&w=800","https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Yermo_portada.jpg&w=800"],
     desc:"Destaca por su magnífica portada y el alero con canecillos de temática variada.",
     rest:[{name:"Restaurante El Puente",foodType:"Tradicional",avgPrice:"25€",contact:"942 81 10 20",tripadvisor:""},{name:"La Casona de Cartes",foodType:"Cántabra",avgPrice:"30€",contact:"942 81 30 40",tripadvisor:""}]},
   {id:"bolmir",name:"Iglesia de San Cipriano de Bolmir",location:"Bolmir (Campoo de Enmedio)",lat:42.9810,lon:-4.0518,order:"Parroquial",culture:"Románico pleno",zone:"Campoo-Los Valles",pop:4800,
-    img:["https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Iglesia_de_San_Cipriano_de_Bolmir.jpg/800px-Iglesia_de_San_Cipriano_de_Bolmir.jpg","https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Bolmir_canecillos.jpg/800px-Bolmir_canecillos.jpg"],
+    img:["https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Iglesia_de_San_Cipriano_de_Bolmir.jpg&w=800","https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Bolmir_canecillos.jpg&w=800"],
     desc:"Pequeña iglesia con ábside románico puro y canecillos de gran expresividad.",
     rest:[{name:"El Cid",foodType:"Cocina casera",avgPrice:"18€",contact:"942 75 20 00",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g580282-Reinosa.html"},{name:"Bodega Pepe",foodType:"Vinos y tostas",avgPrice:"15€",contact:"942 75 33 00",tripadvisor:""}]},
   {id:"villacantid",name:"Iglesia de Santa María la Mayor",location:"Villacantid (Campoo de Suso)",lat:43.0130,lon:-4.1380,order:"Parroquial",culture:"Románico pleno",zone:"Campoo-Los Valles",pop:5200,
-    img:["https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Iglesia_de_Villacantid.jpg/800px-Iglesia_de_Villacantid.jpg","https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Centro_Interpretacion_Romanico_Villacantid.jpg/800px-Centro_Interpretacion_Romanico_Villacantid.jpg"],
+    img:["https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Iglesia_de_Villacantid.jpg&w=800","https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Centro_Interpretacion_Romanico_Villacantid.jpg&w=800"],
     desc:"Alberga el Centro de Interpretación del Románico de Cantabria.",
     rest:[{name:"Hostería Campoo",foodType:"Montañesa",avgPrice:"22€",contact:"942 77 90 00",tripadvisor:""},{name:"Mesón Alto Campoo",foodType:"Carnes",avgPrice:"25€",contact:"942 77 91 00",tripadvisor:""}]},
   {id:"san-pedro-escalante",name:"Iglesia de San Pedro de Escalante",location:"Escalante",lat:43.4470,lon:-3.5095,order:"Parroquial",culture:"Románico tardío",zone:"Trasmiera",pop:3900,
-    img:["https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Iglesia_de_San_Pedro_de_Escalante.jpg/800px-Iglesia_de_San_Pedro_de_Escalante.jpg"],
+    img:["https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Iglesia_de_San_Pedro_de_Escalante.jpg&w=800"],
     desc:"Iglesia del siglo XIII con elementos románicos de transición al gótico.",
     rest:[{name:"Casa Solana",foodType:"Marisquería",avgPrice:"35€",contact:"942 67 70 10",tripadvisor:""},{name:"El Mesón de Escalante",foodType:"Tradicional",avgPrice:"20€",contact:"942 67 71 20",tripadvisor:""}]},
   {id:"santa-maria-lebena",name:"Iglesia de Santa María de Lebeña",location:"Lebeña (Cillorigo de Liébana)",lat:43.2210,lon:-4.5900,order:"Mozárabe",culture:"Prerrománico mozárabe",zone:"Liébana",pop:7800,
-    img:["https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Santa_Mar%C3%ADa_de_Lebe%C3%B1a.jpg/800px-Santa_Mar%C3%ADa_de_Lebe%C3%B1a.jpg","https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Lebena_interior.jpg/800px-Lebena_interior.jpg"],
+    img:["https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Santa_María_de_Lebeña.jpg&w=800","https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Lebena_interior.jpg&w=800"],
     desc:"Joya del arte mozárabe del siglo X con arcos de herradura y columnas con capiteles corintios.",
     rest:[{name:"Asador Llorente",foodType:"Carnes a la brasa",avgPrice:"35€",contact:"942 73 01 55",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g1064376-Potes.html"},{name:"La Barrica de Potes",foodType:"Cocido Lebaniego",avgPrice:"25€",contact:"942 73 21 00",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g1064376-Potes.html"}]},
   {id:"san-roman-escalante",name:"Iglesia de San Román de Escalante",location:"Escalante",lat:43.4450,lon:-3.5120,order:"Parroquial",culture:"Románico tardío",zone:"Trasmiera",pop:3500,
-    img:["https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/San_Roman_de_Escalante_01.jpg/800px-San_Roman_de_Escalante_01.jpg"],
+    img:["https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/San_Roman_de_Escalante_01.jpg&w=800"],
     desc:"Pequeña iglesia con restos románicos y bonito entorno rural en Trasmiera.",
     rest:[{name:"El Langostino de Oro",foodType:"Mariscos",avgPrice:"40€",contact:"942 67 12 12",tripadvisor:""},{name:"Restaurante El Puerto",foodType:"Pescados",avgPrice:"30€",contact:"942 63 00 50",tripadvisor:""}]},
   {id:"comillas-san-cristobal",name:"Iglesia de San Cristóbal",location:"Comillas",lat:43.3871,lon:-4.2909,order:"Parroquial",culture:"Románico rural",zone:"Costa Occidental",pop:4200,
-    img:["https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Comillas_San_Crist%C3%B3bal.jpg/800px-Comillas_San_Crist%C3%B3bal.jpg","https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Comillas_-_Iglesia_de_San_Crist%C3%B3bal.jpg/800px-Comillas_-_Iglesia_de_San_Crist%C3%B3bal.jpg"],
+    img:["https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Comillas_San_Cristóbal.jpg&w=800","https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Comillas_-_Iglesia_de_San_Cristóbal.jpg&w=800"],
     desc:"Conserva elementos románicos originales en un entorno privilegiado junto al Palacio de Sobrellano.",
     rest:[{name:"Restaurante Adolfo",foodType:"Mariscos y pescados",avgPrice:"40€",contact:"942 72 00 33",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g187483-Comillas.html"},{name:"La Abacería de la Sal",foodType:"Productos locales",avgPrice:"20€",contact:"942 72 20 10",tripadvisor:"https://www.tripadvisor.es/Restaurant_Review-g187483-Comillas.html"}]},
   {id:"retortillo",name:"Iglesia de Santa María de Retortillo",location:"Retortillo (Campoo de Enmedio)",lat:42.9690,lon:-4.0290,order:"Parroquial",culture:"Románico primitivo",zone:"Campoo-Los Valles",pop:4500,
@@ -256,12 +256,12 @@ window.localidadesCantabria = [
 
 // Imágenes reales de Wikipedia para iglesias generadas
 const wikiImgs = [
-  "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg&width=400",
-  "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Cervatos_Colegiata_de_San_Pedro_04.jpg&width=400",
-  "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Colegiata_de_Casta%C3%B1eda.jpg&width=400",
-  "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Santa_Mar%C3%ADa_de_Lebe%C3%B1a.jpg&width=400",
-  "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Colegiata_de_San_Mart%C3%ADn_de_Elines.jpg&width=400",
-  "https://commons.wikimedia.org/w/index.php?title=Special:Redirect/file/Santa_Mar%C3%ADa_de_Bareyo.jpg&width=400"
+  "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg&w=400",
+  "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Cervatos_Colegiata_de_San_Pedro_04.jpg&w=400",
+  "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Colegiata_de_Castañeda.jpg&w=400",
+  "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Santa_María_de_Lebeña.jpg&w=400",
+  "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Colegiata_de_San_Martín_de_Elines.jpg&w=400",
+  "https://images.weserv.nl/?url=commons.wikimedia.org/wiki/Special:FilePath/Santa_María_de_Bareyo.jpg&w=400"
 ];
 
 // Localidades reales para el generador
