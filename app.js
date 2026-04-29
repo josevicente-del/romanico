@@ -1,6 +1,6 @@
 // app.js
 const poiData = window.poiData || [];
-const eventsData = window.eventsData || [];
+let eventsData = window.eventsData || [];
 const recipesData = window.recipesData || [];
 const conventSweets = window.conventSweets || [];
 
@@ -33,6 +33,7 @@ function initApp() {
     renderRanking();
     renderRestaurants();
     renderExtra();
+    renderSketchfab();
 }
 
 // --- Lógica de Intro ---
@@ -114,7 +115,7 @@ function updateLocalityInfo() {
     ));
     if (match) {
         const nearby = poiData
-            .map(p => ({d: calculateDistance(match.lat, match.lon, p.coordinates.lat, p.coordinates.lon)}))
+            .map(p => ({d: calculateDistance(match.lat, match.lon, p.lat, p.lon)}))
             .filter(p => p.d <= 20).length;
         infoDiv.style.display = 'block';
         infoDiv.innerHTML = `📍 <strong>${match.name}</strong> (${match.comarca}) — <strong>${nearby}</strong> iglesias en 20 km`;
@@ -142,7 +143,7 @@ function renderMarkers() {
     const visited = getVisited();
 
     data.forEach(poi => {
-        const marker = L.circleMarker([poi.coordinates.lat, poi.coordinates.lon], {
+        const marker = L.circleMarker([poi.lat, poi.lon], {
             radius: 10,
             fillColor: visited.has(poi.id) ? '#27ae60' : '#1c3a6b',
             color: '#fff', weight: 2, opacity: 1, fillOpacity: 0.9
@@ -174,7 +175,7 @@ function getFilteredData() {
         return poiData
             .map(poi => ({
                 ...poi,
-                distancia: calculateDistance(localidadMatch.lat, localidadMatch.lon, poi.coordinates.lat, poi.coordinates.lon)
+                distancia: calculateDistance(localidadMatch.lat, localidadMatch.lon, poi.lat, poi.lon)
             }))
             .filter(poi => {
                 const matchZone = !zone || poi.zone === zone;
@@ -194,7 +195,15 @@ function getFilteredData() {
             (poi.zone && poi.zone.toLowerCase().includes(search));
         return matchZone && matchOrder && matchSearch;
     }).sort((a, b) => {
-        if (sort === 'popularity') return (b.searchPopularity || 0) - (a.searchPopularity || 0);
+        if (sort === 'popularity') {
+            const aIsCol = a.order === 'Colegiata' || a.name.toLowerCase().includes('colegiata');
+            const bIsCol = b.order === 'Colegiata' || b.name.toLowerCase().includes('colegiata');
+            if (aIsCol && !bIsCol) return -1;
+            if (!aIsCol && bIsCol) return 1;
+            const aPop = a.pop || a.searchPopularity || 0;
+            const bPop = b.pop || b.searchPopularity || 0;
+            return bPop - aPop;
+        }
         return a.name.localeCompare(b.name);
     });
 }
@@ -247,13 +256,19 @@ function openDetail(poi) {
         <h2 style="font-family:'Playfair Display'; color:var(--primary)">${poi.name}</h2>
         <p>📍 ${poi.location}</p>
         
+        <!-- Botones Sociales -->
+        <div style="margin-bottom: 20px; display: flex; gap: 10px;">
+            <button onclick="shareContent('whatsapp', '${poi.name}', 'Descubre esta joya del románico en Cantabria.', window.location.href)" style="background: #25D366; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px;">💬 WhatsApp</button>
+            <button onclick="shareContent('telegram', '${poi.name}', 'Descubre esta joya del románico en Cantabria.', window.location.href)" style="background: #0088cc; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px;">✈️ Telegram</button>
+        </div>
+        
         <div class="mini-map-container" id="mini-map-${poi.id}" style="height:200px; width:100%; border-radius:8px; margin:15px 0;"></div>
         
         <div style="display:flex; gap:10px; margin-bottom:20px;">
-            <button onclick="checkLocationAndVisit('${poi.id}', ${poi.coordinates.lat}, ${poi.coordinates.lon})" class="btn-primary" style="flex:1; background:${isVisited ? '#7f8c8d' : 'var(--primary)'}">
+            <button onclick="checkLocationAndVisit('${poi.id}', ${poi.lat}, ${poi.lon})" class="btn-primary" style="flex:1; background:${isVisited ? '#7f8c8d' : 'var(--primary)'}">
                 ${isVisited ? '✓ Ya visitado' : 'Marcar como Visitado (<1km)'}
             </button>
-            <a href="https://www.google.com/maps/dir/?api=1&destination=${poi.coordinates.lat},${poi.coordinates.lon}" target="_blank" class="btn-auth" style="flex:1; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center;">🗺️ Cómo llegar</a>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${poi.lat},${poi.lon}" target="_blank" class="btn-auth" style="flex:1; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center;">🗺️ Cómo llegar</a>
         </div>
 
         <div class="detail-description" style="margin-bottom:20px; font-size:0.95rem;">
@@ -269,24 +284,83 @@ function openDetail(poi) {
                         <span style="color:var(--accent)">${r.avgPrice}</span>
                     </div>
                     <div style="font-size:0.8rem; color:var(--text-muted)">${r.foodType} • 📞 ${r.contact}</div>
-                    ${r.tripadvisor ? `<a href="${r.tripadvisor}" target="_blank" style="display:inline-block;margin-top:5px;font-size:0.75rem;color:#00aa6c;font-weight:600;text-decoration:none;">🟢 Ver en TripAdvisor →</a>` : ''}
+                    <div style="display:flex; gap:10px; margin-top:5px; align-items:center;">
+                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.name || 'Restaurante') + ' ' + poi.location)}" target="_blank" style="color: var(--primary); font-size: 0.8rem; text-decoration: none; font-weight:bold;">📍 Ver en Mapa</a>
+                        ${r.tripadvisor ? `<a href="${r.tripadvisor}" target="_blank" style="color:#00aa6c; font-size:0.8rem; text-decoration:none; font-weight:bold;">🟢 TripAdvisor</a>` : ''}
+                        <button onclick="shareContent('whatsapp', '${r.name || 'Restaurante'}', 'Un buen sitio para comer cerca de ${poi.name}.', 'https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.name || 'Restaurante') + ' ' + poi.location)}')" style="background: none; border: none; color: #25D366; cursor: pointer; padding: 0; font-size: 0.8rem; font-weight:bold;">💬 Compartir</button>
+                    </div>
                 </div>
             `).join('') : '<p>No hay datos de restaurantes cercanos.</p>'}
+        </div>
+        
+        ${poi.userGallery && poi.userGallery.length > 0 ? `
+        <div style="margin-top:20px;">
+            <h3>📸 Galería de Usuarios</h3>
+            <div style="display:flex; gap:10px; overflow-x:auto;">
+                ${poi.userGallery.map(img => `<img src="${img}" style="width:150px; height:100px; object-fit:cover; border-radius:4px;">`).join('')}
+            </div>
+        </div>` : ''}
+
+        <div style="margin-top:20px; background:#f9f9f9; padding:15px; border-radius:8px;">
+            <h4 style="margin-bottom:10px;">¿Tienes una foto? Añádela a la galería</h4>
+            <form id="upload-form" onsubmit="handleUpload(event, '${poi.id}')" enctype="multipart/form-data">
+                <input type="file" name="photo" accept="image/*" required style="margin-bottom:10px;"><br>
+                <button type="submit" style="background:var(--primary); color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer;">Subir Foto (Verificación Automática)</button>
+            </form>
+            <div id="upload-status" style="margin-top:10px; font-size:0.9rem;"></div>
+        </div>
+
+        <div class="modal-buttons" style="margin-top: 20px;">
+            <button onclick="document.getElementById('detail-modal').classList.remove('active')">Cerrar</button>
         </div>
     `;
     modal.classList.add('active');
 
     // Inicializar mini-mapa
     setTimeout(() => {
-        const miniMap = L.map(`mini-map-${poi.id}`, {zoomControl: false}).setView([poi.coordinates.lat, poi.coordinates.lon], 15);
+        const miniMap = L.map(`mini-map-${poi.id}`, {zoomControl: false}).setView([poi.lat, poi.lon], 15);
         L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
             attribution: 'Google Maps'
         }).addTo(miniMap);
-        L.marker([poi.coordinates.lat, poi.coordinates.lon]).addTo(miniMap);
+        L.marker([poi.lat, poi.lon]).addTo(miniMap);
     }, 200);
 
     // Incrementar popularidad por visita (para el ranking)
     incrementChurchVisit(poi.id);
+}
+
+async function handleUpload(e, poiId) {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    formData.append('poiId', poiId);
+    
+    const status = document.getElementById('upload-status');
+    status.innerHTML = "Verificando imagen con IA...";
+    status.style.color = "blue";
+    
+    try {
+        const res = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+        });
+        const data = await res.json();
+        if (data.success) {
+            status.innerHTML = "✅ " + data.message;
+            status.style.color = "green";
+            // Recargar la página o volver a abrir el modal
+            setTimeout(() => {
+                document.getElementById('detail-modal').classList.remove('active');
+                window.location.reload(); 
+            }, 1500);
+        } else {
+            status.innerHTML = "❌ " + data.error;
+            status.style.color = "red";
+        }
+    } catch(err) {
+        status.innerHTML = "❌ Error de conexión con el servidor.";
+        status.style.color = "red";
+    }
 }
 
 // --- Geofencing Logic ---
@@ -371,7 +445,28 @@ function renderAgenda() {
     `).join('');
 }
 
-function renderExtra() {
+async function renderExtra() {
+    const eventsSection = document.getElementById('events-container');
+    if (eventsSection) {
+        try {
+            const res = await fetch('/api/events');
+            if (res.ok) {
+                eventsData = await res.json();
+            }
+        } catch(e) {
+            console.log("No backend detected, using static eventsData.");
+        }
+        
+        eventsSection.innerHTML = eventsData.map(e => `
+            <div class="event-card">
+                <div class="card-content">
+                    <h3 class="card-title">${e.title}</h3>
+                    <p>${e.date} - ${e.location}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
     const recipesCont = document.getElementById('recipes-container');
     const sweetsCont = document.getElementById('sweets-container');
     const search = document.getElementById('search-extra').value.toLowerCase();
@@ -479,19 +574,37 @@ function generateItinerary() {
     console.log("Generando itinerario para zona:", zone);
     if(!zone) { alert("Selecciona una zona primero."); return; }
 
-    const zoneData = poiData.filter(p => p.zone === zone)
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 6);
-    
-    // Ordenar por Latitud para que el recorrido tenga sentido geográfico (Norte-Sur o Sur-Norte)
-    zoneData.sort((a, b) => a.coordinates.lat - b.coordinates.lat);
-
-    if(zoneData.length < 3) {
-        alert("Esta zona no tiene suficientes iglesias para una ruta completa.");
+    const zoneDataUnsorted = poiData.filter(p => p.zone === zone);
+    if(zoneDataUnsorted.length < 4) {
+        alert("Esta zona no tiene suficientes iglesias para una ruta (mínimo 4).");
         return;
     }
 
+    const numToSelect = Math.min(8, Math.max(4, zoneDataUnsorted.length));
+    const zoneData = zoneDataUnsorted
+        .sort(() => Math.random() - 0.5)
+        .slice(0, numToSelect);
+    
+    // Ordenar por Latitud para que el recorrido tenga sentido geográfico (Norte-Sur o Sur-Norte)
+    zoneData.sort((a, b) => a.lat - b.lat);
+
     document.getElementById('itinerary-results').style.display = 'block';
+    
+    // Preparar el botón de compartir del itinerario
+    const btnShareContainer = document.getElementById('itinerary-share-container') || document.createElement('div');
+    btnShareContainer.id = 'itinerary-share-container';
+    btnShareContainer.style.margin = '20px 0';
+    btnShareContainer.style.textAlign = 'center';
+    
+    const routeText = zoneData.map((p, i) => `${i+1}. ${p.name}`).join('\n');
+    btnShareContainer.innerHTML = `
+        <button onclick="shareContent('whatsapp', 'Mi Ruta Románica por ${zone}', '${routeText}', window.location.href)" style="background: #25D366; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-right: 10px;">💬 Compartir Ruta en WhatsApp</button>
+        <button onclick="shareContent('telegram', 'Mi Ruta Románica por ${zone}', '${routeText}', window.location.href)" style="background: #0088cc; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: bold;">✈️ Compartir en Telegram</button>
+    `;
+    
+    const resultsContainer = document.getElementById('itinerary-results');
+    resultsContainer.insertBefore(btnShareContainer, document.getElementById('itinerary-timeline'));
+
     renderItineraryTimeline(zoneData);
     renderItineraryMap(zoneData);
 }
@@ -502,10 +615,11 @@ function renderItineraryTimeline(data) {
     
     // Buscar 3 opciones de comida en la zona
     const restaurants = data.flatMap(p => p.restaurants || []).slice(0, 3);
+    const middleIndex = Math.floor(data.length / 2);
 
     let html = '';
     data.forEach((poi, i) => {
-        let hour = hours[i > 2 ? i + 1 : i]; // Saltar el índice de la comida si i > 2
+        let hour = hours[i > middleIndex ? i + 1 : i] || "19:00"; // Asegurar que haya horas suficientes
         
         html += `
             <div class="timeline-item">
@@ -517,10 +631,10 @@ function renderItineraryTimeline(data) {
             </div>
         `;
 
-        if (i === 2) {
+        if (i === middleIndex) {
             html += `
                 <div class="timeline-item lunch">
-                    <div class="time">13:00</div>
+                    <div class="time">14:00</div>
                     <div class="content" style="background:#fff9ed">
                         <h4>🍽️ Parada para comer (Opciones)</h4>
                         ${restaurants.map(r => `<div>- ${r.name} (${r.foodType})</div>`).join('')}
@@ -535,20 +649,55 @@ function renderItineraryTimeline(data) {
 
 function renderItineraryMap(data) {
     if (itineraryMap) itineraryMap.remove();
-    itineraryMap = L.map('itinerary-map').setView([data[0].coordinates.lat, data[0].coordinates.lon], 11);
+    itineraryMap = L.map('itinerary-map').setView([data[0].lat, data[0].lon], 11);
     
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(itineraryMap);
 
-    const latlngs = data.map(p => [p.coordinates.lat, p.coordinates.lon]);
+    const latlngs = data.map(p => [p.lat, p.lon]);
     
     data.forEach((p, i) => {
-        L.marker([p.coordinates.lat, p.coordinates.lon])
+        L.marker([p.lat, p.lon])
             .addTo(itineraryMap)
             .bindPopup(`<b>Punto ${i+1}: ${p.name}</b>`);
     });
 
     L.polyline(latlngs, {color: 'var(--accent)', weight: 4, dashArray: '10, 10'}).addTo(itineraryMap);
     itineraryMap.fitBounds(L.latLngBounds(latlngs));
+}
+
+function renderSketchfab() {
+    const container = document.getElementById('sketchfab-container');
+    if (!container) return;
+    
+    // Modelos 3D Reales incrustados
+    const details = [
+        { name: "Canecillo Piasca", uid: "6ff35483791843d9a2b33a956fc37a9a", desc: "Detalle de la cornisa." },
+        { name: "Pantocrátor Santillana", uid: "229f051da6a54d5cb5b608b500e94dd1", desc: "Cristo en Majestad del tímpano." },
+        { name: "Capitel Santillana", uid: "036f7f21a8334cfe9526bc15c9a50da9", desc: "Escena historiada del claustro." },
+        { name: "Canecillo Arpista Piasca", uid: "12791f7514414c52b5130f37325c779a", desc: "Músico románico esculpido." }
+    ];
+
+    container.innerHTML = details.map(d => `
+        <div class="card" style="cursor:default; height: 350px; display: flex; flex-direction: column;">
+            <div class="card-img-container" style="flex: 1;">
+                <iframe title="${d.name}" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/${d.uid}/embed" style="width:100%; height:100%; border-radius:8px 8px 0 0;"></iframe>
+            </div>
+            <div class="card-content" style="padding: 10px;">
+                <h3 class="card-title">${d.name}</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin: 0;">${d.desc}</p>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Función global para compartir en redes
+window.shareContent = function(type, title, text, url) {
+    const encodedText = encodeURIComponent(title + "\n\n" + text + "\n\nEnlace: " + url);
+    if(type === 'whatsapp') {
+        window.open(`https://api.whatsapp.com/send?text=${encodedText}`, '_blank');
+    } else if(type === 'telegram') {
+        window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${encodeURIComponent(title + " - " + text)}`, '_blank');
+    }
 }
 
 // --- Listeners de Eventos ---
