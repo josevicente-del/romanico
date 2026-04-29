@@ -1,4 +1,4 @@
-window.poiData = [
+[
   {
     "id": "iglesia-de-san-andres-cotillo",
     "name": "Iglesia de San Andrés (Cotillo)",
@@ -727,37 +727,4 @@ window.poiData = [
       }
     ]
   }
-];
-
-window.localidadesCantabria = [
-  {name:"Santillana del Mar",lat:43.3908,lon:-4.1081,comarca:"Costa Occidental"},
-  {name:"Comillas",lat:43.3871,lon:-4.2909,comarca:"Costa Occidental"},
-  {name:"San Vicente de la Barquera",lat:43.3857,lon:-4.3983,comarca:"Costa Occidental"},
-  {name:"Potes",lat:43.1533,lon:-4.6224,comarca:"Liébana"},
-  {name:"Reinosa",lat:42.9998,lon:-4.1372,comarca:"Campoo-Los Valles"},
-  {name:"Torrelavega",lat:43.3497,lon:-4.0486,comarca:"Besaya"},
-  {name:"Santander",lat:43.4623,lon:-3.8099,comarca:"Santander"},
-  {name:"Castro-Urdiales",lat:43.3830,lon:-3.2169,comarca:"Costa Oriental"},
-  {name:"Laredo",lat:43.4117,lon:-3.4138,comarca:"Costa Oriental"},
-  {name:"Santoña",lat:43.4440,lon:-3.4575,comarca:"Trasmiera"},
-  {name:"Noja",lat:43.4877,lon:-3.5247,comarca:"Trasmiera"},
-  {name:"Suances",lat:43.4236,lon:-4.0415,comarca:"Besaya"},
-  {name:"Cabezón de la Sal",lat:43.3067,lon:-4.2340,comarca:"Saja-Nansa"},
-  {name:"Puente Viesgo",lat:43.2967,lon:-3.9667,comarca:"Valles Pasiegos"},
-  {name:"Selaya",lat:43.2200,lon:-3.7900,comarca:"Valles Pasiegos"},
-  {name:"Ramales de la Victoria",lat:43.2571,lon:-3.4658,comarca:"Asón-Agüera"},
-  {name:"Ampuero",lat:43.3274,lon:-3.4107,comarca:"Asón-Agüera"},
-  {name:"Liérganes",lat:43.3405,lon:-3.7517,comarca:"Trasmiera"},
-  {name:"Molledo",lat:43.1322,lon:-4.0441,comarca:"Besaya"},
-  {name:"Valderredible",lat:42.8256,lon:-3.8741,comarca:"Campoo-Los Valles"},
-  {name:"Castañeda",lat:43.3127,lon:-3.8855,comarca:"Valles Pasiegos"},
-  {name:"Escalante",lat:43.4470,lon:-3.5095,comarca:"Trasmiera"},
-  {name:"Bareyo",lat:43.4513,lon:-3.5679,comarca:"Trasmiera"},
-  {name:"Cartes",lat:43.3200,lon:-4.0600,comarca:"Besaya"},
-  {name:"Cervatos",lat:42.9876,lon:-4.0612,comarca:"Campoo-Los Valles"},
-  {name:"Villacantid",lat:43.0130,lon:-4.1380,comarca:"Campoo-Los Valles"},
-  {name:"Lebeña",lat:43.2210,lon:-4.5900,comarca:"Liébana"},
-  {name:"Piasca",lat:43.1118,lon:-4.5807,comarca:"Liébana"},
-  {name:"Silió",lat:43.1335,lon:-4.0470,comarca:"Besaya"},
-  {name:"Retortillo",lat:42.9690,lon:-4.0290,comarca:"Campoo-Los Valles"}
-];
+]

@@ -1,14 +1,13 @@
-/* Variables de Diseño Pueblos Mágicos */
 :root {
-    --primary: #1c3a6b;
-    --primary-light: #7e8fbe;
-    --accent: #e29b22;
-    --bg-light: #f4f7f6;
-    --text-main: #2c3e50;
-    --text-muted: #7f8c8d;
+    --primary: #111111; /* Negro para textos principales y logo */
+    --primary-light: #444444; /* Gris oscuro para textos secundarios */
+    --accent: #e60000; /* Rojo vibrante estilo Visit London */
+    --bg-light: #ffffff; /* Fondo blanco puro */
+    --text-main: #222222;
+    --text-muted: #666666;
     --white: #ffffff;
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    --border-radius: 12px 2px 12px 2px; /* Estilo asimétrico Pueblos Mágicos */
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombras más sutiles */
+    --border-radius: 4px; /* Bordes menos redondeados, más corporativos */
 }
 
 * {
@@ -100,17 +99,20 @@ body {
 
 /* Header */
 .magical-header {
-    background: var(--primary);
-    color: white;
-    padding: 20px 5%;
-    box-shadow: var(--shadow);
+    background: #ffffff;
+    color: var(--primary);
+    padding: 15px 5%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 .header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .logo {
@@ -119,16 +121,18 @@ body {
 }
 
 .logo-text {
-    font-family: 'Playfair Display', serif;
-    font-size: 2rem;
-    font-weight: 700;
-    letter-spacing: 1px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    color: var(--primary);
 }
 
 .logo-sub {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     text-transform: uppercase;
-    letter-spacing: 4px;
+    font-weight: 700;
+    letter-spacing: 2px;
     color: var(--accent);
     margin-top: -5px;
 }
@@ -157,44 +161,49 @@ body {
 }
 
 .btn-auth {
-    background: transparent;
-    border: 1px solid var(--accent);
-    color: var(--accent);
-    padding: 8px 20px;
-    border-radius: 20px;
+    background: var(--accent);
+    border: none;
+    color: white;
+    padding: 10px 25px;
+    border-radius: var(--border-radius);
     cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s;
+    font-weight: 700;
+    transition: background 0.3s;
 }
 
 .btn-auth:hover {
-    background: var(--accent);
-    color: white;
+    background: #cc0000;
 }
 
 /* Navigation */
 .magical-nav {
     display: flex;
     gap: 30px;
-    border-top: 1px solid rgba(255,255,255,0.1);
+    border-top: 1px solid rgba(0,0,0,0.05);
     padding-top: 15px;
 }
 
 .nav-item {
     background: none;
     border: none;
-    color: white;
+    color: var(--primary);
     font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 0.9rem;
+    font-weight: 700;
+    font-size: 1rem;
     cursor: pointer;
-    opacity: 0.7;
-    transition: all 0.3s;
+    opacity: 0.8;
+    transition: color 0.3s;
     position: relative;
+    padding-bottom: 5px;
+}
+
+.nav-item:hover {
+    color: var(--accent);
 }
 
 .nav-item.active {
     opacity: 1;
+    color: var(--accent);
 }
 
 .nav-item.active::after {
@@ -311,14 +320,15 @@ select {
     background: var(--white);
     border-radius: var(--border-radius);
     overflow: hidden;
-    box-shadow: var(--shadow);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     transition: transform 0.3s, box-shadow 0.3s;
     cursor: pointer;
+    border: none;
 }
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.12);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
 }
 
 .card-img-container {
@@ -342,21 +352,24 @@ select {
 }
 
 .card-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.4rem;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
     color: var(--primary);
     margin-bottom: 10px;
+    line-height: 1.2;
 }
 
 .tag {
     display: inline-block;
-    padding: 4px 12px;
-    background: #f0f2f5;
-    border-radius: 15px;
+    padding: 6px 14px;
+    background: #f0f0f0;
+    border-radius: 2px;
     font-size: 0.75rem;
     color: var(--primary-light);
     margin-right: 5px;
-    font-weight: 600;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 
 /* Modals */
@@ -589,11 +602,10 @@ select {
 
 /* Footer */
 .magical-footer {
-    background: var(--primary);
+    background: #222222;
     color: white;
     padding: 60px 5% 30px;
     margin-top: 50px;
-    border-radius: 50px 50px 0 0;
 }
 
 .footer-content {
@@ -610,10 +622,11 @@ select {
 }
 
 .footer-info h3 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 800;
     font-size: 1.8rem;
     margin-bottom: 15px;
-    color: var(--accent);
+    color: var(--white);
 }
 
 .footer-info p {

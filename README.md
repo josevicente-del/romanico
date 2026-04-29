@@ -4,7 +4,7 @@
 
 ## 🏰 Características Principales
 - **Colección de Iglesias**: Explora más de 100 puntos de interés del románico cántabro.
-- **Mapa Interactivo**: Ubicación exacta de colegiatas, iglesias y monumentos.
+- **Mapa Interactivo**: Ubicación exacta de colegiatas, iglesias y monumentos. Tambien restaurantes 
 - **Rutas Personalizadas**: Generador de itinerarios para un día de turismo románico.
 - **Agenda Cultural**: Eventos y noticias actualizadas sobre el patrimonio medieval.
 - **Comunidad**: Comparte tus propias fotografías y valora tus lugares favoritos.
