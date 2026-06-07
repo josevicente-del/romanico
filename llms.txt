@@ -1,0 +1,15 @@
+# Románico Cantabria
+
+Guía interactiva y profesional para descubrir el patrimonio del arte románico en Cantabria, España.
+
+## Información General
+- **URL Principal:** https://romanicocantabria.es/
+- **Descripción:** Exploración y catalogación detallada de colegiatas, iglesias parroquiales y templos rupestres del románico cántabro con mapas, itinerarios interactivos y contenido cultural.
+- **Temática:** Turismo cultural, historia medieval, arquitectura románica, gastronomía local y dulces de convento.
+
+## Secciones Principales
+- **Colección:** Listado completo y filtrable de las iglesias románicas con detalles, imágenes reales, geolocalización y restaurantes recomendados en las inmediaciones.
+- **Mapa Mágico:** Mapa interactivo con capas de relevancia (Top 6, Top 15) y filtros por comarca.
+- **Un Día Románico:** Generador dinámico de itinerarios de un día con rutas lógicas y recomendaciones de restaurantes.
+- **Agenda:** Eventos culturales, visitas guiadas y actividades sobre el románico en Cantabria.
+- **Saber Más:** Biblioteca de artículos y monografías recomendadas para ampliar conocimientos.

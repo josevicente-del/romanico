@@ -73,12 +73,15 @@ h1, h2, h3, h4, h5, h6 {
     position: relative;
     z-index: 3;
     font-family: 'Noto Serif', serif;
-    font-size: 3.5rem;
+    font-size: 5rem;
+    font-weight: 700;
+    line-height: 1.2;
     color: white;
     text-align: center;
-    text-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    padding: 20px;
-    letter-spacing: -0.02em;
+    text-shadow: 0 10px 40px rgba(0,0,0,0.85);
+    padding: 30px;
+    letter-spacing: -0.03em;
+    max-width: 900px;
 }
 
 #skip-intro {
@@ -127,19 +130,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .logo-text {
     font-family: 'Noto Serif', serif;
-    font-size: 2rem;
+    font-size: 2.8rem;
     font-weight: 700;
     letter-spacing: -1px;
     color: var(--primary);
+    line-height: 1.1;
 }
 
 .logo-sub {
-    font-size: 0.8rem;
+    font-size: 1.1rem;
     text-transform: uppercase;
     font-weight: 700;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.15em;
     color: var(--accent);
-    margin-top: -5px;
+    margin-top: -2px;
     display: block;
 }
 
@@ -743,4 +747,181 @@ select {
     background: var(--surface-highest);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow);
+}
+
+/* --- Iglesias Pendientes & Auth Helpers --- */
+.pending-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(28, 58, 107, 0.08) !important;
+    background: var(--surface-highest);
+}
+
+.pending-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(3, 25, 46, 0.06) !important;
+    border-color: var(--accent) !important;
+}
+
+.auth-form h3 {
+    margin-bottom: 20px;
+    font-family: 'Noto Serif', serif;
+    color: var(--primary);
+}
+
+.pass-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.pass-wrapper input {
+    padding-right: 45px !important;
+}
+
+.toggle-pass {
+    position: absolute;
+    right: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 5px;
+    color: var(--text-muted);
+}
+
+.strength-meter {
+    margin-top: 6px;
+    min-height: 20px;
+}
+
+/* Controles flotantes del mapa (Premium UI) */
+.map-controls-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px 0 rgba(28, 58, 107, 0.15);
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.control-group-map {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.control-group-map label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.control-group-map select {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-family: 'Manrope', sans-serif;
+    border: 1px solid rgba(28, 58, 107, 0.2);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--primary);
+    outline: none;
+    cursor: pointer;
+    min-width: 160px;
+    transition: border-color 0.3s;
+}
+
+.control-group-map select:focus {
+    border-color: var(--accent);
+}
+
+@media (max-width: 768px) {
+    .map-controls-panel {
+        left: 10px;
+        right: 10px;
+        top: 10px;
+        padding: 10px 15px;
+        gap: 10px;
+        justify-content: space-between;
+    }
+    .control-group-map select {
+        min-width: 130px;
+    }
+}
+
+/* Sección de Comunidad / Comentarios (Premium CSS) */
+.comment-card {
+    background: #fff;
+    border: 1px solid rgba(28, 58, 107, 0.08);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.comment-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px dashed rgba(28, 58, 107, 0.1);
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+}
+
+.comment-user {
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.comment-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.comment-church {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 4px;
+}
+
+.comment-stars {
+    color: #f1c40f;
+    font-size: 0.9rem;
+}
+
+.comment-text {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #444;
+}
+
+/* Map Style */
+#map {
+    height: 600px;
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    margin-top: 20px;
+    border: 1px solid rgba(28, 58, 107, 0.1);
+    z-index: 1;
 }
