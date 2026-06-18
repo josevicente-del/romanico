@@ -49,7 +49,7 @@ async function initApp() {
     renderUserRanking();
     
     // Cargar eventos de la agenda asíncronamente
-    await loadEvents();
+    loadEvents();
     
     // Cargar clima dinámico de Meteosource
     loadWeather();
@@ -78,16 +78,31 @@ async function loadEvents() {
         const res = await fetch('/api/events');
         if (res.ok) {
             eventsData = await res.json();
+            console.log("Eventos cargados desde la API del backend.");
+            renderAgenda();
+            return;
         } else {
-            // Si la respuesta no es exitosa, usar los eventos estáticos como fallback
-            console.log("Backend response not ok, using static eventsData.");
-            eventsData = window.eventsData || [];
+            console.log("Respuesta de la API del backend no exitosa, intentando events.json estático.");
         }
     } catch(e) {
-        // Si hay un error de red o no existe el servidor, usar la agenda estática de data.js
-        console.log("No backend detected, using static eventsData.");
+        console.log("No se pudo conectar al backend, intentando cargar events.json estático...");
+    }
+
+    try {
+        // Fallback: Intentar obtener el archivo events.json estático directamente
+        const staticRes = await fetch('./events.json');
+        if (staticRes.ok) {
+            eventsData = await staticRes.json();
+            console.log("Eventos cargados desde el archivo events.json estático.");
+        } else {
+            console.warn("No se pudo cargar events.json, usando window.eventsData.");
+            eventsData = window.eventsData || [];
+        }
+    } catch(staticErr) {
+        console.error("Error al cargar events.json estático:", staticErr);
         eventsData = window.eventsData || [];
     }
+
     // Renderizar la agenda en la interfaz de usuario
     renderAgenda();
 }

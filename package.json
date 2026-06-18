@@ -4,7 +4,9 @@
   "description": "¡Bienvenido a la guía definitiva del **Románico en Cantabria**! Esta aplicación es una Progressive Web App (PWA) diseñada para amantes del arte medieval, historiadores y turistas que desean explorar el rico patrimonio arquitectónico de Cantabria.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "scrape": "node scraper.js",
+    "build": "node scraper.js"
   },
   "repository": {
     "type": "git",

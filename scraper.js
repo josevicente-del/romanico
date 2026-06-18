@@ -92,3 +92,7 @@ async function scrapeEvents() {
 }
 
 module.exports = { scrapeEvents };
+
+if (require.main === module) {
+    scrapeEvents();
+}

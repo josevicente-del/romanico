@@ -6,7 +6,8 @@ const ASSETS = [
   '/app.js',
   '/data.js',
   '/data.json',
-  '/manifest.json'
+  '/manifest.json',
+  '/events.json'
 ];
 
 self.addEventListener('install', event => {
