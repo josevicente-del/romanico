@@ -1,27 +1,53 @@
 [
   {
     "nombre": "Colegiata de Santa Juliana (Santillana del Mar)",
-    "descripcion": "La colegiata de Santa Juliana de Santillana del Mar (Cantabria, España), a la que debe su nombre esta localidad cántabra (Sant Iuliana-Santillana), es uno de los monumentos románicos más representativos de la región. Fue declarada Monumento Nacional de España el 12 de marzo de 1889.\nEn 2015, en la aprobación por la Unesco de la ampliación del Camino de Santiago en España a «Caminos de Santiago de Compostela: Camino francés y Caminos del Norte de España», fue incluido como uno de los bienes individuales (n.º ref. 669bis-012) del camino costero.​​ Fuentes utilizadas: Wikipedia y Románico Digital.",
+    "descripcion": "La colegiata de Santa Juliana de Santillana del Mar es uno de los monumentos románicos más representativos e importantes de Cantabria y de todo el norte de España. Declarada Monumento Nacional en 1889, su construcción actual data del siglo XII sobre un antiguo monasterio del siglo IX que albergaba las reliquias de la mártir Juliana. El templo presenta una estructura de tres naves con crucero y tres ábsides semicirculares. Sin embargo, su elemento más célebre es el magnífico claustro románico, construido a finales del siglo XII y principios del XIII. Este claustro destaca por la excepcional calidad y variedad iconográfica de sus capiteles tallados, donde se representan luchas de caballeros, centauros, animales fantásticos, motivos vegetales geométricos y diversas escenas bíblicas de gran valor simbólico. La fachada principal cuenta con una notable portada bajo un tejadillo con canecillos y relieves románicos, completando un conjunto monumental imprescindible del Camino de Santiago por la costa. Fuentes utilizadas: Wikipedia y Románico Digital.",
     "imagenes": [
       "images/resumen/iglesia_colegiata_de_santa_juliana_santillana_del_mar_1.jpg",
       "images/resumen/iglesia_colegiata_de_santa_juliana_santillana_del_mar_2.jpg",
       "images/resumen/iglesia_colegiata_de_santa_juliana_santillana_del_mar_3.jpg",
       "images/resumen/iglesia_colegiata_de_santa_juliana_santillana_del_mar_4.jpg"
-    ]
+    ],
+    "bestiary": {
+      "description": "El claustro románico de Santillana del Mar alberga uno de los bestiarios más ricos y complejos de la región. Sus célebres capiteles exponen luchas de centauros-sagitarios contra caballeros (la batalla espiritual contra la herejía), dragones alados con colas entrelazadas que personifican las fuerzas del mal, y aves picoteando tallos, símbolo del alma alimentándose de la eucaristía.",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Capitel_del_Claustro_de_la_Colegiata_de_Santa_Juliana_01.jpg/800px-Capitel_del_Claustro_de_la_Colegiata_de_Santa_Juliana_01.jpg",
+          "caption": "Dragones Entrelazados"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Capitel_del_Claustro_de_la_Colegiata_de_Santa_Juliana_02.jpg/800px-Capitel_del_Claustro_de_la_Colegiata_de_Santa_Juliana_02.jpg",
+          "caption": "Centauros en Lucha"
+        }
+      ]
+    }
   },
   {
     "nombre": "Colegiata de San Pedro de Cervatos",
-    "descripcion": "Para ver otras colegiatas bajo la misma advocación, véase Colegiata de San Pedro.\n\nLa colegiata de San Pedro de Cervatos es un templo católico de estilo románico situado en Cervatos, en el extremo oriental de la sierra de Híjar y en el municipio de Campoo de Enmedio (Cantabria, España). Fuentes utilizadas: Wikipedia y Románico Digital.",
+    "descripcion": "La Colegiata de San Pedro de Cervatos, situada en el municipio de Campoo de Enmedio, es un templo románico del siglo XII mundialmente conocido por la singularidad y riqueza de su escultura monumental de temática erótica. Fundado originalmente como monasterio en el año 999 bajo el patrocinio del conde Sancho García, el edificio románico actual consta de una sola nave con ábside semicircular y una esbelta torre defensiva adosada a los pies. Los canecillos del alero del tejado y los capiteles exteriores exhiben una asombrosa variedad de representaciones explícitas de figuras humanas y animales realizando actos sexuales, acróbatas, músicos y monstruos. Estas representaciones de carácter obsceno tenían una función moralizante y pedagógica en la Edad Media, advirtiendo a los fieles contra los pecados de la carne, la lujuria y los vicios mundanos. En contraste con la crudeza exterior, el interior de la colegiata alberga capiteles de una factura exquisita con entrelazados y decoración vegetal de influencia bizantina y califal. Fuentes utilizadas: Wikipedia y Románico Digital.",
     "imagenes": [
       "images/resumen/iglesia_colegiata_de_san_pedro_de_cervatos_1.jpg",
       "images/resumen/iglesia_colegiata_de_san_pedro_de_cervatos_2.jpg",
       "images/resumen/iglesia_colegiata_de_san_pedro_de_cervatos_3.jpg",
       "images/resumen/iglesia_colegiata_de_san_pedro_de_cervatos_4.jpg"
-    ]
+    ],
+    "bestiary": {
+      "description": "El bestiario esculpido en la Colegiata de Cervatos destaca por la expresividad de su fauna real e imaginaria. En los capiteles y canecillos del ábside sobresalen figuras de leones y monstruos de fauces abiertas, que en la Edad Media simbolizaban al demonio acechando a los fieles, así como águilas de garras afiladas representantes de la soberbia.",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Cervatos_Colegiata_de_San_Pedro_19.jpg/800px-Cervatos_Colegiata_de_San_Pedro_19.jpg",
+          "caption": "Capitel del Ábside"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6c/Cervatos_Colegiata_de_San_Pedro_15.jpg/800px-Cervatos_Colegiata_de_San_Pedro_15.jpg",
+          "caption": "Canecillo Zoomorfo"
+        }
+      ]
+    }
   },
   {
     "nombre": "Colegiata de San Martín de Elines",
-    "descripcion": "La iglesia conocida como colegiata de San Martín de Elines, situada en la población de San Martín de Elines (Cantabria), es la más destacada de Valderredible por su tamaño, monumentalidad y belleza. Durante la Edad Media constituyó el monasterio principal del valle. Actualmente está considerada como bien de interés cultural, y fue declarada monumento histórico-artístico perteneciente al Tesoro Artístico Nacional mediante decreto de 3 de junio de 1931.​\n\nSin embargo, poco se ha conservado de su documentación, aunque en él se escribió el libro \"Miseria de Ome\" uno de los pocos conservados de... Fuentes utilizadas: Wikipedia y Románico Digital.",
+    "descripcion": "La Colegiata de San Martín de Elines es el templo románico más importante y monumental del valle de Valderredible, en el sur de Cantabria. Edificada en el siglo XII, destaca por haber sido erigida sobre un monasterio mozárabe previo del siglo X, del cual se conservan notables vestigios como los arcos de herradura del actual claustro y cementerio. La iglesia presenta una sola nave culminada en un imponente ábside semicircular decorado exteriormente con arquerías ciegas y canecillos esculpidos. Una de sus mayores singularidades arquitectónicas es su torre campanario de planta circular, que evoca influencias del románico lombardo. En el interior del ábside se conservan valiosos restos de pinturas murales románicas originales con figuras de apóstoles, un hallazgo pictórico excepcional en la región. El claustro del siglo XVI atesora una excelente colección de sarcófagos medievales ricamente labrados, entre ellos uno gótico del siglo XIII adornado con la espada y la concha del peregrino de Santiago. Fuentes utilizadas: Wikipedia y Románico Digital.",
     "imagenes": [
       "images/resumen/iglesia_colegiata_de_san_mart_n_de_elines_1.jpg",
       "images/resumen/iglesia_colegiata_de_san_mart_n_de_elines_2.jpg",
@@ -31,7 +57,7 @@
   },
   {
     "nombre": "Colegiata de Santa Cruz de Castañeda",
-    "descripcion": "La colegiata de Santa Cruz se encuentra ubicada en Socobio, lugar perteneciente al municipio de Castañeda, en la comunidad autónoma de Cantabria (España). Fue declarada monumento nacional el 7 de noviembre de 1930. Está dedicada a la Santa Cruz. Fuentes utilizadas: Wikipedia y Románico Digital.",
+    "descripcion": "La Colegiata de Santa Cruz de Castañeda, ubicada en Socobio (municipio de Castañeda), es un majestuoso templo románico de la primera mitad del siglo XII caracterizado por su robustez constructiva y la armonía de sus formas. Declarada Monumento Nacional en 1930, fue la sede de un importante priorato agustiniano. Destaca por su planta de cruz latina y, muy especialmente, por su linterna o torre central de base octogonal que se eleva sobre el crucero apoyada en trompas, un rasgo arquitectónico de influencia borgoñona y de la escuela del Duero muy poco común en el norte de España. En el interior, los arcos fajones y los capiteles del crucero y el ábside muestran una magnífica decoración escultórica con motivos de caza, leones enfrentados, representaciones antropomorfas y motivos geométricos. La fachada occidental cuenta con una hermosa portada de arquivoltas apuntadas y canecillos tallados que enriquecen visualmente el exterior del edificio. Fuentes utilizadas: Wikipedia y Románico Digital.",
     "imagenes": [
       "images/resumen/iglesia_colegiata_de_santa_cruz_de_casta_eda_1.jpg",
       "images/resumen/iglesia_colegiata_de_santa_cruz_de_casta_eda_2.jpg",
@@ -77,7 +103,20 @@
       "images/resumen/iglesia_iglesia_de_san_andr_s_argomilla_2.jpg",
       "images/resumen/iglesia_iglesia_de_san_andr_s_argomilla_3.jpg",
       "images/resumen/iglesia_iglesia_de_san_andr_s_argomilla_4.jpg"
-    ]
+    ],
+    "bestiary": {
+      "description": "Los canecillos y capiteles de la iglesia de Argomilla (siglo XII) contienen un amplio repertorio zoomorfo de gran interés didáctico. Entre los relieves destacan monos en actitudes burlonas que simbolizan los instintos más bajos del ser humano, leones rampantes de fauces amenazantes y aves de presa aprisionando liebres, diseñados para ilustrar el triunfo de la justicia divina sobre el pecado.",
+      "images": [
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Argomilla_San_Andr%C3%A9s_08.jpg/800px-Argomilla_San_Andr%C3%A9s_08.jpg",
+          "caption": "Canecillos del Ábside"
+        },
+        {
+          "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Argomilla_San_Andr%C3%A9s_05.jpg/800px-Argomilla_San_Andr%C3%A9s_05.jpg",
+          "caption": "Detalle de Portada"
+        }
+      ]
+    }
   },
   {
     "nombre": "Iglesia de San Facundo y San Primitivo (Silió)",

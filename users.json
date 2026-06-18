@@ -1,0 +1,20 @@
+[
+  {
+    "username": "SanchoPanza",
+    "email": "sancho.panza@cervantes.com",
+    "country": "Espa�a",
+    "city": "Bustasur",
+    "province": "Campoo",
+    "createdAt": "2026-06-18T19:21:49.915Z",
+    "verified": false
+  },
+  {
+    "username": "José Vicente Catala",
+    "email": "jose.vicente@gmail.com",
+    "country": "España",
+    "city": "Valencia",
+    "province": "Valencia",
+    "createdAt": "2026-06-18T19:42:35.328Z",
+    "verified": false
+  }
+]

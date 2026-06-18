@@ -6,7 +6,7 @@
     <meta name="google-site-verification" content="bo1KIKC7SG6zkYlFvIJqQ6W3Ujb5PQ7SG9wYHVD6wyU" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1c3a6b">
-    <meta name="description" content="Descubre la riqueza del arte románico en Cantabria. Explora colegiatas, iglesias y rutas medievales con nuestra guía interactiva.">
+    <meta name="description" content="Guía del Románico en Cantabria: explora colegiatas y templos románicos de Santillana, Cervatos o Elines, planifica rutas y descubre patrimonio medieval.">
     <meta name="keywords" content="románico cantabria, turismo cantabria, iglesias románicas, colegiata santillana del mar, rutas medievales, patrimonio cantabria, arte medieval">
     <meta name="author" content="Románico Cantabria">
     <link rel="canonical" href="https://romanicocantabria.es/">
@@ -25,7 +25,7 @@
     <meta property="twitter:description" content="Descubre el patrimonio medieval de Cantabria con nuestra aplicación interactiva.">
     <meta property="twitter:image" content="https://romanicocantabria.es/colegiata_santa_juliana_santillana_1777204517020.png">
 
-    <title>Románico Cantabria | Guía Profesional de Turismo Románico</title>
+    <title>Guía del Románico en Cantabria | Colegiatas y Rutas Medievales</title>
     
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
@@ -57,6 +57,10 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 
+    <!-- Supabase JS Client v2 & Configuration -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase_config.js"></script>
+
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -76,10 +80,10 @@
 
     <header class="magical-header">
         <div class="header-top">
-            <h1 class="logo" style="margin: 0; padding: 0; display: inline-flex; flex-direction: column;">
+            <div class="logo" style="margin: 0; padding: 0; display: inline-flex; flex-direction: column;">
                 <span class="logo-text">Románico</span>
                 <span class="logo-sub">Cantabria</span>
-            </h1>
+            </div>
             <div class="user-stats">
                 <div class="stat-item">
                     <span class="stat-icon">👁️</span>
@@ -108,10 +112,12 @@
             <button class="nav-item" data-view="weather">El Tiempo</button>
             <button class="nav-item" data-view="3d">Visita 3D</button>
             <button class="nav-item" data-view="learn">Saber Más</button>
+            <button class="nav-item" id="nav-profile" data-view="profile" style="display: none;">Mi Perfil</button>
         </nav>
     </header>
 
     <main>
+        <h1 class="main-seo-title">Guía de Arte Románico en Cantabria</h1>
 
         <!-- Iglesias Pendientes de Visitar (Solo para usuarios autenticados) -->
         <section id="pending-section" class="view-container" style="display:none; padding: 25px 5%; margin: 20px auto; max-width: 1400px; background: rgba(28, 58, 107, 0.05); border-radius: 12px; border: 1px solid rgba(28, 58, 107, 0.1);">
@@ -167,6 +173,7 @@
             <div class="filters-scroll">
                 <select id="filter-zone"><option value="">Todas las Zonas</option></select>
                 <select id="filter-order"><option value="">Tipo</option></select>
+                <select id="filter-culture"><option value="">Periodo Histórico</option></select>
                 <select id="sort-by">
                     <option value="popularity">Más Buscados</option>
                     <option value="default">A-Z</option>
@@ -297,9 +304,26 @@
                 <h2 style="font-family:'Playfair Display', serif; color:var(--primary); text-align:center; margin-bottom:15px;">💬 Comunidad Románica</h2>
                 <p style="text-align:center; margin-bottom:30px;">Comparte tus impresiones, dudas o recomendaciones sobre las iglesias románicas de Cantabria.</p>
                 
+                <!-- Contador de suscriptores verificados -->
+                <div class="subscribers-community-badge" style="max-width: 600px; margin: 0 auto 30px; text-align: center; background: rgba(28, 58, 107, 0.05); padding: 12px 20px; border-radius: 30px; font-weight: 600; color: var(--primary); border: 1px solid rgba(28, 58, 107, 0.1);">
+                    👥 ¡Ya somos <span id="community-subscribers-count" style="font-weight: 800; color: var(--accent);">0</span> viajeros registrados y verificados en nuestra comunidad!
+                </div>
+                
                 <!-- Formulario de comentarios (se renderizará o habilitará dinámicamente) -->
                 <div id="comment-form-container" style="max-width:600px; margin:0 auto 40px; background:#fff; padding:25px; border-radius:12px; box-shadow:var(--shadow); border:1px solid rgba(28, 58, 107, 0.05);">
                     <!-- Habilitado vía JS -->
+                </div>
+
+                <!-- Suscripción al Boletín / Newsletter de Viajes -->
+                <div class="newsletter-card" style="max-width:600px; margin:0 auto 40px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 30px; border-radius: 12px; box-shadow: var(--shadow); color: white; text-align: center;">
+                    <div style="font-size: 2.5rem; margin-bottom: 10px;">📧</div>
+                    <h3 style="font-family:'Noto Serif', serif; color: white; margin-bottom: 10px; font-size: 1.5rem;">Boletín del Viajero Medieval</h3>
+                    <p style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 20px; line-height: 1.5;">Suscríbete para recibir mensualmente rutas exclusivas, recomendaciones gastronómicas e investigaciones históricas sobre el románico.</p>
+                    <form id="newsletter-form" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        <input type="email" id="news-email" required placeholder="Tu correo electrónico..." style="flex: 1; min-width: 200px; padding: 12px 20px; border-radius: 4px; border: none; font-family: inherit; font-size: 0.9rem; color: #111;">
+                        <button type="submit" class="btn-primary" style="background: var(--accent-light); color: var(--primary); font-weight: bold; border: none; padding: 12px 25px; cursor: pointer; border-radius: 4px; text-transform: uppercase;">Suscribirse</button>
+                    </form>
+                    <div id="newsletter-status" style="margin-top: 12px; font-size: 0.85rem; font-weight: bold; display: none;"></div>
                 </div>
 
                 <h3 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px;">Opiniones y Comentarios Recientes</h3>
@@ -338,14 +362,97 @@
 
         <section id="learn-view" class="view-container">
             <div class="extra-panel" style="padding: 0 5% 50px;">
-                <h2 style="font-family:'Playfair Display', serif; color:var(--primary); text-align:center; margin-bottom:15px;">📚 Saber Más: Artículos y Libros</h2>
-                <p style="text-align:center; margin-bottom:30px;">Amplía tus conocimientos sobre el arte románico y la historia medieval con esta selección de lecturas recomendadas.</p>
+                <h2 style="font-family:'Noto Serif', serif; color:var(--primary); text-align:center; margin-bottom:15px;">📚 Centro de Conocimiento e Inspiración</h2>
+                                <p style="text-align:center; margin-bottom:30px; max-width:800px; margin-left:auto; margin-right:auto;">Amplía tus conocimientos sobre el arte medieval de Cantabria y descubre las relaciones estilísticas entre sus diferentes focos monumentales.</p>
                 
-                <h3 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px; font-size:1.3rem;">📰 Artículos de Interés</h3>
-                <div id="articles-container" class="magical-grid" style="margin-bottom: 45px;"></div>
+                <!-- Subnavegación de Pestañas Internas (Tabs) -->
+                <div class="learn-tabs" style="display:flex; justify-content:center; gap:15px; margin-bottom:40px; border-bottom:1px solid var(--surface-container); padding-bottom:15px;">
+                    <button class="learn-tab-btn active" data-learn-tab="books">📰 Artículos y Libros</button>
+                    <button class="learn-tab-btn" data-learn-tab="style-relations">🔬 Relaciones Estilísticas</button>
+                </div>
                 
-                <h3 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px; font-size:1.3rem;">📖 Libros y Monografías</h3>
-                <div id="books-container" class="magical-grid"></div>
+                <!-- Subsección 1: Artículos y Libros -->
+                <div id="learn-tab-content-books" class="learn-tab-content active">
+                    <h3 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px; font-size:1.3rem;">📰 Artículos de Interés</h3>
+                    <div id="articles-container" class="magical-grid" style="margin-bottom: 45px;"></div>
+                    
+                    <h3 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px; font-size:1.3rem;">📖 Libros y Monografías</h3>
+                    <div id="books-container" class="magical-grid"></div>
+                </div>
+
+                <!-- Subsección 4: Relaciones Estilísticas del Románico -->
+                <div id="learn-tab-content-style-relations" class="learn-tab-content" style="display:none;">
+                    <div id="style-relations-container"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Vista de Perfil de Viajero -->
+        <section id="profile-view" class="view-container" style="display: none; padding: 25px 5%; margin: 20px auto; max-width: 1000px;">
+            <div class="profile-card" style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: var(--border-radius); box-shadow: var(--shadow); border: 1px solid rgba(255, 255, 255, 0.5); padding: 30px;">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+                    <h2 style="font-family:'Noto Serif', serif; color:var(--primary); margin: 0; display:flex; align-items:center; gap:10px; font-size: 1.8rem;">
+                        👤 Mi Perfil de Viajero
+                    </h2>
+                    <!-- Contador de personas registradas global -->
+                    <div style="background: var(--surface-highest); padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: var(--primary); border: 1px solid rgba(28, 58, 107, 0.1);">
+                        👥 Total de Viajeros en la Red: <span id="global-subscribers-count" style="font-weight: 800; color: var(--accent);">0</span>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+                    <!-- Columna de Datos de Usuario -->
+                    <div class="profile-info-column">
+                        <h3 style="font-family:'Manrope', sans-serif; color:var(--primary); margin-top: 0; margin-bottom: 15px; font-size: 1.2rem;">Editar Información Personal</h3>
+                        <form id="profile-form">
+                            <div class="form-group" style="margin-bottom:15px;">
+                                <label style="font-weight:600; display:block; margin-bottom:5px; font-size:0.9rem;">Correo Electrónico (No editable)</label>
+                                <input type="email" id="profile-email" disabled style="width:100%; padding:10px; border:1px solid rgba(0,0,0,0.1); border-radius:6px; background:#f5f5f5; color:#777; cursor:not-allowed;">
+                            </div>
+                            <div class="form-group" style="margin-bottom:15px;">
+                                <label style="font-weight:600; display:block; margin-bottom:5px; font-size:0.9rem;">Nombre Completo</label>
+                                <input type="text" id="profile-fullname" required style="width:100%; padding:10px; border:1px solid rgba(0,0,0,0.15); border-radius:6px; font-family:inherit;">
+                            </div>
+                            <div class="form-group" style="margin-bottom:15px;">
+                                <label style="font-weight:600; display:block; margin-bottom:5px; font-size:0.9rem;">País</label>
+                                <input type="text" id="profile-country" required style="width:100%; padding:10px; border:1px solid rgba(0,0,0,0.15); border-radius:6px; font-family:inherit;">
+                            </div>
+                            <div class="form-group" style="margin-bottom:15px;">
+                                <label style="font-weight:600; display:block; margin-bottom:5px; font-size:0.9rem;">Ciudad</label>
+                                <input type="text" id="profile-city" required style="width:100%; padding:10px; border:1px solid rgba(0,0,0,0.15); border-radius:6px; font-family:inherit;">
+                            </div>
+                            <div class="form-group" style="margin-bottom:20px;">
+                                <label style="font-weight:600; display:block; margin-bottom:5px; font-size:0.9rem;">Provincia de Residencia</label>
+                                <input type="text" id="profile-province" required style="width:100%; padding:10px; border:1px solid rgba(0,0,0,0.15); border-radius:6px; font-family:inherit;">
+                            </div>
+                            <button type="submit" class="btn-primary" style="width:100%; padding:12px; font-size:1rem; font-weight:600; border-radius:6px;">Guardar Cambios</button>
+                            <div id="profile-status" class="status-msg" style="margin-top:10px; font-weight:600; text-align:center;"></div>
+                        </form>
+                    </div>
+
+                    <!-- Columna de Progreso y Estadísticas -->
+                    <div class="profile-stats-column" style="background: rgba(28, 58, 107, 0.03); padding: 25px; border-radius: var(--border-radius); border: 1px solid rgba(28, 58, 107, 0.05); display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <h3 style="font-family:'Manrope', sans-serif; color:var(--primary); margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; text-align: center;">Tu Progreso en el Viaje</h3>
+                            
+                            <!-- Círculo de porcentaje / progreso -->
+                            <div style="position: relative; width: 140px; height: 140px; margin: 0 auto 20px; background: radial-gradient(circle, #fff 60%, transparent 60.5%), conic-gradient(var(--accent) 0%, #e0e0e0 0%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow);" id="profile-progress-ring">
+                                <div style="text-align: center; z-index: 2;">
+                                    <span id="profile-progress-percent" style="font-size: 1.6rem; font-weight: 800; color: var(--primary); display: block;">0%</span>
+                                    <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Completado</span>
+                                </div>
+                            </div>
+
+                            <p style="text-align: center; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
+                                Has explorado <strong id="profile-visited-count" style="color:var(--accent); font-size:1.1rem;">0</strong> de las <strong id="profile-total-count">0</strong> colegiatas e iglesias del románico en Cantabria.
+                            </p>
+                        </div>
+
+                        <div style="border-top: 1px solid rgba(0,0,0,0.1); padding-top: 20px; margin-top: 20px; text-align: center;">
+                            <button id="btn-profile-logout" class="btn-auth" style="width: 100%; background: #c4302b; padding: 12px; border-radius: 6px; font-weight: 600; color: white;">Cerrar Sesión</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
@@ -398,8 +505,11 @@
             </div>
             <form id="register-form" class="auth-form active">
                 <h3>Registro de Viajero</h3>
-                <div class="form-group"><label>Usuario</label><input type="text" id="reg-user" required></div>
-                <div class="form-group"><label>Email</label><input type="email" id="reg-email" required></div>
+                <div class="form-group"><label>Nombre Completo</label><input type="text" id="reg-fullname" required placeholder="Ej: Juan Pérez"></div>
+                <div class="form-group"><label>País</label><input type="text" id="reg-country" required placeholder="Ej: España"></div>
+                <div class="form-group"><label>Ciudad</label><input type="text" id="reg-city" required placeholder="Ej: Santander"></div>
+                <div class="form-group"><label>Provincia de residencia</label><input type="text" id="reg-province" required placeholder="Ej: Cantabria"></div>
+                <div class="form-group"><label>Email</label><input type="email" id="reg-email" required placeholder="Ej: juan@example.com"></div>
                 <div class="form-group">
                     <label>Contraseña</label>
                     <div class="pass-wrapper">
@@ -439,12 +549,23 @@
                 <h3>Románico Cantabria</h3>
                 <p>Tu guía interactiva para descubrir el patrimonio medieval y las iglesias románicas de Cantabria.</p>
             </div>
-            <div class="footer-links">
-                <p>Explora: 
-                    <a href="#list-view">Colección</a> | 
-                    <a href="#map-view">Mapa</a> | 
-                    <a href="#itinerary-view">Rutas</a>
-                </p>
+            <div class="footer-links" style="display: flex; flex-direction: column; gap: 10px;">
+                <p style="margin: 0; font-weight: 600; color: var(--accent);">Mapa del Sitio / Navegación Interna:</p>
+                <div class="footer-nav-grid" style="display: flex; flex-wrap: wrap; gap: 8px 15px; font-size: 0.85rem; max-width: 600px;">
+                    <a href="#list-view" class="footer-seo-link" onclick="document.querySelector('[data-view=list]').click()">🏰 Colección Románica</a>
+                    <a href="#map-view" class="footer-seo-link" onclick="document.querySelector('[data-view=map]').click()">🗺️ Mapa Interactivo</a>
+                    <a href="#itinerary-view" class="footer-seo-link" onclick="document.querySelector('[data-view=itinerary]').click()">🧭 Itinerarios de un Día</a>
+                    <a href="#agenda-view" class="footer-seo-link" onclick="document.querySelector('[data-view=agenda]').click()">📅 Agenda de Eventos 2026</a>
+                    <a href="#ranking-view" class="footer-seo-link" onclick="document.querySelector('[data-view=ranking]').click()">🏆 Ranking de Viajeros</a>
+                    <a href="#restaurants-view" class="footer-seo-link" onclick="document.querySelector('[data-view=restaurants]').click()">🍽️ Dónde Comer (Gastronomía)</a>
+                    <a href="#extra-view" class="footer-seo-link" onclick="document.querySelector('[data-view=extra]').click()">🥘 Dulces y Recetas</a>
+                    <a href="#community-view" class="footer-seo-link" onclick="document.querySelector('[data-view=community]').click()">💬 Comunidad Románica</a>
+                    <a href="#weather-view" class="footer-seo-link" onclick="document.querySelector('[data-view=weather]').click()">🌦️ Previsión del Tiempo</a>
+                    <a href="#3d-view" class="footer-seo-link" onclick="document.querySelector('[data-view=3d]').click()">🏛️ Modelos y Visita 3D</a>
+                    <a href="#learn-view" class="footer-seo-link" onclick="document.querySelector('[data-view=learn]').click()">📚 Artículos y Libros</a>
+                    <a href="/llms.txt" class="footer-seo-link" target="_blank">🤖 Guía de IA (llms.txt)</a>
+                    <a href="/sitemap.xml" class="footer-seo-link" target="_blank">🗺️ Sitemap XML</a>
+                </div>
             </div>
         </div>
         <div class="footer-bottom">

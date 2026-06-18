@@ -1,7 +1,7 @@
 # Full Audit Report
 
 - URL: `http://localhost:8080/`
-- Generated: `2026-06-07T22:14:48.840433`
+- Generated: `2026-06-10T22:08:27.073941`
 - Overall score: `36/100`
 - Score confidence: `Low`
 - Scoring version: `1`

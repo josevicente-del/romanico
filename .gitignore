@@ -1,2 +1,19 @@
-
+# Dependencias
 Agentic-SEO-Skill/
+
+# Entornos de desarrollo y temporales
+.notebooklm-mcp/
+__pycache__/
+*.pyc
+data.js.bak
+
+# Archivos de reportes y auditorías
+audit_report.json
+informe_clasificacion.json
+resumen_detallado.txt
+resultados_auditoria_imagenes.json
+imagenes_reales_buscadas.json
+
+# Carpeta de scripts de trabajo temporal (excepto el script ya bajo control)
+scratch/*
+!scratch/check.py

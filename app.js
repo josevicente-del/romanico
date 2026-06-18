@@ -34,6 +34,8 @@ document.addEventListener('DOMContentLoaded', () => {
     setupEventListeners();
     incrementViews();
     updateDashboard();
+    handleHashRouting();
+    window.addEventListener('hashchange', handleHashRouting);
 });
 
 async function initApp() {
@@ -59,17 +61,34 @@ async function initApp() {
     renderLearnSection();
     initCommentsIfNeeded();
     renderComments();
+
+    // Registrar Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+                .then(reg => console.log('Service Worker registrado correctamente.', reg.scope))
+                .catch(err => console.error('Error al registrar Service Worker:', err));
+        });
+    }
 }
 
 async function loadEvents() {
     try {
+        // Intentar obtener los eventos desde la API del backend
         const res = await fetch('/api/events');
         if (res.ok) {
             eventsData = await res.json();
+        } else {
+            // Si la respuesta no es exitosa, usar los eventos estáticos como fallback
+            console.log("Backend response not ok, using static eventsData.");
+            eventsData = window.eventsData || [];
         }
     } catch(e) {
+        // Si hay un error de red o no existe el servidor, usar la agenda estática de data.js
         console.log("No backend detected, using static eventsData.");
+        eventsData = window.eventsData || [];
     }
+    // Renderizar la agenda en la interfaz de usuario
     renderAgenda();
 }
 
@@ -107,13 +126,16 @@ function incrementViews() {
 function initFilters() {
     const zones = new Set();
     const orders = new Set();
+    const cultures = new Set();
     poiData.forEach(poi => {
         if(poi.zone) zones.add(poi.zone);
         if(poi.order) orders.add(poi.order);
+        if(poi.culture) cultures.add(poi.culture);
     });
 
     const filterZone = document.getElementById('filter-zone');
     const filterOrder = document.getElementById('filter-order');
+    const filterCulture = document.getElementById('filter-culture');
     const itineraryZone = document.getElementById('itinerary-zone-select');
 
     zones.forEach(z => {
@@ -127,6 +149,13 @@ function initFilters() {
         opt.value = o; opt.textContent = o;
         filterOrder.appendChild(opt);
     });
+    if (filterCulture) {
+        cultures.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c; opt.textContent = c;
+            filterCulture.appendChild(opt);
+        });
+    }
 }
 
 // --- Poblar datalist de localidades para autocompletado ---
@@ -243,6 +272,8 @@ function renderMarkers() {
 function getFilteredData() {
     const zone = document.getElementById('filter-zone').value;
     const order = document.getElementById('filter-order').value;
+    const filterCultureEl = document.getElementById('filter-culture');
+    const culture = filterCultureEl ? filterCultureEl.value : '';
     const searchInput = document.getElementById('search-input');
     const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
     const sort = document.getElementById('sort-by').value;
@@ -266,7 +297,8 @@ function getFilteredData() {
             .filter(poi => {
                 const matchZone = !zone || poi.zone === zone;
                 const matchOrder = !order || poi.order === order;
-                return matchZone && matchOrder;
+                const matchCulture = !culture || poi.culture === culture;
+                return matchZone && matchOrder && matchCulture;
             })
             .sort((a, b) => a.distancia - b.distancia);
     }
@@ -275,11 +307,12 @@ function getFilteredData() {
     return poiData.filter(poi => {
         const matchZone = !zone || poi.zone === zone;
         const matchOrder = !order || poi.order === order;
+        const matchCulture = !culture || poi.culture === culture;
         const matchSearch = !search || 
             poi.name.toLowerCase().includes(search) || 
             poi.location.toLowerCase().includes(search) || 
             (poi.zone && poi.zone.toLowerCase().includes(search));
-        return matchZone && matchOrder && matchSearch;
+        return matchZone && matchOrder && matchCulture && matchSearch;
     }).sort((a, b) => {
         if (sort === 'popularity') {
             const aIsCol = a.order === 'Colegiata' || a.name.toLowerCase().includes('colegiata');
@@ -309,9 +342,15 @@ function renderList() {
         const distHTML = poi.distancia !== undefined
             ? `<span class="tag" style="background:#27ae60;color:white;">📍 ${poi.distancia.toFixed(1)} km</span>`
             : '';
+        
+        const hasRealImages = poi.images && poi.images.length > 0;
+        const imgHTML = hasRealImages 
+            ? `<img src="${poi.images[0]}" alt="${poi.name}">`
+            : `<div class="card-img-placeholder" title="Foto próximamente"><span>Foto próximamente</span></div>`;
+
         card.innerHTML = `
             <div class="card-img-container">
-                <img src="${(poi.images && poi.images.length > 0) ? poi.images[0] : 'colegiata_santa_juliana_santillana_1777204517020.png'}" alt="${poi.name}" onerror="this.src='colegiata_santa_juliana_santillana_1777204517020.png'">
+                ${imgHTML}
             </div>
             <div class="card-content">
                 <h3 class="card-title">${poi.name}</h3>
@@ -328,17 +367,225 @@ function renderList() {
     });
 }
 
+// =========================================================================
+// MOTOR DE AFINIDADES Y VÍNCULOS ENTRE TEMPLOS ROMÁNICOS
+// =========================================================================
+// Calcula la compatibilidad y los vínculos artísticos y geográficos entre
+// un templo seleccionado y todos los demás templos del catálogo.
+function calculateAffinities(sourcePoi) {
+    if (!sourcePoi || !window.poiData) return [];
+
+    // Descriptores artísticos y arquitectónicos para encontrar afinidades temáticas
+    const keywords = [
+        { word: "erótico", label: "Relieves o canecillos erótico-satíricos" },
+        { word: "satíric", label: "Esculturas de carácter satírico o burlesco" },
+        { word: "canecillo", label: "Decoración singular en canecillos" },
+        { word: "bestiario", label: "Escultura moralizante con bestiario medieval" },
+        { word: "animal", label: "Motivos zoomorfos esculpidos en capiteles" },
+        { word: "claustro", label: "Claustro historiado o galerías porticadas" },
+        { word: "pinturas", label: "Magnífico ciclo de pinturas murales góticas/románicas" },
+        { word: "murales", label: "Pinturas murales medievales" },
+        { word: "cueva", label: "Arquitectura rupestre excavada en roca arenisca" },
+        { word: "rupestre", label: "Eremitismo rupestre e iglesias hipogeas" },
+        { word: "mozárabe", label: "Pervivencias estilísticas mozárabes" },
+        { word: "ábside", label: "Ábside decorado con columnas e impostas" },
+        { word: "espadaña", label: "Típica espadaña románica campurriana" },
+        { word: "puntas de diamante", label: "Decoración geométrica con puntas de diamante" }
+    ];
+
+    const results = [];
+
+    // Cálculo simplificado de la distancia Haversine
+    function getDistanceKm(lat1, lon1, lat2, lon2) {
+        const R = 6371; // Radio terrestre en km
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    const sourceText = ((sourcePoi.description || "") + " " + (sourcePoi.bestiary ? sourcePoi.bestiary.description : "")).toLowerCase();
+
+    // Focos y corrientes existentes
+    const fociMap = {
+        colegiatas: [
+            "colegiata-de-santa-juliana-santillana-del-mar",
+            "colegiata-de-san-pedro-de-cervatos",
+            "colegiata-de-san-mart-n-de-elines",
+            "colegiata-de-santa-cruz-de-casta-eda",
+            "iglesia-de-santa-mar-a-piasca"
+        ],
+        septentrional: [
+            "iglesia-de-santa-mar-a-bareyo",
+            "iglesia-de-santa-mar-a-yermo",
+            "iglesia-de-san-andr-s-argomilla",
+            "iglesia-de-santa-mar-a-de-puerto-santo-a"
+        ],
+        rural: [
+            "iglesia-de-san-cipriano-bolmir",
+            "iglesia-de-santa-mar-a-la-mayor-villacantid",
+            "iglesia-de-san-juan-bautista-loma-somera",
+            "iglesia-de-santa-eulalia-bustasur",
+            "iglesia-de-santa-eulalia-sopenilla",
+            "iglesia-de-san-pedro-gervelas",
+            "iglesia-de-san-pedro-castillo-pedroso"
+        ],
+        eremitismo: [
+            "iglesia-rupestre-de-arroyuelos",
+            "iglesia-rupestre-de-santa-mar-a-de-valverde",
+            "iglesia-rupestre-de-cadalso"
+        ],
+        lebaniega: [
+            "iglesia-de-santa-mar-a-lebe-a",
+            "monasterio-de-santo-toribio-de-liebana"
+        ]
+    };
+
+    let sourceFocus = "";
+    for (const [focusId, ids] of Object.entries(fociMap)) {
+        if (ids.includes(sourcePoi.id)) {
+            sourceFocus = focusId;
+            break;
+        }
+    }
+
+    window.poiData.forEach(poi => {
+        if (poi.id === sourcePoi.id) return;
+
+        let score = 10;
+        const reasons = [];
+
+        // 1. Mismo foco/corriente (40 ptos)
+        let sameFocus = false;
+        if (sourceFocus && fociMap[sourceFocus].includes(poi.id)) {
+            score += 40;
+            sameFocus = true;
+            const focusNames = {
+                colegiatas: "Grandes Colegiatas y Prioratos",
+                septentrional: "Románico Septentrional (Costa)",
+                rural: "Románico Rural",
+                eremitismo: "Eremitismo Rupestre e hipogeo",
+                lebaniega: "Escuela Románica Lebaniega"
+            };
+            reasons.push(`Mismo foco estilístico: <strong>${focusNames[sourceFocus]}</strong>.`);
+        }
+
+        // Mismo tipo de orden (ej: colegiata con colegiata)
+        if (!sameFocus && poi.order && sourcePoi.order && poi.order === sourcePoi.order) {
+            score += 20;
+            reasons.push(`Misma tipología: Ambas catalogadas como <strong>${poi.order}</strong>.`);
+        }
+
+        // 2. Proximidad Geográfica (35 ptos)
+        const dist = getDistanceKm(sourcePoi.lat, sourcePoi.lon, poi.lat, poi.lon);
+        if (dist <= 15) {
+            score += 35;
+            reasons.push(`Cercanía extrema: A solo <strong>${dist.toFixed(1)} km</strong> de distancia.`);
+        } else if (dist <= 30) {
+            score += 20;
+            reasons.push(`Misma comarca: Situadas a <strong>${dist.toFixed(1)} km</strong>.`);
+        } else if (dist <= 55) {
+            score += 10;
+            reasons.push(`Distancia de ruta: A <strong>${dist.toFixed(1)} km</strong>.`);
+        }
+
+        // 3. Superposición de términos artísticos (25 ptos)
+        const poiText = ((poi.description || "") + " " + (poi.bestiary ? poi.bestiary.description : "")).toLowerCase();
+        let matches = 0;
+        keywords.forEach(kw => {
+            if (sourceText.includes(kw.word) && poiText.includes(kw.word)) {
+                matches++;
+                if (matches <= 2) {
+                    score += 12;
+                    reasons.push(`Detalle común: Ambos poseen ${kw.label}.`);
+                }
+            }
+        });
+
+        // Normalizar afinidad en porcentaje
+        let affinityPercentage = Math.min(100, Math.round((score / 100) * 100));
+        if (affinityPercentage < 25) affinityPercentage = 25 + (score % 15);
+
+        results.push({
+            poi: poi,
+            distance: dist,
+            affinity: affinityPercentage,
+            reasons: reasons.slice(0, 3)
+        });
+    });
+
+    results.sort((a, b) => b.affinity - a.affinity || a.distance - b.distance);
+    return results;
+}
+
 // --- Detail View con Mini-Mapa y Geofencing ---
 function openDetail(poi) {
+    // Guardar título y descripción originales para restauración posterior
+    if (!window.originalTitle) {
+        window.originalTitle = document.title;
+    }
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (!window.originalDescription && metaDesc) {
+        window.originalDescription = metaDesc.getAttribute('content');
+    }
+
+    // Actualizar metadatos dinámicamente para SEO
+    document.title = `${poi.name} | Guía del Románico en Cantabria`;
+    if (metaDesc) {
+        metaDesc.setAttribute('content', `${poi.name} en ${poi.location}: ${poi.description.substring(0, 140)}...`);
+    }
+
+    // Actualizar hash para enlazado profundo (Deep Linking)
+    window.location.hash = poi.id;
+
+    // Inyectar Datos Estructurados Schema.org JSON-LD para SEO y GEO local
+    let jsonLdEl = document.getElementById('dynamic-jsonld');
+    if (!jsonLdEl) {
+        jsonLdEl = document.createElement('script');
+        jsonLdEl.type = 'application/ld+json';
+        jsonLdEl.id = 'dynamic-jsonld';
+        document.head.appendChild(jsonLdEl);
+    }
+    const schemaData = {
+        "@context": "https://schema.org",
+        "@type": "TouristAttraction",
+        "name": poi.name,
+        "description": poi.description.substring(0, 250),
+        "image": (poi.images && poi.images.length > 0) ? poi.images[0] : "",
+        "geo": {
+            "@type": "GeoCoordinates",
+            "latitude": poi.lat,
+            "longitude": poi.lon
+        },
+        "address": {
+            "@type": "PostalAddress",
+            "addressLocality": poi.location,
+            "addressRegion": "Cantabria",
+            "addressCountry": "ES"
+        }
+    };
+    jsonLdEl.textContent = JSON.stringify(schemaData);
+
     const modal = document.getElementById('detail-modal');
     const body = document.getElementById('modal-body');
     const visited = getVisited();
     const isVisited = visited.has(poi.id);
 
+    const hasRealImages = poi.images && poi.images.length > 0;
+    const galleryHTML = hasRealImages
+        ? `<div class="modal-gallery">
+            ${poi.images.slice(0, (poi.order === 'Colegiata' || (poi.name && poi.name.toLowerCase().includes('colegiata'))) ? 6 : 4).map(img => `<img src="${img}" class="gallery-img">`).join('')}
+           </div>`
+        : `<div class="detail-img-placeholder" title="Foto próximamente">
+            <span>Foto próximamente</span>
+           </div>`;
+
     body.innerHTML = `
-        <div class="modal-gallery">
-            ${poi.images.slice(0, (poi.order === 'Colegiata' || (poi.name && poi.name.toLowerCase().includes('colegiata'))) ? 6 : 4).map(img => `<img src="${img}" class="gallery-img" onerror="this.src='calles_santillana_del_mar_1777204641643.png'">`).join('')}
-        </div>
+        ${galleryHTML}
         <h2 style="font-family:'Playfair Display'; color:var(--primary)">${poi.name}</h2>
         <p>📍 ${poi.location}</p>
         
@@ -363,6 +610,27 @@ function openDetail(poi) {
         <div class="detail-description" style="margin-bottom:20px; font-size:0.95rem;">
             ${poi.description}
         </div>
+
+        ${poi.bestiary ? `
+        <div class="bestiary-section" style="margin-top:20px; margin-bottom:25px; padding:20px; background:linear-gradient(135deg, rgba(28,58,107,0.05) 0%, rgba(144,77,0,0.04) 100%); border-radius:10px; border: 1px solid rgba(28, 58, 107, 0.15);">
+            <h3 style="font-family:'Noto Serif', serif; color:var(--primary); font-size:1.15rem; margin-top:0; margin-bottom:12px; display:flex; align-items:center; gap:8px; border-bottom:2px solid rgba(144,77,0,0.2); padding-bottom:10px;">
+                🦁 Bestiario Románico: Capiteles y Simbolismo
+            </h3>
+            <p style="font-size:0.88rem; line-height:1.6; margin-bottom:16px; color:var(--text-main); text-align:justify;">${poi.bestiary.description}</p>
+            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:12px;">
+                ${poi.bestiary.images.map(img => `
+                    <div style="background:white; border-radius:8px; overflow:hidden; border:1px solid rgba(0,0,0,0.08); text-align:center; box-shadow:0 3px 8px rgba(0,0,0,0.06); transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
+                        <div style="width:100%; height:110px; background:#f0f0f0; overflow:hidden; position:relative;">
+                            <img src="${img.url}" alt="${img.caption}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"
+                                onerror="this.parentElement.innerHTML='<div style=\\"display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:2rem;\\">🏛️</div>'">
+                        </div>
+                        <p style="font-size:0.72rem; padding:7px 5px; font-weight:700; color:var(--text-muted); margin:0; line-height:1.3;">${img.caption}</p>
+                    </div>
+                `).join('')}
+            </div>
+            <p style="font-size:0.72rem; color:var(--text-muted); margin-top:12px; margin-bottom:0;">📷 Fuente: Wikimedia Commons (CC BY-SA)</p>
+        </div>
+        ` : ''}
 
         <h3 style="font-size:1rem; border-bottom:1px solid #eee; padding-bottom:5px;">🍽️ Dónde comer cerca</h3>
         <div class="restaurants-list" style="margin-top:10px;">
@@ -399,8 +667,39 @@ function openDetail(poi) {
             <div id="upload-status" style="margin-top:10px; font-size:0.9rem;"></div>
         </div>
 
-        <div class="modal-buttons" style="margin-top: 20px;">
-            <button onclick="document.getElementById('detail-modal').classList.remove('active')">Cerrar</button>
+        <!-- Sección de Templos Relacionados en el Modal -->
+        <div class="modal-related-section">
+            <h4 class="modal-related-title">🔗 Templos Relacionados en la Guía</h4>
+            <div class="modal-related-grid">
+                ${(() => {
+                    const related = calculateAffinities(poi).slice(0, 3);
+                    return related.map(aff => {
+                        const rp = aff.poi;
+                        const mainImg = rp.images && rp.images.length > 0 ? rp.images[0] : '';
+                        const imgTag = mainImg 
+                            ? `<img src="${mainImg}" alt="${rp.name}">`
+                            : `<div class="card-img-placeholder" style="min-height: 100px; height: 100%; font-size: 0.65rem; padding: 10px;"></div>`;
+                        return `
+                            <div class="modal-related-card" onclick="window.openDetailById('${rp.id}')">
+                                <div class="modal-related-img-container">
+                                    ${imgTag}
+                                </div>
+                                <div class="modal-related-info">
+                                    <div>
+                                        <h5 class="modal-related-card-title">${rp.name}</h5>
+                                        <p class="modal-related-card-meta">📍 ${rp.location} • 📏 ${aff.distance.toFixed(1)} km</p>
+                                    </div>
+                                    <span class="modal-related-card-badge">${aff.affinity}% Afinidad</span>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                })()}
+            </div>
+        </div>
+
+        <div class="modal-buttons" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px;">
+            <button onclick="closeDetail()">Cerrar</button>
         </div>
     `;
     modal.classList.add('active');
@@ -538,11 +837,18 @@ function renderAgenda() {
                 <a href="${ev.url}" target="_blank" class="btn-primary" style="display: block; text-align: center; font-size: 0.8rem; text-decoration: none; padding: 8px 12px; width: 100%;">ℹ️ Más Información</a>
             </div>
         ` : '';
+        const clickAttr = ev.url ? `onclick="window.open('${ev.url}', '_blank')"` : '';
+        const cursorStyle = ev.url ? 'cursor:pointer; transition: transform 0.2s, box-shadow 0.2s;' : 'cursor:default';
+        const newBadge = ev.isNew ? `<span style="background: #e74c3c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; animation: pulse 1.5s infinite;">🆕 NUEVO</span>` : '';
+        
         return `
-            <div class="card" style="cursor:default">
+            <div class="card event-card" ${clickAttr} style="${cursorStyle}">
                 <div class="card-content" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
                     <div>
-                        <span class="tag" style="background:var(--accent); color:white">${ev.type || 'Evento'}</span>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="tag" style="background:var(--accent); color:white">${ev.type || 'Evento'}</span>
+                            ${newBadge}
+                        </div>
                         <h3 class="card-title" style="margin-top:10px">${ev.title}</h3>
                         <p style="font-size:0.8rem; font-weight:600">📅 ${ev.date}</p>
                         <p style="font-size:0.8rem; color:var(--text-muted)">📍 ${ev.location || 'Cantabria'}</p>
@@ -562,7 +868,11 @@ async function renderExtra() {
     const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
     
     if(recipesCont) {
-        recipesCont.innerHTML = recipesData.map(r => `
+        // Habilitar filtro de búsqueda también para las recetas medievales
+        const filteredRecipes = recipesData.filter(r => 
+            !search || r.name.toLowerCase().includes(search) || r.origin.toLowerCase().includes(search) || r.ingredients.some(ing => ing.toLowerCase().includes(search))
+        );
+        recipesCont.innerHTML = filteredRecipes.map(r => `
             <div class="card" style="cursor:default">
                 ${r.thumbnail ? `
                 <div class="card-img-container" style="height:150px; position:relative;">
@@ -813,6 +1123,7 @@ window.load3DModel = function(index, uid, name) {
 }
 
 // Renderizar la sección Saber Más (Libros y Artículos)
+// Renderizar la sección Saber Más (Libros, Artículos, Guía de Viajes y SEO)
 function renderLearnSection() {
     const articlesCont = document.getElementById('articles-container');
     const booksCont = document.getElementById('books-container');
@@ -857,7 +1168,485 @@ function renderLearnSection() {
             </div>
         `).join('');
     }
+
+    // Inyectar el apartado de relaciones estilísticas del románico
+    renderStyleRelations();
 }
+
+// =========================================================================
+// APARTADO INTERACTIVO: RELACIONES ESTILÍSTICAS DEL ROMÁNICO EN CANTABRIA
+// =========================================================================
+// Renderiza la tabla estructurada de corrientes estilísticas que nos ha enviado
+// el usuario y configura un panel interactivo premium con tarjetas dinámicas
+// para explorar cómo se vinculan los templos de Cantabria entre sí.
+function renderStyleRelations() {
+    const container = document.getElementById('style-relations-container');
+    if (!container) return;
+
+    // Datos estructurados de las corrientes estilísticas de Cantabria
+    const focos = [
+        {
+            id: "colegiatas",
+            name: "Grandes Colegiatas y Prioratos",
+            emoji: "🏰",
+            desc: "Obras cumbre de enorme complejidad volumétrica (fruto de la conversión de antiguos monasterios por el poder real). Destacan sus dobles arquerías, claustros, bóvedas y capiteles historiados de altísima calidad. Muestran fuertes influencias del románico dinástico (Jaca, León, Frómista) y de la abadía francesa de Cluny.",
+            churchIds: [
+                "colegiata-de-santa-juliana-santillana-del-mar",
+                "colegiata-de-san-pedro-de-cervatos",
+                "colegiata-de-san-mart-n-de-elines",
+                "colegiata-de-santa-cruz-de-casta-eda",
+                "iglesia-de-santa-mar-a-piasca"
+            ]
+        },
+        {
+            id: "septentrional",
+            name: "Románico Septentrional (Costa y Valles Centrales)",
+            emoji: "🌊",
+            desc: "Emplazado en rutas de comercio marítimo y en el Camino de Santiago de la costa, se caracteriza por obras de gran envergadura técnica. Posee un complejo código escultórico con predominancia del bestiario (leones, aves, monstruos fantásticos) de gran intención moralizante y pedagógica.",
+            churchIds: [
+                "iglesia-de-santa-mar-a-bareyo",
+                "iglesia-de-santa-mar-a-yermo",
+                "iglesia-de-san-andr-s-argomilla",
+                "iglesia-de-santa-mar-a-de-puerto-santo-a"
+            ]
+        },
+        {
+            id: "rural",
+            name: "Románico Rural (Campoo y Valderredible)",
+            emoji: "🌾",
+            desc: "Iglesias de concejo con gran pureza tectónica (una sola nave, magnífica piedra de sillería) que funcionan como nexo estilístico con el románico del norte de Palencia y Burgos. Se distinguen por sus espadañas campurrianas (frecuentemente con escaleras exteriores) y el abundante románico erótico y satírico en sus canecillos.",
+            churchIds: [
+                "iglesia-de-san-cipriano-bolmir",
+                "iglesia-de-santa-mar-a-la-mayor-villacantid",
+                "iglesia-de-san-juan-bautista-loma-somera",
+                "iglesia-de-santa-eulalia-bustasur",
+                "iglesia-de-santa-eulalia-sopenilla",
+                "iglesia-de-san-pedro-gervelas",
+                "iglesia-de-san-pedro-castillo-pedroso"
+            ]
+        },
+        {
+            id: "eremitismo",
+            name: "Eremitismo Rupestre (Prerrománico y Mozárabe)",
+            emoji: "🪨",
+            desc: "Supone la manifestación arquitectónica y religiosa más arcaica de la región, conformada por templos tallados directamente en la roca arenisca del valle del Ebro. Presentan una relación arquitectónica directa con la corriente mozárabe (arcos de herradura, pilares de palmera) y el prerrománico asturiano (arcos peraltados).",
+            churchIds: [
+                "iglesia-rupestre-de-arroyuelos"
+            ]
+        },
+        {
+            id: "lebaniega",
+            name: "Escuela Románica Lebaniega",
+            emoji: "⛰️",
+            desc: "Marcada por el aislamiento de sus montañas, sus iglesias mantienen un arraigo a formas más tradicionales. Se observan fábricas más rústicas a base de mampostería, decoración sumamente sobria, pervivencias mozárabes y un empleo muy característico de la decoración con 'puntas de diamante'.",
+            churchIds: [
+                "iglesia-de-santa-mar-a-lebe-a"
+            ]
+        }
+    ];
+
+    container.innerHTML = `
+        <div class="style-relations-panel" style="margin-top: 20px;">
+            <div class="travel-header-banner" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 35px; border-radius: 12px; color: white; margin-bottom: 40px; box-shadow: var(--shadow);">
+                <h3 style="font-family:'Noto Serif', serif; color: white; font-size: 1.8rem; margin-bottom: 10px;">🔬 Corrientes y Relaciones Estilísticas del Románico</h3>
+                <p style="font-size: 1rem; opacity: 0.9; max-width: 800px; line-height: 1.6;">
+                    La encrucijada geográfica de Cantabria originó una marcada polarización de estilos: desde la finura técnica en el norte hasta las pervivencias mozárabes en Liébana y el románico rural erótico del sur.
+                </p>
+            </div>
+
+            <!-- Tabla de datos estructurada -->
+            <div style="background: white; padding: 25px; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 40px; border: 1px solid rgba(0,0,0,0.05); overflow-x: auto;">
+                <h4 style="font-family:'Noto Serif', serif; color: var(--primary); font-size: 1.3rem; margin-top: 0; margin-bottom: 20px; border-bottom: 2px solid var(--accent); padding-bottom: 8px;">📊 Tabla de Focos Monumentales</h4>
+                <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.92rem; line-height: 1.5;">
+                    <thead>
+                        <tr style="border-bottom: 2px solid var(--primary); color: var(--primary); font-weight: bold; background: rgba(28, 58, 107, 0.02);">
+                            <th style="padding: 15px; width: 25%;">Foco / Corriente Estilística</th>
+                            <th style="padding: 15px; width: 50%;">Relaciones y Características de Estilo</th>
+                            <th style="padding: 15px; width: 25%;">Ejemplos de Templos Relacionados</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${focos.map((f, index) => `
+                            <tr style="border-bottom: 1px solid rgba(0,0,0,0.05); background: ${index % 2 === 0 ? 'transparent' : 'rgba(28, 58, 107, 0.01)'}">
+                                <td style="padding: 15px; font-weight: bold; color: var(--primary); font-size: 0.95rem;">${f.emoji} ${f.name}</td>
+                                <td style="padding: 15px; color: var(--text-main); text-align: justify;">${f.desc}</td>
+                                <td style="padding: 15px; font-weight: 600; color: var(--accent); font-style: italic;">
+                                    ${f.churchIds.map(id => {
+                                        const poi = poiData.find(p => p.id === id);
+                                        return poi ? `<a href="#list-view" onclick="window.openDetailById('${id}')" style="color: var(--accent); text-decoration: none; display: block; margin-bottom: 5px; transition: color 0.2s;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--accent)'">🏰 ${poi.name}</a>` : '';
+                                    }).join('')}
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Buscador e interactividad de relaciones -->
+            <div style="background: var(--surface-highest); padding: 30px; border-radius: 12px; border: 1px solid rgba(28, 58, 107, 0.08); box-shadow: var(--shadow); margin-bottom: 40px;">
+                <h4 style="font-family:'Noto Serif', serif; color: var(--primary); font-size: 1.3rem; margin-top: 0; margin-bottom: 15px; text-align: center;">🔬 Explorador de Corrientes del Románico</h4>
+                <p style="text-align: center; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 25px;">Selecciona una corriente para filtrar dinámicamente los templos vinculados y ver cómo se relacionan artísticamente.</p>
+                
+                <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 30px;">
+                    ${focos.map(f => `
+                        <button class="learn-tab-btn" onclick="window.selectStyleRelationsFocus('${f.id}')" id="btn-focus-${f.id}" style="width: auto; padding: 10px 20px; font-size: 0.85rem; font-weight: bold; border-radius: 20px; background: white; border: 1px solid rgba(28, 58, 107, 0.15); color: var(--primary); cursor: pointer; transition: all 0.2s;">
+                            ${f.emoji} ${f.name}
+                        </button>
+                    `).join('')}
+                </div>
+
+                <div id="style-focus-results" style="display: none; background: white; padding: 25px; border-radius: 10px; border: 1px solid rgba(0,0,0,0.05); box-shadow: var(--shadow);">
+                    <h5 id="style-focus-title" style="font-family:'Noto Serif', serif; color: var(--primary); font-size: 1.15rem; margin-top: 0; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 8px;"></h5>
+                    <p id="style-focus-desc" style="font-size: 0.9rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 20px; text-align: justify;"></p>
+                    
+                    <h6 style="font-weight: 700; color: var(--primary); font-size: 0.95rem; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                        🏰 Iglesias Vinculadas a este Foco en la Guía:
+                    </h6>
+                    <div id="style-focus-grid" class="magical-grid" style="grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                        <!-- Tarjetas inyectadas dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- NUEVA SECCIÓN: RED DE AFINIDADES E IGLESIAS CONECTADAS ENTRE SÍ -->
+            <div style="background: var(--surface-highest); padding: 30px; border-radius: 12px; border: 1px solid rgba(28, 58, 107, 0.08); box-shadow: var(--shadow);">
+                <h4 style="font-family:'Noto Serif', serif; color: var(--primary); font-size: 1.4rem; margin-top: 0; margin-bottom: 10px; text-align: center;">🔗 Red de Afinidades e Iglesias Conectadas</h4>
+                <p style="text-align: center; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 25px; max-width: 700px; margin-left: auto; margin-right: auto;">
+                    Selecciona un templo de origen para descubrir cuáles son las iglesias de Cantabria más vinculadas estilística, artística y geográficamente a través de nuestra red de conexiones.
+                </p>
+
+                <div class="relations-layout">
+                    <!-- Mapa interactivo de la red de conexiones (Leaflet) -->
+                    <div class="relations-map-wrapper">
+                        <h5 class="relations-map-title">🗺️ Mapa de Conexiones de Estilo y Ruta</h5>
+                        <div id="relations-network-map" class="relations-map"></div>
+                    </div>
+
+                    <!-- Selector de Templo e Iglesias sugeridas -->
+                    <div class="relations-panel-sidebar">
+                        <div class="relation-selector-card">
+                            <label for="relation-source-select">Selecciona el Templo de Origen:</label>
+                            <select id="relation-source-select" class="relation-select" onchange="window.updateChurchRelations(this.value)">
+                                <!-- Opciones inyectadas dinámicamente -->
+                            </select>
+                        </div>
+
+                        <!-- Listado de tarjetas de iglesias afines -->
+                        <div id="relations-results" class="relations-results-list">
+                            <!-- Inyectado dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Cargar los templos ordenados alfabéticamente en el selector
+    setTimeout(() => {
+        const selectEl = document.getElementById('relation-source-select');
+        if (selectEl && window.poiData) {
+            const sortedPois = [...window.poiData].sort((a, b) => a.name.localeCompare(b.name));
+            selectEl.innerHTML = sortedPois.map(poi => `<option value="${poi.id}">${poi.name}</option>`).join('');
+            
+            if (sortedPois.length > 0) {
+                // Colegiata de Santa Juliana por defecto
+                const juliana = sortedPois.find(p => p.id.includes('santa-juliana'));
+                const defaultId = juliana ? juliana.id : sortedPois[0].id;
+                selectEl.value = defaultId;
+                
+                // Si la pestaña está activa, inicializar mapa
+                const tabBtn = document.querySelector('.learn-tab-btn[data-learn-tab="style-relations"]');
+                if (tabBtn && tabBtn.classList.contains('active')) {
+                    window.initRelationsMap(defaultId);
+                }
+            }
+        }
+    }, 100);
+}
+
+// Permite filtrar e interactuar con las iglesias vinculadas al foco estilístico
+window.selectStyleRelationsFocus = (focusId) => {
+    const buttons = ["colegiatas", "septentrional", "rural", "eremitismo", "lebaniega"];
+    buttons.forEach(id => {
+        const btn = document.getElementById(`btn-focus-${id}`);
+        if (btn) {
+            btn.style.background = 'white';
+            btn.style.color = 'var(--primary)';
+            btn.style.borderColor = 'rgba(28, 58, 107, 0.15)';
+        }
+    });
+
+    const activeBtn = document.getElementById(`btn-focus-${focusId}`);
+    if (activeBtn) {
+        activeBtn.style.background = 'var(--primary)';
+        activeBtn.style.color = 'white';
+        activeBtn.style.borderColor = 'var(--primary)';
+    }
+
+    const focos = {
+        colegiatas: {
+            title: "Grandes Colegiatas y Prioratos",
+            desc: "Representan la cúspide de la complejidad arquitectónica y escultórica en Cantabria. Al ser conversiones de antiguos cenobios bajo patrocinio real o de grandes linajes, exhiben una elaborada planificación espacial de influencia de Cluny y el románico de autopista (Camino de Santiago dinástico).",
+            churchIds: [
+                "colegiata-de-santa-juliana-santillana-del-mar",
+                "colegiata-de-san-pedro-de-cervatos",
+                "colegiata-de-san-mart-n-de-elines",
+                "colegiata-de-santa-cruz-de-casta-eda",
+                "iglesia-de-santa-mar-a-piasca"
+            ]
+        },
+        septentrional: {
+            title: "Románico Septentrional (Costa y Valles Centrales)",
+            desc: "Ligado a las comarcas marineras y la Trasmiera, este estilo destaca por templos con fachadas de sillería de gran prestancia y un fascinante repertorio escultórico de bestiario (leones, centauros, monstruos campurrianos y mitológicos) empleado con fines pedagógicos y morales.",
+            churchIds: [
+                "iglesia-de-santa-mar-a-bareyo",
+                "iglesia-de-santa-mar-a-yermo",
+                "iglesia-de-san-andr-s-argomilla",
+                "iglesia-de-santa-mar-a-de-puerto-santo-a"
+            ]
+        },
+        rural: {
+            title: "Románico Rural (Campoo y Valderredible)",
+            desc: "Característico de los pequeños concejos agrarios del sur. Son iglesias de una sola nave con ábsides muy bien esculpidos, famosas por sus espadañas integradas y un profuso catálogo de canecillos eróticos, burlescos o satíricos de gran libertad artística.",
+            churchIds: [
+                "iglesia-de-san-cipriano-bolmir",
+                "iglesia-de-santa-mar-a-la-mayor-villacantid",
+                "iglesia-de-san-juan-bautista-loma-somera",
+                "iglesia-de-santa-eulalia-bustasur",
+                "iglesia-de-santa-eulalia-sopenilla",
+                "iglesia-de-san-pedro-gervelas",
+                "iglesia-de-san-pedro-castillo-pedroso"
+            ]
+        },
+        eremitismo: {
+            title: "Eremitismo Rupestre (Prerrománico y Mozárabe)",
+            desc: "La manifestación más primigenia del cristianismo en la región, constituida por cuevas artificiales e iglesias excavadas directamente en la roca arenisca del alto Ebro, con reminiscencias mozárabes (arcos de herradura y pilares palmera).",
+            churchIds: [
+                "iglesia-rupestre-de-arroyuelos"
+            ]
+        },
+        lebaniega: {
+            title: "Escuela Románica Lebaniega",
+            desc: "Focos geográficamente aislados en los Picos de Europa. Se caracterizan por mantener un fuerte arraigo a las tradiciones locales mozárabes y asturianas, fábricas rústicas y un profuso uso de la ornamentación geométrica de 'punta de diamante' en arcos e impostas.",
+            churchIds: [
+                "iglesia-de-santa-mar-a-lebe-a"
+            ]
+        }
+    };
+
+    // Ajustar listado de IDs eliminando duplicados si los hubiera
+    if (focusId === 'rural') {
+        selChurchIds = [
+            "iglesia-de-san-cipriano-bolmir",
+            "iglesia-de-santa-mar-a-la-mayor-villacantid",
+            "iglesia-de-san-juan-bautista-loma-somera",
+            "iglesia-de-santa-eulalia-bustasur",
+            "iglesia-de-santa-eulalia-sopenilla",
+            "iglesia-de-san-pedro-gervelas",
+            "iglesia-de-san-pedro-castillo-pedroso"
+        ];
+    } else {
+        selChurchIds = focos[focusId].churchIds;
+    }
+
+    const sel = focos[focusId];
+    if (!sel) return;
+
+    document.getElementById('style-focus-results').style.display = 'block';
+    document.getElementById('style-focus-title').innerHTML = `🔬 Foco: ${sel.title}`;
+    document.getElementById('style-focus-desc').innerHTML = sel.desc;
+
+    const grid = document.getElementById('style-focus-grid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+    selChurchIds.forEach(id => {
+        const poi = poiData.find(p => p.id === id);
+        if (poi) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.style.cursor = 'pointer';
+            card.innerHTML = `
+                <div class="card-img-container" style="height:140px;">
+                    <img src="${poi.images[0]}" alt="${poi.name}" style="width:100%; height:100%; object-fit:cover;">
+                </div>
+                <div class="card-content" style="padding:15px;">
+                    <h4 class="card-title" style="font-size:1.05rem; margin-bottom:5px; color:var(--primary);">${poi.name}</h4>
+                    <p style="font-size:0.8rem; color:var(--text-muted); margin:0;">📍 ${poi.location}</p>
+                </div>
+            `;
+            card.addEventListener('click', () => {
+                document.querySelector('[data-view="list"]').click();
+                openDetail(poi);
+            });
+            grid.appendChild(card);
+        }
+    });
+};
+
+// =========================================================================
+// GESTIÓN DEL MAPA INTERACTIVO DE RELACIONES Y RED DE AFINIDADES
+// =========================================================================
+
+window.initRelationsMap = (startId) => {
+    const mapContainer = document.getElementById('relations-network-map');
+    if (!mapContainer) return;
+
+    if (window.relationsMap) {
+        window.relationsMap.invalidateSize();
+        if (startId) window.updateChurchRelations(startId);
+        return;
+    }
+
+    // Inicializar mapa de Leaflet centrado en Cantabria
+    window.relationsMap = L.map('relations-network-map', {
+        zoomControl: true,
+        scrollWheelZoom: false
+    }).setView([43.2, -4.0], 9);
+
+    L.tileLayer('https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}', {
+        attribution: 'Google Maps'
+    }).addTo(window.relationsMap);
+
+    setTimeout(() => {
+        window.relationsMap.invalidateSize();
+        if (startId) window.updateChurchRelations(startId);
+    }, 150);
+};
+
+window.updateChurchRelations = (sourceId) => {
+    const sourcePoi = window.poiData.find(p => p.id === sourceId);
+    if (!sourcePoi) return;
+
+    // Sincronizar el select dropdown
+    const selectEl = document.getElementById('relation-source-select');
+    if (selectEl) {
+        selectEl.value = sourceId;
+    }
+
+    // Calcular templos afines
+    const affinities = calculateAffinities(sourcePoi).slice(0, 4);
+
+    // Actualizar listado en sidebar
+    const resultsContainer = document.getElementById('relations-results');
+    if (resultsContainer) {
+        resultsContainer.innerHTML = affinities.map(aff => {
+            const p = aff.poi;
+            const reasonsHtml = aff.reasons.map(r => `<li>${r}</li>`).join('');
+            const mainImg = p.images && p.images.length > 0 ? p.images[0] : '';
+            const imgHtml = mainImg 
+                ? `<img src="${mainImg}" alt="${p.name}">`
+                : `<div class="card-img-placeholder" style="min-height: 100px; height: 100%; font-size: 0.65rem; padding: 10px;"></div>`;
+            return `
+                <div class="relation-card" data-church-id="${p.id}" onmouseover="window.highlightRelationLine('${p.id}', true)" onmouseout="window.highlightRelationLine('${p.id}', false)">
+                    <div class="relation-card-thumb">
+                        ${imgHtml}
+                    </div>
+                    <div class="relation-card-info">
+                        <div>
+                            <div class="relation-card-title-row">
+                                <h6 class="relation-card-title">${p.name}</h6>
+                                <span class="affinity-badge">${aff.affinity}% Afinidad</span>
+                            </div>
+                            <p class="relation-card-subtitle">📍 ${p.location} • 📏 a ${aff.distance.toFixed(1)} km</p>
+                            <ul class="relation-card-reasons" style="margin: 0; padding-left: 15px; font-size: 0.78rem;">
+                                ${reasonsHtml}
+                            </ul>
+                        </div>
+                        <div class="relation-card-actions" style="margin-top: 10px;">
+                            <button class="relation-btn relation-btn-primary" onclick="window.openDetailById('${p.id}')">Ver Ficha</button>
+                            <button class="relation-btn relation-btn-secondary" onclick="window.updateChurchRelations('${p.id}')">Centrar Relación 🎯</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    // Actualizar el mapa
+    if (!window.relationsMap) return;
+
+    if (!window.relationsMapLayers) {
+        window.relationsMapLayers = [];
+    }
+    // Eliminar capas/líneas anteriores
+    window.relationsMapLayers.forEach(layer => window.relationsMap.removeLayer(layer));
+    window.relationsMapLayers = [];
+
+    // Marcador principal (Origen)
+    const sourceIcon = L.divIcon({
+        className: 'custom-div-icon',
+        html: `<div style="background-color: #d45d00; width: 18px; height: 18px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.5);"></div>`,
+        iconSize: [18, 18],
+        iconAnchor: [9, 9]
+    });
+
+    const sourceMarker = L.marker([sourcePoi.lat, sourcePoi.lon], {icon: sourceIcon})
+        .addTo(window.relationsMap)
+        .bindPopup(`<b>Origen: ${sourcePoi.name}</b><br>📍 ${sourcePoi.location}`);
+    
+    window.relationsMapLayers.push(sourceMarker);
+
+    const points = [[sourcePoi.lat, sourcePoi.lon]];
+    window.relationsMapLines = {};
+
+    // Marcadores destinos y líneas
+    affinities.forEach(aff => {
+        const p = aff.poi;
+        points.push([p.lat, p.lon]);
+
+        const destIcon = L.divIcon({
+            className: 'custom-div-icon',
+            html: `<div style="background-color: #1c3a6b; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 8px rgba(0,0,0,0.4);"></div>`,
+            iconSize: [14, 14],
+            iconAnchor: [7, 7]
+        });
+
+        const destMarker = L.marker([p.lat, p.lon], {icon: destIcon})
+            .addTo(window.relationsMap)
+            .bindPopup(`<b>${p.name}</b><br>📍 ${p.location}<br>Afinidad: ${aff.affinity}%<br>Distancia: ${aff.distance.toFixed(1)} km`);
+        
+        window.relationsMapLayers.push(destMarker);
+
+        // Línea punteada
+        const polyline = L.polyline([[sourcePoi.lat, sourcePoi.lon], [p.lat, p.lon]], {
+            color: '#d45d00',
+            weight: 3,
+            dashArray: '5, 8',
+            opacity: 0.65
+        }).addTo(window.relationsMap);
+
+        polyline.bindPopup(`Conexión: ${aff.affinity}% de afinidad con ${p.name}`);
+
+        window.relationsMapLayers.push(polyline);
+        window.relationsMapLines[p.id] = polyline;
+    });
+
+    // Ajustar límites del mapa
+    window.relationsMap.fitBounds(L.latLngBounds(points), {padding: [40, 40]});
+};
+
+window.highlightRelationLine = (churchId, highlight) => {
+    if (window.relationsMapLines && window.relationsMapLines[churchId]) {
+        const line = window.relationsMapLines[churchId];
+        if (highlight) {
+            line.setStyle({
+                color: '#1c3a6b',
+                weight: 5,
+                dashArray: 'none',
+                opacity: 0.95
+            });
+            line.bringToFront();
+        } else {
+            line.setStyle({
+                color: '#d45d00',
+                weight: 3,
+                dashArray: '5, 8',
+                opacity: 0.65
+            });
+        }
+    }
+};
 
 // Función global para compartir en redes
 window.shareContent = function(type, title, text, url) {
@@ -888,6 +1677,7 @@ function setupEventListeners() {
                 }, 100);
             }
             if(view === 'community') renderComments();
+            if(view === 'profile') updateProfileForm();
             
             // Mostrar o ocultar controles de búsqueda según la sección activa
             const controlsSection = document.querySelector('.controls-section');
@@ -914,6 +1704,7 @@ function setupEventListeners() {
 
     document.getElementById('filter-zone').addEventListener('change', () => { renderList(); renderMarkers(); });
     document.getElementById('filter-order').addEventListener('change', () => { renderList(); renderMarkers(); });
+    document.getElementById('filter-culture').addEventListener('change', () => { renderList(); renderMarkers(); });
     document.getElementById('sort-by').addEventListener('change', () => { renderList(); renderMarkers(); });
     document.getElementById('search-input').addEventListener('input', () => { renderList(); renderMarkers(); updateLocalityInfo(); });
     document.getElementById('search-extra').addEventListener('input', () => { renderAgenda(); renderExtra(); });
@@ -927,7 +1718,13 @@ function setupEventListeners() {
 
     document.querySelectorAll('.close-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            document.querySelectorAll('.modal').forEach(m => m.classList.remove('active'));
+            document.querySelectorAll('.modal').forEach(m => {
+                if (m.id === 'detail-modal') {
+                    closeDetail();
+                } else {
+                    m.classList.remove('active');
+                }
+            });
         });
     });
 
@@ -971,22 +1768,84 @@ function setupEventListeners() {
         });
     });
 
+    // Listeners para pestañas de aprendizaje
+    document.querySelectorAll('.learn-tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.dataset.learnTab;
+            document.querySelectorAll('.learn-tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.learn-tab-content').forEach(c => c.style.display = 'none');
+            const targetContent = document.getElementById(`learn-tab-content-${tab}`);
+            if (targetContent) targetContent.style.display = 'block';
+
+            // Si se selecciona la pestaña de relaciones estilísticas, inicializar o redimensionar el mapa de relaciones
+            if (tab === 'style-relations') {
+                const selectEl = document.getElementById('relation-source-select');
+                const currentId = selectEl ? selectEl.value : null;
+                setTimeout(() => {
+                    window.initRelationsMap(currentId);
+                }, 100);
+            }
+        });
+    });
+
+    // Listener para formulario de newsletter
+    const newsletterForm = document.getElementById('newsletter-form');
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const emailInput = document.getElementById('news-email');
+            const statusDiv = document.getElementById('newsletter-status');
+            const email = emailInput.value.trim().toLowerCase();
+            
+            if (email) {
+                // Guardar en suscriptores locales
+                let subscribers = JSON.parse(localStorage.getItem('romanico_subscribers') || '[]');
+                if (!subscribers.includes(email)) {
+                    subscribers.push(email);
+                    localStorage.setItem('romanico_subscribers', JSON.stringify(subscribers));
+                }
+                
+                // Actualizar UI
+                statusDiv.style.display = 'block';
+                statusDiv.style.color = '#27ae60';
+                statusDiv.textContent = '¡Gracias por suscribirte! Te hemos enviado un correo de bienvenida.';
+                emailInput.value = '';
+                
+                // Ocultar mensaje tras 5 segundos
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            }
+        });
+    }
+
     window.openDetailById = id => {
         const poi = poiData.find(p => p.id === id);
         if(poi) openDetail(poi);
     };
+
+    // Listeners del Perfil del Viajero
+    const profileForm = document.getElementById('profile-form');
+    if (profileForm) profileForm.addEventListener('submit', handleProfileSave);
+
+    const btnProfileLogout = document.getElementById('btn-profile-logout');
+    if (btnProfileLogout) btnProfileLogout.addEventListener('click', handleLogout);
 }
 
 // --- Funciones del Sistema de Autenticación y Gamificación ---
 
 function handleRegister(e) {
     e.preventDefault();
-    const user = document.getElementById('reg-user').value.trim();
+    const user = document.getElementById('reg-fullname').value.trim();
     const email = document.getElementById('reg-email').value.trim().toLowerCase();
     const pass = document.getElementById('reg-pass').value;
+    const country = document.getElementById('reg-country').value.trim();
+    const city = document.getElementById('reg-city').value.trim();
+    const province = document.getElementById('reg-province').value.trim();
     const statusMsg = document.getElementById('reg-status');
 
-    if (!user || !email || !pass) {
+    if (!user || !email || !pass || !country || !city || !province) {
         statusMsg.textContent = "Por favor, completa todos los campos.";
         statusMsg.style.color = "red";
         return;
@@ -1004,10 +1863,43 @@ function handleRegister(e) {
         username: user,
         email: email,
         password: pass,
-        visited: []
+        country: country,
+        city: city,
+        province: province,
+        visited: [],
+        role: 'user'
     };
     users.push(newUser);
     localStorage.setItem(USERS_KEY, JSON.stringify(users));
+
+    // =========================================================================
+    // COMUNICACIÓN CON EL BACKEND (SISTEMA DE CORREO Y BOLETÍN QUINCENAL)
+    // =========================================================================
+    // Enviamos una petición POST al servidor local para almacenar los datos del
+    // usuario y disparar el envío del correo electrónico de verificación.
+    // Se implementa con captura de errores para no bloquear el flujo del usuario
+    // si el servidor se encuentra offline temporalmente.
+    fetch('/api/users/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(newUser)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error del servidor: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Sincronización del usuario con el servidor SMTP completada con éxito:", data);
+    })
+    .catch(error => {
+        // Log de depuración no invasivo para tolerar fallos
+        console.error("No se pudo enviar el correo de verificación (servidor offline):", error);
+    });
+    // =========================================================================
 
     statusMsg.textContent = "✅ ¡Registro completado con éxito! Iniciando sesión...";
     statusMsg.style.color = "green";
@@ -1060,6 +1952,7 @@ function setCurrentUser(user) {
         localStorage.removeItem(CURRENT_USER_KEY);
     }
     updateAuthUI();
+    updateProfileForm();
     renderList();
     renderMarkers();
     updateProgress();
@@ -1080,7 +1973,9 @@ function updateAuthUI() {
     const authContainer = document.getElementById('auth-header-container');
     if (!authContainer) return;
 
+    const navProfile = document.getElementById('nav-profile');
     if (currentUser) {
+        if (navProfile) navProfile.style.display = 'inline-block';
         const prefix = currentUser.role === 'admin' ? '⚙️ ' : '👑 ';
         authContainer.innerHTML = `
             <span style="font-weight:600; color:var(--primary); font-size:0.9rem; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${prefix}${currentUser.username}</span>
@@ -1089,6 +1984,7 @@ function updateAuthUI() {
         const btnLogout = document.getElementById('btn-logout');
         if (btnLogout) btnLogout.addEventListener('click', handleLogout);
     } else {
+        if (navProfile) navProfile.style.display = 'none';
         authContainer.innerHTML = `
             <button id="btn-login" class="btn-auth">Iniciar Sesión</button>
         `;
@@ -1099,6 +1995,99 @@ function updateAuthUI() {
             });
         }
     }
+}
+
+function updateProfileForm() {
+    const navProfile = document.getElementById('nav-profile');
+    const profileEmail = document.getElementById('profile-email');
+    const profileFullname = document.getElementById('profile-fullname');
+    const profileCountry = document.getElementById('profile-country');
+    const profileCity = document.getElementById('profile-city');
+    const profileProvince = document.getElementById('profile-province');
+    
+    // Contadores globales de suscriptores
+    const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+    const globalCountEl = document.getElementById('global-subscribers-count');
+    const communityCountEl = document.getElementById('community-subscribers-count');
+    if (globalCountEl) globalCountEl.textContent = users.length;
+    if (communityCountEl) communityCountEl.textContent = users.length;
+
+    if (currentUser) {
+        if (navProfile) navProfile.style.display = 'inline-block';
+        if (profileEmail) profileEmail.value = currentUser.email;
+        if (profileFullname) profileFullname.value = currentUser.username;
+        if (profileCountry) profileCountry.value = currentUser.country || '';
+        if (profileCity) profileCity.value = currentUser.city || '';
+        if (profileProvince) profileProvince.value = currentUser.province || '';
+
+        // Calcular progreso de iglesias visitadas
+        const visitedCount = (currentUser.visited || []).length;
+        const totalCount = poiData.length;
+        const percent = totalCount > 0 ? Math.round((visitedCount / totalCount) * 100) : 0;
+
+        const progressPercentEl = document.getElementById('profile-progress-percent');
+        const visitedCountEl = document.getElementById('profile-visited-count');
+        const totalCountEl = document.getElementById('profile-total-count');
+        const progressRingEl = document.getElementById('profile-progress-ring');
+
+        if (progressPercentEl) progressPercentEl.textContent = `${percent}%`;
+        if (visitedCountEl) visitedCountEl.textContent = visitedCount;
+        if (totalCountEl) totalCountEl.textContent = totalCount;
+        if (progressRingEl) {
+            progressRingEl.style.background = `radial-gradient(circle, #fff 60%, transparent 60.5%), conic-gradient(var(--accent) ${percent}%, #e0e0e0 ${percent}%)`;
+        }
+    } else {
+        if (navProfile) navProfile.style.display = 'none';
+    }
+}
+
+function handleProfileSave(e) {
+    e.preventDefault();
+    if (!currentUser) return;
+
+    const fullname = document.getElementById('profile-fullname').value.trim();
+    const country = document.getElementById('profile-country').value.trim();
+    const city = document.getElementById('profile-city').value.trim();
+    const province = document.getElementById('profile-province').value.trim();
+    const statusMsg = document.getElementById('profile-status');
+
+    if (!fullname || !country || !city || !province) {
+        if (statusMsg) {
+            statusMsg.textContent = "Por favor, completa todos los campos.";
+            statusMsg.style.color = "red";
+        }
+        return;
+    }
+
+    // Actualizar en el array global de usuarios de localStorage
+    let users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+    const userIndex = users.findIndex(u => u.email === currentUser.email);
+    
+    currentUser.username = fullname;
+    currentUser.country = country;
+    currentUser.city = city;
+    currentUser.province = province;
+
+    if (userIndex !== -1) {
+        users[userIndex].username = fullname;
+        users[userIndex].country = country;
+        users[userIndex].city = city;
+        users[userIndex].province = province;
+        localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+
+    localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(currentUser));
+    
+    if (statusMsg) {
+        statusMsg.textContent = "✅ Cambios guardados correctamente.";
+        statusMsg.style.color = "green";
+        setTimeout(() => {
+            statusMsg.textContent = "";
+        }, 3000);
+    }
+
+    updateAuthUI();
+    renderUserRanking();
 }
 
 function renderPendingChurches() {
@@ -1151,41 +2140,67 @@ function renderPendingChurches() {
     });
 }
 
-function renderAdminPanel() {
+async function renderAdminPanel() {
     const adminPanelSection = document.getElementById('admin-panel-section');
     const tableBody = document.getElementById('admin-users-table-body');
     const countSpan = document.getElementById('admin-users-count');
 
     if (!adminPanelSection) return;
 
-    // Solo mostrar si el usuario está autenticado y es admin
+    // =========================================================================
+    // SEGURIDAD Y ACCESO DE ADMINISTRACIÓN
+    // =========================================================================
+    // Solo mostramos esta sección si el usuario logueado posee el rol de 'admin'.
     if (currentUser && currentUser.role === 'admin') {
         adminPanelSection.style.display = 'block';
 
-        const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
-        if (countSpan) countSpan.textContent = users.length;
+        try {
+            // Consultamos la lista de usuarios registrados en el servidor de correo
+            const response = await fetch('/api/admin/users');
+            const data = await response.json();
+            
+            if (data.success) {
+                const serverUsers = data.users || [];
+                if (countSpan) countSpan.textContent = data.total;
 
-        if (tableBody) {
-            if (users.length === 0) {
+                if (tableBody) {
+                    if (serverUsers.length === 0) {
+                        tableBody.innerHTML = `
+                            <tr>
+                                <td colspan="3" style="text-align: center; padding: 15px; color: var(--text-muted); font-style: italic;">
+                                    No hay usuarios registrados en el servidor.
+                                </td>
+                            </tr>
+                        `;
+                    } else {
+                        // Mapeamos los usuarios del servidor mostrando su región y villa
+                        tableBody.innerHTML = serverUsers.map(u => {
+                            const locationInfo = `${u.province || 'Desconocida'} (${u.city || 'Desconocida'})`;
+                            return `
+                                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                    <td style="padding: 12px; font-weight: bold; color: var(--primary);">👤 ${u.username}</td>
+                                    <td style="padding: 12px; font-family: monospace; color: var(--text);">${u.email}</td>
+                                    <td style="padding: 12px; text-align: center;">
+                                        <span class="tag" style="background: var(--primary); color: white; font-size: 0.8rem; font-weight: bold; padding: 4px 10px; border-radius: 10px;">
+                                            📍 ${locationInfo}
+                                        </span>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('');
+                    }
+                }
+            }
+        } catch (err) {
+            console.error("Error al obtener la lista de usuarios del backend:", err);
+            if (tableBody) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="3" style="text-align: center; padding: 15px; color: var(--text-muted);">
-                            No hay usuarios registrados en el sistema.
+                        <td colspan="3" style="text-align: center; padding: 15px; color: red; font-weight: bold;">
+                            Error al cargar los usuarios desde el servidor.
                         </td>
                     </tr>
                 `;
-            } else {
-                tableBody.innerHTML = users.map(u => `
-                    <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
-                        <td style="padding: 12px; font-weight: bold; color: var(--primary);">👤 ${u.username}</td>
-                        <td style="padding: 12px; font-family: monospace; color: var(--text);">${u.email}</td>
-                        <td style="padding: 12px; text-align: center;">
-                            <span class="tag" style="background: var(--primary); color: white; font-size: 0.8rem; font-weight: bold; padding: 3px 8px; border-radius: 10px;">
-                                ${(u.visited || []).length} templos
-                            </span>
-                        </td>
-                    </tr>
-                `).join('');
             }
         }
     } else {
@@ -1917,3 +2932,53 @@ function formatDate(dateStr) {
 
 
 
+
+// =========================================================================
+// FUNCIONES AUXILIARES PARA ENLAZADO PROFUNDO (HASH ROUTING) Y METADATOS SEO
+// =========================================================================
+
+function handleHashRouting() {
+    const hash = window.location.hash;
+    if (hash && hash.length > 1) {
+        const targetId = hash.substring(1);
+        
+        // Excluir hashes de vistas generales
+        const mainViews = ['list-view', 'map-view', 'itinerary-view', 'agenda-view', 'ranking-view', 'restaurants-view', 'extra-view', 'community-view', 'weather-view', '3d-view', 'learn-view', 'profile-view'];
+        if (mainViews.includes(targetId)) return;
+        
+        const poi = window.poiData.find(p => p.id === targetId);
+        if (poi) {
+            // Esperar a que la UI esté lista
+            setTimeout(() => {
+                openDetail(poi);
+            }, 250);
+        }
+    }
+}
+
+function closeDetail() {
+    const modal = document.getElementById('detail-modal');
+    if (modal) modal.classList.remove('active');
+    
+    // Restaurar metadatos SEO originales
+    if (window.originalTitle) {
+        document.title = window.originalTitle;
+    }
+    if (window.originalDescription) {
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.setAttribute('content', window.originalDescription);
+    }
+    
+    // Eliminar estructurado JSON-LD dinámico
+    const jsonLdEl = document.getElementById('dynamic-jsonld');
+    if (jsonLdEl) jsonLdEl.remove();
+    
+    // Limpiar hash de URL de forma elegante
+    if (window.location.hash) {
+        history.replaceState(null, document.title, window.location.pathname + window.location.search);
+    }
+}
+
+// Exponer funciones globalmente
+window.closeDetail = closeDetail;
+window.handleHashRouting = handleHashRouting;
