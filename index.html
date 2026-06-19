@@ -119,46 +119,6 @@
     <main>
         <h1 class="main-seo-title">Guía de Arte Románico en Cantabria</h1>
 
-        <!-- Iglesias Pendientes de Visitar (Solo para usuarios autenticados) -->
-        <section id="pending-section" class="view-container" style="display:none; padding: 25px 5%; margin: 20px auto; max-width: 1400px; background: rgba(28, 58, 107, 0.05); border-radius: 12px; border: 1px solid rgba(28, 58, 107, 0.1);">
-            <h2 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:10px; display:flex; align-items:center; gap:10px; font-size: 1.8rem;">
-                🏰 Tus Iglesias Pendientes de Visitar
-            </h2>
-            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">
-                Aquí tienes los templos románicos de Cantabria que aún te quedan por explorar en tu cuenta de viajero. ¡Acércate a menos de 100 metros con tu GPS para marcarlos como visitados!
-            </p>
-            <div id="pending-cards-container" class="magical-grid"></div>
-        </section>
-
-        <!-- Panel de Administración (Solo para Administrador) -->
-        <section id="admin-panel-section" class="view-container" style="display:none; padding: 25px 5%; margin: 20px auto; max-width: 1400px; background: rgba(196, 48, 43, 0.05); border-radius: 12px; border: 1px solid rgba(196, 48, 43, 0.15);">
-            <h2 style="font-family:'Noto Serif', serif; color:#c4302b; margin-bottom:10px; display:flex; align-items:center; gap:10px; font-size: 1.8rem;">
-                ⚙️ Panel de Control de Administración
-            </h2>
-            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">
-                Gestión de usuarios registrados y auditoría de suscripciones para campañas de boletines/newsletters.
-            </p>
-            <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.05);">
-                <h3 style="margin-top: 0; color: var(--primary); font-family: 'Manrope', sans-serif;">
-                    📧 Usuarios Registrados (<span id="admin-users-count">0</span>)
-                </h3>
-                <div style="overflow-x: auto; margin-top: 15px;">
-                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
-                        <thead>
-                            <tr style="border-bottom: 2px solid var(--primary); color: var(--primary); font-weight: bold;">
-                                <th style="padding: 10px;">Usuario</th>
-                                <th style="padding: 10px;">Correo Electrónico</th>
-                                <th style="padding: 10px;">Iglesias Visitadas</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-users-table-body">
-                            <!-- Inyectado dinámicamente vía JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
         <!-- Buscadores -->
         <section class="controls-section">
             <div class="search-group">
@@ -184,6 +144,56 @@
 
         <!-- Vistas -->
         <section id="list-view" class="view-container active">
+            <!-- Iglesias Pendientes de Visitar (Solo para usuarios autenticados) -->
+            <section id="pending-section" style="display:none; padding: 25px 5%; margin: 20px auto; max-width: 1400px; background: rgba(28, 58, 107, 0.05); border-radius: 12px; border: 1px solid rgba(28, 58, 107, 0.1);">
+                <h2 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:10px; display:flex; align-items:center; gap:10px; font-size: 1.8rem;">
+                    🏰 Tus Iglesias Pendientes de Visitar
+                </h2>
+                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">
+                    Aquí tienes los templos románicos de Cantabria que aún te quedan por explorar en tu cuenta de viajero. ¡Acércate a menos de 100 metros con tu GPS para marcarlos como visitados!
+                </p>
+                <div id="pending-cards-container" class="magical-grid"></div>
+            </section>
+
+            <!-- Panel de Administración (Solo para Administrador) -->
+            <section id="admin-panel-section" style="display:none; padding: 25px 5%; margin: 20px auto; max-width: 1400px; background: rgba(196, 48, 43, 0.05); border-radius: 12px; border: 1px solid rgba(196, 48, 43, 0.15);">
+                <h2 style="font-family:'Noto Serif', serif; color:#c4302b; margin-bottom:10px; display:flex; align-items:center; gap:10px; font-size: 1.8rem;">
+                    ⚙️ Panel de Control de Administración
+                </h2>
+                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">
+                    Gestión de usuarios registrados y auditoría de suscripciones para campañas de boletines/newsletters.
+                </p>
+                <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.05);">
+                    <h3 style="margin-top: 0; color: var(--primary); font-family: 'Manrope', sans-serif;">
+                        📧 Usuarios Registrados (<span id="admin-users-count">0</span>)
+                    </h3>
+                    <div style="overflow-x: auto; margin-top: 15px;">
+                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--primary); color: var(--primary); font-weight: bold;">
+                                    <th style="padding: 10px;">Usuario</th>
+                                    <th style="padding: 10px;">Correo Electrónico</th>
+                                    <th style="padding: 10px;">Iglesias Visitadas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-users-table-body">
+                                <!-- Inyectado dinámicamente vía JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Fotos Pendientes de Aprobación (Solo para Administrador) -->
+                <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.05); margin-top: 25px;">
+                    <h3 style="margin-top: 0; color: var(--primary); font-family: 'Manrope', sans-serif;">
+                        📸 Fotos Pendientes de Aprobación (<span id="admin-photos-count">0</span>)
+                    </h3>
+                    <div id="admin-pending-photos-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 15px;">
+                        <!-- Inyectado dinámicamente vía JS -->
+                    </div>
+                </div>
+            </section>
+
             <!-- Portada / Dashboard (Mapa de Clima de Cantabria) -->
             <section id="community-dashboard" class="dashboard-section" style="margin-bottom: 30px; max-width: 100%;">
                 <div class="dashboard-card weather-card-full" style="width: 100%; background: var(--surface-highest); border-radius: var(--border-radius); box-shadow: var(--shadow); padding: 25px;">

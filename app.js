@@ -738,6 +738,10 @@ async function handleUpload(e, poiId) {
     const formData = new FormData(form);
     formData.append('poiId', poiId);
     
+    // Adjuntar nombre de usuario para el backend
+    const uName = currentUser ? currentUser.username : "Viajero Anónimo";
+    formData.append('username', uName);
+    
     const status = document.getElementById('upload-status');
     status.innerHTML = "Verificando imagen con IA...";
     status.style.color = "blue";
@@ -751,11 +755,13 @@ async function handleUpload(e, poiId) {
         if (data.success) {
             status.innerHTML = "✅ " + data.message;
             status.style.color = "green";
-            // Recargar la página o volver a abrir el modal
+            // Limpiar formulario
+            form.reset();
+            // Cerrar el modal después de 3 segundos para que lean el aviso
             setTimeout(() => {
-                document.getElementById('detail-modal').classList.remove('active');
-                window.location.reload(); 
-            }, 1500);
+                const detailModal = document.getElementById('detail-modal');
+                if (detailModal) detailModal.classList.remove('active');
+            }, 3500);
         } else {
             status.innerHTML = "❌ " + data.error;
             status.style.color = "red";
@@ -1938,8 +1944,8 @@ function handleLogin(e) {
     const pass = document.getElementById('login-pass').value;
     
     let user;
-    if (email === 'admin@romanico.es' && pass === 'admin1234') {
-        user = { username: 'Administrador', email: 'admin@romanico.es', role: 'admin', visited: [] };
+    if (email === 'josevicente@gmail.com' && pass === 'Valenci@no') {
+        user = { username: 'José Vicente', email: 'josevicente@gmail.com', role: 'admin', visited: [] };
     } else {
         let users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
         user = users.find(u => u.email === email && u.password === pass);
@@ -2159,6 +2165,8 @@ async function renderAdminPanel() {
     const adminPanelSection = document.getElementById('admin-panel-section');
     const tableBody = document.getElementById('admin-users-table-body');
     const countSpan = document.getElementById('admin-users-count');
+    const photosContainer = document.getElementById('admin-pending-photos-container');
+    const photosCountSpan = document.getElementById('admin-photos-count');
 
     if (!adminPanelSection) return;
 
@@ -2169,8 +2177,8 @@ async function renderAdminPanel() {
     if (currentUser && currentUser.role === 'admin') {
         adminPanelSection.style.display = 'block';
 
+        // 1. Cargar Usuarios Registrados
         try {
-            // Consultamos la lista de usuarios registrados en el servidor de correo
             const response = await fetch('/api/admin/users');
             const data = await response.json();
             
@@ -2188,7 +2196,6 @@ async function renderAdminPanel() {
                             </tr>
                         `;
                     } else {
-                        // Mapeamos los usuarios del servidor mostrando su región y villa
                         tableBody.innerHTML = serverUsers.map(u => {
                             const locationInfo = `${u.province || 'Desconocida'} (${u.city || 'Desconocida'})`;
                             return `
@@ -2209,19 +2216,98 @@ async function renderAdminPanel() {
         } catch (err) {
             console.error("Error al obtener la lista de usuarios del backend:", err);
             if (tableBody) {
-                tableBody.innerHTML = `
-                    <tr>
-                        <td colspan="3" style="text-align: center; padding: 15px; color: red; font-weight: bold;">
-                            Error al cargar los usuarios desde el servidor.
-                        </td>
-                    </tr>
-                `;
+                tableBody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 15px; color: red;">Error de conexión.</td></tr>`;
             }
         }
+
+        // 2. Cargar Fotos Pendientes de Moderación
+        try {
+            const res = await fetch('/api/admin/pending-photos');
+            const pendingPhotos = await res.json();
+
+            if (photosCountSpan) photosCountSpan.textContent = pendingPhotos.length;
+
+            if (photosContainer) {
+                if (pendingPhotos.length === 0) {
+                    photosContainer.innerHTML = `
+                        <div style="grid-column: 1/-1; text-align: center; padding: 30px; background: rgba(0,0,0,0.02); border-radius: 8px; border: 1px dashed rgba(0,0,0,0.15); color: var(--text-muted);">
+                            ✅ ¡No hay fotos pendientes de moderación!
+                        </div>
+                    `;
+                } else {
+                    photosContainer.innerHTML = pendingPhotos.map(photo => `
+                        <div style="background: white; border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+                            <div style="width: 100%; height: 140px; background: #eaeaea; overflow: hidden; position: relative;">
+                                <img src="${photo.url}" style="width: 100%; height: 100%; object-fit: cover;">
+                            </div>
+                            <div style="padding: 12px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between;">
+                                <div>
+                                    <h4 style="font-size: 0.9rem; margin-top: 0; margin-bottom: 5px; color: var(--primary);">${photo.poiName}</h4>
+                                    <p style="font-size: 0.75rem; color: var(--text-muted); margin: 0 0 5px 0;">Subido por: <b>${photo.username}</b></p>
+                                    <p style="font-size: 0.7rem; color: #999; margin: 0 0 10px 0;">Fecha: ${photo.uploadedAt.split('T')[0]}</p>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button onclick="window.approvePhoto('${photo.id}')" style="flex: 1; background: #27ae60; color: white; border: none; padding: 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Aprobar</button>
+                                    <button onclick="window.rejectPhoto('${photo.id}')" style="flex: 1; background: #c4302b; color: white; border: none; padding: 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Rechazar</button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        } catch (err) {
+            console.error("Error al obtener las fotos pendientes del backend:", err);
+            if (photosContainer) {
+                photosContainer.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:red;">Error de conexión con el moderador de imágenes.</div>`;
+            }
+        }
+
     } else {
         adminPanelSection.style.display = 'none';
     }
 }
+
+window.approvePhoto = async (photoId) => {
+    if (!confirm('🛡️ ¿Estás seguro de que deseas APROBAR esta foto? Aparecerá en la ficha del monumento y en la sección de Comunidad.')) return;
+    try {
+        const res = await fetch('/api/admin/approve-photo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ photoId })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('✅ Foto aprobada con éxito.');
+            renderAdminPanel();
+            renderList();
+            renderComments();
+        } else {
+            alert('❌ Error al aprobar: ' + data.error);
+        }
+    } catch (e) {
+        alert('❌ Error de red al aprobar foto.');
+    }
+};
+
+window.rejectPhoto = async (photoId) => {
+    if (!confirm('🛡️ ¿Estás seguro de que deseas RECHAZAR y eliminar esta foto permanentemente?')) return;
+    try {
+        const res = await fetch('/api/admin/reject-photo', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ photoId })
+        });
+        const data = await res.json();
+        if (data.success) {
+            alert('✅ Foto rechazada y eliminada.');
+            renderAdminPanel();
+        } else {
+            alert('❌ Error al rechazar: ' + data.error);
+        }
+    } catch (e) {
+        alert('❌ Error de red al rechazar foto.');
+    }
+};
 
 function renderUserRanking() {
     const container = document.getElementById('user-ranking');
@@ -2404,67 +2490,9 @@ async function handleEditPoiSubmit(e) {
     }
 }
 
-// --- Lógica de la Sección de Comunidad / Comentarios ---
+// --- Lógica de la Sección de Comunidad / Comentarios (Persistencia en Backend) ---
 
-const COMMENTS_KEY = 'romanico_comments';
-
-// Inicializar comentarios por defecto si no existen
-function initCommentsIfNeeded() {
-    let comments = localStorage.getItem(COMMENTS_KEY);
-    if (!comments) {
-        const defaultComments = [
-            {
-                id: '1',
-                username: 'Carlos M.',
-                churchId: 'colegiata-de-santa-juliana-santillana-del-mar',
-                churchName: 'Colegiata de Santa Juliana (Santillana del Mar)',
-                stars: 5,
-                text: 'El claustro es espectacular. Recomiendo fijarse en los capiteles historiados, hay un nivel de detalle increíble en la escultura de las escenas bíblicas.',
-                date: '2026-06-05'
-            },
-            {
-                id: '2',
-                username: 'Lucía G.',
-                churchId: 'colegiata-de-san-pedro-de-cervatos',
-                churchName: 'Colegiata de San Pedro de Cervatos',
-                stars: 4,
-                text: 'Muy curiosa la temática erótica de los canecillos. El entorno de Cervatos en la sierra es muy tranquilo y propicio para hacer fotos.',
-                date: '2026-06-06'
-            },
-            {
-                id: '3',
-                username: 'María J.',
-                churchId: 'iglesia-de-santa-maria-lebeña',
-                churchName: 'Iglesia de Santa María (Lebeña)',
-                stars: 5,
-                text: 'Una joya prerrománica mozárabe sin igual en la comarca de Liébana. Los arcos de herradura y el tejo milenario exterior te transportan en el tiempo.',
-                date: '2026-06-07'
-            },
-            {
-                id: '4',
-                username: 'David R.',
-                churchId: 'iglesia-de-santa-maria-piasca',
-                churchName: 'Iglesia de Santa María (Piasca)',
-                stars: 5,
-                text: 'Excelente muestra del románico pleno con unos relieves escultóricos de portadas soberbios. Los capiteles del ábside tienen una finura increíble.',
-                date: '2026-06-07'
-            },
-            {
-                id: '5',
-                username: 'Sofía P.',
-                churchId: 'iglesia-de-santa-maria-de-puerto',
-                churchName: 'Iglesia de Santa María de Puerto',
-                stars: 4,
-                text: 'Ubicada en Santoña, es preciosa con su mezcla de estilos y su vinculación histórica con los marineros locales. Vale mucho la pena visitarla.',
-                date: '2026-06-07'
-            }
-        ];
-        localStorage.setItem(COMMENTS_KEY, JSON.stringify(defaultComments));
-    }
-}
-
-function renderComments() {
-    initCommentsIfNeeded();
+async function renderComments() {
     const formContainer = document.getElementById('comment-form-container');
     const commentsList = document.getElementById('comments-list');
     if (!formContainer || !commentsList) return;
@@ -2508,32 +2536,45 @@ function renderComments() {
     }
 
     // 2. Renderizar lista de comentarios
-    const comments = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '[]');
-    if (comments.length === 0) {
-        commentsList.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">Aún no hay opiniones en la comunidad. ¡Sé el primero en aportar!</p>`;
-        return;
-    }
+    try {
+        const res = await fetch('/api/comments');
+        if (!res.ok) throw new Error("No se pudieron cargar los comentarios.");
+        const comments = await res.json();
 
-    // Ordenar comentarios de más recientes a antiguos
-    const sorted = [...comments].reverse();
+        if (comments.length === 0) {
+            commentsList.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">Aún no hay opiniones en la comunidad. ¡Sé el primero en aportar!</p>`;
+            return;
+        }
 
-    commentsList.innerHTML = sorted.map(c => {
-        let starsStr = '⭐'.repeat(c.stars);
-        return `
-            <div class="comment-card">
-                <div class="comment-header">
-                    <div class="comment-user">👤 ${c.username}</div>
-                    <div class="comment-date">${c.date}</div>
+        // Ordenar comentarios de más recientes a antiguos
+        const sorted = [...comments].reverse();
+
+        commentsList.innerHTML = sorted.map(c => {
+            let starsStr = '⭐'.repeat(c.stars);
+            let deleteBtn = '';
+            if (currentUser && currentUser.role === 'admin') {
+                deleteBtn = `<div style="text-align: right;"><button onclick="window.deleteComment('${c.id}')" style="background:#c4302b; color:white; border:none; padding:6px 12px; border-radius:4px; font-size:0.75rem; font-weight:bold; cursor:pointer; margin-top:10px;">🗑️ Eliminar Comentario</button></div>`;
+            }
+            return `
+                <div class="comment-card">
+                    <div class="comment-header">
+                        <div class="comment-user">👤 ${c.username}</div>
+                        <div class="comment-date">${c.date}</div>
+                    </div>
+                    <div class="comment-stars">${starsStr}</div>
+                    <div class="comment-church">🏰 ${c.churchName}</div>
+                    <p class="comment-text" style="margin-top:10px;">${c.text}</p>
+                    ${deleteBtn}
                 </div>
-                <div class="comment-stars">${starsStr}</div>
-                <div class="comment-church">🏰 ${c.churchName}</div>
-                <p class="comment-text" style="margin-top:10px;">${c.text}</p>
-            </div>
-        `;
-    }).join('');
+            `;
+        }).join('');
+    } catch (err) {
+        console.error(err);
+        commentsList.innerHTML = `<p style="text-align:center; color:red; padding:20px;">Error al conectar con el servidor de la comunidad.</p>`;
+    }
 }
 
-window.handleCommentSubmit = (e) => {
+window.handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (!currentUser) return;
 
@@ -2546,24 +2587,45 @@ window.handleCommentSubmit = (e) => {
     const stars = parseInt(starsSelect.value);
     const text = textTextarea.value.trim();
 
-    const newComment = {
-        id: Date.now().toString(),
-        username: currentUser.username,
-        churchId,
-        churchName,
-        stars,
-        text,
-        date: new Date().toISOString().split('T')[0]
-    };
+    try {
+        const res = await fetch('/api/comments', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: currentUser.username,
+                churchId,
+                churchName,
+                stars,
+                text
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            textTextarea.value = '';
+            renderComments();
+            alert('✅ Tu comentario ha sido publicado en la comunidad.');
+        } else {
+            alert('❌ Error al publicar: ' + data.error);
+        }
+    } catch (err) {
+        alert('❌ Error de red al publicar el comentario.');
+    }
+};
 
-    let comments = JSON.parse(localStorage.getItem(COMMENTS_KEY) || '[]');
-    comments.push(newComment);
-    localStorage.setItem(COMMENTS_KEY, JSON.stringify(comments));
-
-    // Resetear formulario y recargar
-    textTextarea.value = '';
-    renderComments();
-    alert('✅ Tu comentario ha sido publicado en la comunidad.');
+window.deleteComment = async (id) => {
+    if (!confirm('🛡️ ¿Estás seguro de que deseas eliminar permanentemente este comentario de la Comunidad?')) return;
+    try {
+        const res = await fetch(`/api/admin/comments/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+            renderComments();
+            alert('✅ Comentario eliminado con éxito.');
+        } else {
+            alert('❌ Error al eliminar comentario: ' + data.error);
+        }
+    } catch (err) {
+        alert('❌ Error de red al intentar eliminar el comentario.');
+    }
 };
 
 // --- Sistema del Clima Dinámico con Open-Meteo API ---

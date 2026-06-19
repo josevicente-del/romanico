@@ -2,20 +2,20 @@
   "name": "Románico en Cantabria",
   "short_name": "Románico",
   "description": "Explora el arte románico en Cantabria: mapas, rutas medievales y patrimonio histórico en una experiencia interactiva.",
-  "start_url": "./index.html",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#121212",
   "icons": [
     {
-      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg/192px-Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg",
+      "src": "./icon-192.png",
       "sizes": "192x192",
-      "type": "image/jpeg"
+      "type": "image/png"
     },
     {
-      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg/512px-Colegiata_de_Santa_Juliana_-_Santillana_del_Mar.jpg",
+      "src": "./icon-512.png",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/png"
     }
   ]
 }

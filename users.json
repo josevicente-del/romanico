@@ -16,5 +16,32 @@
     "province": "Valencia",
     "createdAt": "2026-06-18T19:42:35.328Z",
     "verified": false
+  },
+  {
+    "username": "Test User",
+    "email": "test@example.com",
+    "country": "EspaEspana",
+    "city": "Santander",
+    "province": "Cantabria",
+    "createdAt": "2026-06-19T20:36:36.577Z",
+    "verified": false
+  },
+  {
+    "username": "Playwright Tester",
+    "email": "test_1781901790170@example.com",
+    "country": "Espana",
+    "city": "Santander",
+    "province": "Cantabria",
+    "createdAt": "2026-06-19T20:43:10.359Z",
+    "verified": false
+  },
+  {
+    "username": "Viajero De Prueba",
+    "email": "viajero.prueba2026@ejemplo.co",
+    "country": "Espa",
+    "city": "Santander",
+    "province": "Cantabria",
+    "createdAt": "2026-06-19T20:45:57.384Z",
+    "verified": false
   }
 ]
