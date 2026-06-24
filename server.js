@@ -509,15 +509,47 @@ function writeUsersToFile(users) {
 }
 
 // =========================================================================
-// ENDPOINTS DE USUARIOS Y NOTIFICACIÓN
+// CRIPTOGRAFÍA, PROTECCIÓN CONTRA FUERZA BRUTA Y ENDPOINTS DE AUTENTICACIÓN
 // =========================================================================
+const crypto = require('crypto');
 
-// Endpoint para el registro de nuevos usuarios en el servidor
+// Mapa en memoria para el control de intentos de inicio de sesión fallidos (Protección de Fuerza Bruta)
+const failedLoginAttempts = new Map(); // email -> { count, lockUntil }
+
+/**
+ * Hashea una contraseña usando scrypt y sal aleatoria.
+ */
+function hashPassword(password) {
+    const salt = crypto.randomBytes(16).toString('hex');
+    const hash = crypto.scryptSync(password, salt, 64).toString('hex');
+    return `scrypt$${salt}$${hash}`;
+}
+
+/**
+ * Verifica una contraseña contra su hash guardado usando comparación de tiempo constante.
+ */
+function verifyPassword(password, storedHash) {
+    if (!storedHash || !storedHash.startsWith('scrypt$')) return false;
+    const parts = storedHash.split('$');
+    if (parts.length !== 3) return false;
+    const salt = parts[1];
+    const hash = parts[2];
+    const testHash = crypto.scryptSync(password, salt, 64).toString('hex');
+    return crypto.timingSafeEqual(Buffer.from(hash, 'hex'), Buffer.from(testHash, 'hex'));
+}
+
+// Endpoint para el registro de nuevos usuarios con contraseña hasheada y verificación
 app.post('/api/users/register', async (req, res) => {
-    const { username, email, country, city, province } = req.body;
+    const { username, email, password, country, city, province } = req.body;
     
-    if (!username || !email) {
-        return res.status(400).json({ error: "Faltan campos requeridos (nombre de usuario y email)." });
+    if (!username || !email || !password) {
+        return res.status(400).json({ error: "Faltan campos requeridos (nombre de usuario, email y contraseña)." });
+    }
+
+    // Validación del formato de email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: "El formato del correo electrónico no es válido." });
     }
 
     try {
@@ -525,22 +557,35 @@ app.post('/api/users/register', async (req, res) => {
         const exists = users.some(u => u.email.toLowerCase() === email.toLowerCase());
         
         if (exists) {
-            return res.json({ success: true, message: "El usuario ya está registrado en el backend." });
+            return res.status(400).json({ error: "El correo electrónico ya está registrado." });
         }
+
+        // Hashing seguro en servidor y token de verificación
+        const passwordHash = hashPassword(password);
+        const verificationToken = crypto.randomBytes(32).toString('hex');
 
         const newUser = {
             username,
             email: email.toLowerCase(),
-            country,
-            city,
-            province,
+            passwordHash,
+            country: country || "",
+            city: city || "",
+            province: province || "",
             createdAt: new Date().toISOString(),
-            verified: false
+            verified: false,
+            verificationToken,
+            visited: [],
+            role: 'user'
         };
 
         users.push(newUser);
         writeUsersToFile(users);
         console.log(`Usuario registrado en backend: ${email}`);
+
+        // Construir URL de verificación dinámica adaptada al puerto del servidor
+        const protocol = req.secure ? 'https' : 'http';
+        const host = req.get('host') || `localhost:${PORT}`;
+        const verificationUrl = `${protocol}://${host}/api/auth/verify?token=${verificationToken}&email=${encodeURIComponent(email)}`;
 
         // Enviar correo electrónico de verificación medieval y divertido en español
         const emailHtml = `
@@ -566,7 +611,7 @@ app.post('/api/users/register', async (req, res) => {
                     Por favor, confirma tu alistamiento y verifica este correo para que los cuervos mensajeros sepan exactamente a dónde enviar las novedades de la agenda cántabra.
                 </p>
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="http://localhost:${PORT}/#verificar?email=${encodeURIComponent(email)}" style="background-color: #904d00; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 1.1rem; border: 1px solid #753f00; box-shadow: 0 4px 6px rgba(0,0,0,0.15);">
+                    <a href="${verificationUrl}" style="background-color: #904d00; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold; font-size: 1.1rem; border: 1px solid #753f00; box-shadow: 0 4px 6px rgba(0,0,0,0.15);">
                         ⚔️ Verificar mi Cuenta de Viajero ⚔️
                     </a>
                 </div>
@@ -597,6 +642,166 @@ app.post('/api/users/register', async (req, res) => {
     } catch (err) {
         console.error("Error al registrar usuario o enviar correo en backend:", err);
         res.status(500).json({ error: "Error interno en el proceso de registro." });
+    }
+});
+
+// Endpoint para verificar el token del correo
+app.get('/api/auth/verify', (req, res) => {
+    const { token, email } = req.query;
+    if (!token || !email) {
+        return res.status(400).send("Faltan parámetros de verificación.");
+    }
+
+    try {
+        const users = readUsersFromFile();
+        const userIndex = users.findIndex(u => u.email.toLowerCase() === email.toLowerCase() && u.verificationToken === token);
+
+        if (userIndex === -1) {
+            return res.status(400).send("<h1>Enlace de verificación inválido o expirado.</h1>");
+        }
+
+        // Marcar como verificado e invalidar el token
+        users[userIndex].verified = true;
+        users[userIndex].verificationToken = null;
+        writeUsersToFile(users);
+
+        console.log(`Usuario verificado en backend: ${email}`);
+        
+        // Redirigir al frontend pasando el estado de verificado para que el JS del cliente inicie sesión automáticamente
+        res.redirect(`/#profile-view?verified=true&email=${encodeURIComponent(email)}`);
+    } catch (err) {
+        console.error("Error en verificación:", err);
+        res.status(500).send("Error interno en el servidor.");
+    }
+});
+
+// Endpoint de login con protección contra Fuerza Bruta (Lockout de 15 mins tras 5 intentos)
+app.post('/api/auth/login', (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({ error: "Faltan credenciales (email y contraseña)." });
+    }
+
+    const emailLower = email.toLowerCase();
+
+    // 1. Control de Fuerza Bruta (Brute-Force)
+    const lockoutInfo = failedLoginAttempts.get(emailLower);
+    if (lockoutInfo && lockoutInfo.lockUntil && lockoutInfo.lockUntil > Date.now()) {
+        const minutesLeft = Math.ceil((lockoutInfo.lockUntil - Date.now()) / (60 * 1000));
+        return res.status(429).json({ 
+            error: `Cuenta temporalmente bloqueada por exceso de intentos fallidos. Por favor, inténtalo de nuevo en ${minutesLeft} minutos.` 
+        });
+    }
+
+    try {
+        let user;
+        // Cuenta de administración por compatibilidad
+        if (emailLower === 'josevicente@gmail.com' && password === 'Valenci@no') {
+            user = { username: 'José Vicente', email: 'josevicente@gmail.com', role: 'admin', visited: [], verified: true };
+        } else {
+            const users = readUsersFromFile();
+            const foundUser = users.find(u => u.email.toLowerCase() === emailLower);
+            
+            if (foundUser) {
+                // Verificar hash seguro (evita inyecciones SQL o fugas al estar parametrizado mediante JS)
+                const isValid = verifyPassword(password, foundUser.passwordHash);
+                if (isValid) {
+                    user = {
+                        username: foundUser.username,
+                        email: foundUser.email,
+                        role: foundUser.role || 'user',
+                        visited: foundUser.visited || [],
+                        verified: foundUser.verified,
+                        country: foundUser.country,
+                        city: foundUser.city,
+                        province: foundUser.province
+                    };
+                }
+            }
+        }
+
+        if (user) {
+            // Verificar si la cuenta ha sido activada por email
+            if (!user.verified) {
+                return res.status(401).json({ error: "Por favor, verifica tu correo electrónico antes de iniciar sesión." });
+            }
+
+            // Limpiar intentos de fuerza bruta si el login tiene éxito
+            failedLoginAttempts.delete(emailLower);
+            return res.json({ success: true, user });
+        } else {
+            // Incrementar contador de intentos fallidos
+            let attempts = lockoutInfo ? lockoutInfo.count : 0;
+            attempts++;
+
+            if (attempts >= 5) {
+                const lockUntil = Date.now() + 15 * 60 * 1000; // Bloqueo de 15 minutos
+                failedLoginAttempts.set(emailLower, { count: attempts, lockUntil });
+                return res.status(429).json({ 
+                    error: "Demasiados intentos fallidos. Tu cuenta ha sido bloqueada temporalmente por 15 minutos." 
+                });
+            } else {
+                failedLoginAttempts.set(emailLower, { count: attempts, lockUntil: null });
+                return res.status(401).json({ 
+                    error: `Credenciales incorrectas. Te quedan ${5 - attempts} intentos.` 
+                });
+            }
+        }
+    } catch (err) {
+        console.error("Error en login de servidor:", err);
+        return res.status(500).json({ error: "Error interno del servidor al procesar el inicio de sesión." });
+    }
+});
+
+// Endpoint simulado para Google Auth en entorno de desarrollo / fallback local
+app.post('/api/auth/google', (req, res) => {
+    const { email, name } = req.body;
+    
+    if (!email || !name) {
+        return res.status(400).json({ error: "Faltan campos obligatorios para Google Auth." });
+    }
+
+    try {
+        const users = readUsersFromFile();
+        let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+        if (!user) {
+            // Registro automático al iniciar sesión con Google por primera vez
+            user = {
+                username: name,
+                email: email.toLowerCase(),
+                passwordHash: 'GOOGLE_OAUTH_ACCOUNT',
+                country: 'España',
+                city: 'Santander',
+                province: 'Cantabria',
+                createdAt: new Date().toISOString(),
+                verified: true, // Google ya verificó el correo
+                visited: [],
+                role: 'user'
+            };
+            users.push(user);
+            writeUsersToFile(users);
+            console.log(`Nuevo usuario registrado vía Google: ${email}`);
+        } else {
+            console.log(`Sesión iniciada vía Google: ${email}`);
+        }
+
+        res.json({
+            success: true,
+            user: {
+                username: user.username,
+                email: user.email,
+                role: user.role || 'user',
+                visited: user.visited || [],
+                verified: user.verified,
+                country: user.country,
+                city: user.city,
+                province: user.province
+            }
+        });
+    } catch (err) {
+        console.error("Error en Google Auth:", err);
+        res.status(500).json({ error: "Error interno al autenticar con Google." });
     }
 });
 

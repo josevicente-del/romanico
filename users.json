@@ -43,5 +43,18 @@
     "province": "Cantabria",
     "createdAt": "2026-06-19T20:45:57.384Z",
     "verified": false
+  },
+  {
+    "username": "Noble Viajero",
+    "email": "viajero@test.com",
+    "passwordHash": "scrypt$5a231e7eed1dd6377c7cab3984960e14$a32262bc2600d98b09dd6a4e46bfff29ca63b88212e44d33c857cf6c72ceb48d3ac9a12f033d40ecebb4c4a8a4a6347e6a92c22fc5935a4aa3ad09f255ab04e4",
+    "country": "Espana",
+    "city": "Santander",
+    "province": "Cantabria",
+    "createdAt": "2026-06-24T21:06:34.479Z",
+    "verified": false,
+    "verificationToken": "9574d90328e46735465156945cf8b2cf435a31c269ce5b52db951824135905a9",
+    "visited": [],
+    "role": "user"
   }
 ]

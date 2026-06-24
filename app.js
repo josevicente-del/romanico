@@ -24,6 +24,16 @@ const CHURCH_VISITS_KEY = 'romanico_church_visits'; // Para el ranking de iglesi
 
 let currentUser = JSON.parse(localStorage.getItem(CURRENT_USER_KEY) || 'null');
 
+// --- Inicialización de Supabase ---
+let supabase = null;
+if (window.checkSupabaseConfig && window.checkSupabaseConfig()) {
+    // Si la configuración es correcta, creamos el cliente de Supabase
+    supabase = window.supabase.createClient(window.supabaseUrl, window.supabaseAnonKey);
+    console.log("Supabase inicializado correctamente para autenticación.");
+} else {
+    console.log("Supabase no configurado. Utilizando fallback a servidor local (Express).");
+}
+
 let map;
 let markers = [];
 
@@ -36,6 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDashboard();
     handleHashRouting();
     window.addEventListener('hashchange', handleHashRouting);
+    // Inicializar menú móvil y overlays táctiles
+    initMobileMenu();
+    initMapMobileScrollOverlays();
 });
 
 async function initApp() {
@@ -61,6 +74,7 @@ async function initApp() {
     renderLearnSection();
     initCommentsIfNeeded();
     renderComments();
+    checkEmailVerificationParams();
 
     // Registrar Service Worker para PWA
     if ('serviceWorker' in navigator) {
@@ -355,7 +369,7 @@ function renderList() {
         card.className = `card ${isVisited ? 'visited' : ''}`;
         // Mostrar distancia si existe (búsqueda por localidad)
         const distHTML = poi.distancia !== undefined
-            ? `<span class="tag" style="background:#27ae60;color:white;">📍 ${poi.distancia.toFixed(1)} km</span>`
+            ? `<span class="tag tag-distance">📍 ${poi.distancia.toFixed(1)} km</span>`
             : '';
         
         const hasRealImages = poi.images && poi.images.length > 0;
@@ -369,10 +383,10 @@ function renderList() {
             </div>
             <div class="card-content">
                 <h3 class="card-title">${poi.name}</h3>
-                <p style="font-size:0.8rem; color:var(--text-muted);">📍 ${poi.location}</p>
-                <div class="tags" style="margin-top:10px;">
+                <p class="card-location">📍 ${poi.location}</p>
+                <div class="tags">
                     <span class="tag">${poi.zone}</span>
-                    <span class="tag" style="background:var(--accent); color:white;">${poi.order}</span>
+                    <span class="tag tag-order">${poi.order}</span>
                     ${distHTML}
                 </div>
             </div>
@@ -601,85 +615,85 @@ function openDetail(poi) {
 
     body.innerHTML = `
         ${galleryHTML}
-        <h2 style="font-family:'Playfair Display'; color:var(--primary)">${poi.name}</h2>
-        <p>📍 ${poi.location}</p>
+        <h2 class="modal-detail-title">${poi.name}</h2>
+        <p class="modal-detail-location">📍 ${poi.location}</p>
         
         <!-- Botones Sociales -->
-        <div style="margin-bottom: 20px; display: flex; gap: 10px;">
-            <button onclick="shareContent('whatsapp', '${poi.name}', 'Descubre esta joya del románico en Cantabria.', window.location.href)" style="background: #25D366; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px;">💬 WhatsApp</button>
-            <button onclick="shareContent('telegram', '${poi.name}', 'Descubre esta joya del románico en Cantabria.', window.location.href)" style="background: #0088cc; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 5px;">✈️ Telegram</button>
+        <div class="modal-social-buttons">
+            <button onclick="shareContent('whatsapp', '${poi.name}', 'Descubre esta joya del románico en Cantabria.', window.location.href)" class="btn-social-wa">💬 WhatsApp</button>
+            <button onclick="shareContent('telegram', '${poi.name}', 'Descubre esta joya del románico en Cantabria.', window.location.href)" class="btn-social-tg">✈️ Telegram</button>
         </div>
         
-        <div class="mini-map-container" id="mini-map-${poi.id}" style="height:200px; width:100%; border-radius:8px; margin:15px 0;"></div>
+        <div class="mini-map-container" id="mini-map-${poi.id}"></div>
         
-        <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
-            <button onclick="checkLocationAndVisit('${poi.id}', ${poi.lat}, ${poi.lon})" class="btn-primary" style="flex:1; min-width:150px; background:${isVisited ? '#7f8c8d' : 'var(--primary)'}">
+        <div class="modal-action-buttons">
+            <button id="btn-visit-${poi.id}" onclick="checkLocationAndVisit('${poi.id}', ${poi.lat}, ${poi.lon})" class="btn-primary" style="background:${isVisited ? '#7f8c8d' : 'var(--primary)'}">
                 ${isVisited ? '✓ Ya visitado' : 'Marcar como Visitado (<100m)'}
             </button>
-            <a href="https://www.google.com/maps/dir/?api=1&destination=${poi.lat},${poi.lon}" target="_blank" class="btn-auth" style="flex:1; min-width:120px; text-align:center; text-decoration:none; display:flex; align-items:center; justify-content:center;">🗺️ Cómo llegar</a>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=${poi.lat},${poi.lon}" target="_blank" class="btn-auth">🗺️ Cómo llegar</a>
             ${currentUser && currentUser.role === 'admin' ? `
-            <button onclick="openEditPoiById('${poi.id}')" class="btn-primary" style="flex:1; min-width:120px; background:var(--accent); color:white;">⚙️ Editar Datos</button>
+            <button onclick="openEditPoiById('${poi.id}')" class="btn-primary" style="background:var(--accent); color:white;">⚙️ Editar Datos</button>
             ` : ''}
         </div>
 
-        <div class="detail-description" style="margin-bottom:20px; font-size:0.95rem;">
+        <div class="detail-description">
             ${poi.description}
         </div>
 
         ${poi.bestiary ? `
-        <div class="bestiary-section" style="margin-top:20px; margin-bottom:25px; padding:20px; background:linear-gradient(135deg, rgba(28,58,107,0.05) 0%, rgba(144,77,0,0.04) 100%); border-radius:10px; border: 1px solid rgba(28, 58, 107, 0.15);">
-            <h3 style="font-family:'Noto Serif', serif; color:var(--primary); font-size:1.15rem; margin-top:0; margin-bottom:12px; display:flex; align-items:center; gap:8px; border-bottom:2px solid rgba(144,77,0,0.2); padding-bottom:10px;">
+        <div class="bestiary-section">
+            <h3 class="bestiary-title">
                 🦁 Bestiario Románico: Capiteles y Simbolismo
             </h3>
-            <p style="font-size:0.88rem; line-height:1.6; margin-bottom:16px; color:var(--text-main); text-align:justify;">${poi.bestiary.description}</p>
-            <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:12px;">
+            <p class="bestiary-desc">${poi.bestiary.description}</p>
+            <div class="bestiary-grid">
                 ${poi.bestiary.images.map(img => `
-                    <div style="background:white; border-radius:8px; overflow:hidden; border:1px solid rgba(0,0,0,0.08); text-align:center; box-shadow:0 3px 8px rgba(0,0,0,0.06); transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">
-                        <div style="width:100%; height:110px; background:#f0f0f0; overflow:hidden; position:relative;">
-                            <img src="${img.url}" alt="${img.caption}" loading="lazy" style="width:100%; height:100%; object-fit:cover; position:absolute; top:0; left:0;"
-                                onerror="this.parentElement.innerHTML='<div style=\\"display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:2rem;\\">🏛️</div>'">
+                    <div class="bestiary-item">
+                        <div class="bestiary-img-container">
+                            <img src="${img.url}" alt="${img.caption}" loading="lazy"
+                                onerror="this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:2rem;\\'>🏛️</div>'">
                         </div>
-                        <p style="font-size:0.72rem; padding:7px 5px; font-weight:700; color:var(--text-muted); margin:0; line-height:1.3;">${img.caption}</p>
+                        <p class="bestiary-caption">${img.caption}</p>
                     </div>
                 `).join('')}
             </div>
-            <p style="font-size:0.72rem; color:var(--text-muted); margin-top:12px; margin-bottom:0;">📷 Fuente: Wikimedia Commons (CC BY-SA)</p>
+            <p class="bestiary-source">📷 Fuente: Wikimedia Commons (CC BY-SA)</p>
         </div>
         ` : ''}
 
-        <h3 style="font-size:1rem; border-bottom:1px solid #eee; padding-bottom:5px;">🍽️ Dónde comer cerca</h3>
-        <div class="restaurants-list" style="margin-top:10px;">
+        <h3 class="restaurants-list-title">🍽️ Dónde comer cerca</h3>
+        <div class="restaurants-list">
             ${poi.restaurants && poi.restaurants.length > 0 ? poi.restaurants.map(r => `
-                <div style="margin-bottom:10px; padding:10px; background:#f4f7f6; border-radius:8px;">
-                    <div style="display:flex; justify-content:space-between; font-weight:600;">
+                <div class="restaurant-item">
+                    <div class="restaurant-header">
                         <span>${r.name}</span>
                         <span style="color:var(--accent)">${r.avgPrice}</span>
                     </div>
-                    <div style="font-size:0.8rem; color:var(--text-muted)">${r.foodType} • 📞 ${r.contact}</div>
-                    <div style="display:flex; gap:10px; margin-top:5px; align-items:center;">
-                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.name || 'Restaurante') + ' ' + poi.location)}" target="_blank" style="color: var(--primary); font-size: 0.8rem; text-decoration: none; font-weight:bold;">📍 Ver en Mapa</a>
-                        ${r.tripadvisor ? `<a href="${r.tripadvisor}" target="_blank" style="color:#00aa6c; font-size:0.8rem; text-decoration:none; font-weight:bold;">🟢 TripAdvisor</a>` : ''}
-                        <button onclick="shareContent('whatsapp', 'Cómo llegar a ${r.name || 'Restaurante'}', 'Ubicado cerca de ${poi.name}. Aquí tienes la ruta para llegar:', 'https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(r.name + ' ' + poi.location)}')" style="background: none; border: none; color: #25D366; cursor: pointer; padding: 0; font-size: 0.8rem; font-weight:bold;">💬 Enviar Ruta WhatsApp</button>
+                    <div class="restaurant-meta">${r.foodType} • 📞 ${r.contact}</div>
+                    <div class="restaurant-actions">
+                        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.name || 'Restaurante') + ' ' + poi.location)}" target="_blank">📍 Ver en Mapa</a>
+                        ${r.tripadvisor ? `<a href="${r.tripadvisor}" target="_blank" style="color:#00aa6c;">🟢 TripAdvisor</a>` : ''}
+                        <button onclick="shareContent('whatsapp', 'Cómo llegar a ${r.name || 'Restaurante'}', 'Ubicado cerca de ${poi.name}. Aquí tienes la ruta para llegar:', 'https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(r.name + ' ' + poi.location)}')" style="color: #25D366;">💬 Enviar Ruta WhatsApp</button>
                     </div>
                 </div>
             `).join('') : '<p>No hay datos de restaurantes cercanos.</p>'}
         </div>
         
         ${poi.userGallery && poi.userGallery.length > 0 ? `
-        <div style="margin-top:20px;">
+        <div class="user-gallery-section">
             <h3>📸 Galería de Usuarios</h3>
-            <div style="display:flex; gap:10px; overflow-x:auto;">
-                ${poi.userGallery.map(img => `<img src="${img}" style="width:150px; height:100px; object-fit:cover; border-radius:4px;">`).join('')}
+            <div class="user-gallery-container">
+                ${poi.userGallery.map(img => `<img src="${img}" class="user-gallery-img">`).join('')}
             </div>
         </div>` : ''}
 
-        <div style="margin-top:20px; background:#f9f9f9; padding:15px; border-radius:8px;">
-            <h4 style="margin-bottom:10px;">¿Tienes una foto? Añádela a la galería</h4>
+        <div class="upload-form-container">
+            <h4>¿Tienes una foto? Añádela a la galería</h4>
             <form id="upload-form" onsubmit="handleUpload(event, '${poi.id}')" enctype="multipart/form-data">
-                <input type="file" name="photo" accept="image/*" required style="margin-bottom:10px;"><br>
-                <button type="submit" style="background:var(--primary); color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer;">Subir Foto (Verificación Automática)</button>
+                <input type="file" name="photo" accept="image/*" required><br>
+                <button type="submit" class="btn-primary">Subir Foto (Verificación Automática)</button>
             </form>
-            <div id="upload-status" style="margin-top:10px; font-size:0.9rem;"></div>
+            <div id="upload-status" class="upload-form-status"></div>
         </div>
 
         <!-- Sección de Templos Relacionados en el Modal -->
@@ -713,7 +727,7 @@ function openDetail(poi) {
             </div>
         </div>
 
-        <div class="modal-buttons" style="margin-top: 25px; border-top: 1px solid #eee; padding-top: 15px;">
+        <div class="modal-footer">
             <button onclick="closeDetail()">Cerrar</button>
         </div>
     `;
@@ -1135,11 +1149,34 @@ function renderSketchfab() {
 
 // Función global para inyectar dinámicamente el iframe cuando el usuario lo solicite
 window.load3DModel = function(index, uid, name) {
-    const viewport = document.getElementById(`sketchfab-viewport-${index}`);
-    if (viewport) {
-        viewport.innerHTML = `
-            <iframe title="${name}" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/${uid}/embed" style="width:100%; height:100%; border:none;"></iframe>
-        `;
+    const isMobile = window.innerWidth <= 768;
+    const iframeHtml = `
+        <iframe title="${name}" frameborder="0" allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share src="https://sketchfab.com/models/${uid}/embed" style="width:100%; height:100%; border:none;"></iframe>
+    `;
+
+    if (isMobile) {
+        // En móviles, abrir el modelo 3D en el detail-modal a pantalla completa para una mejor experiencia táctil y evitar atascos de scroll
+        const detailModal = document.getElementById('detail-modal');
+        const modalBody = document.getElementById('modal-body');
+        if (detailModal && modalBody) {
+            modalBody.innerHTML = `
+                <h2 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:15px; text-align:center;">🏛️ Visita 3D: ${name}</h2>
+                <div style="width: 100%; height: 60vh; border-radius: 8px; overflow: hidden; box-shadow: var(--shadow); border: 1px solid rgba(28, 58, 107, 0.1);">
+                    ${iframeHtml}
+                </div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); text-align: center; margin-top: 15px; font-style: italic;">
+                    Usa un dedo para rotar el modelo en 3D y dos dedos para hacer zoom y desplazarte.
+                </p>
+            `;
+            detailModal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Bloquear scroll de la página de fondo
+        }
+    } else {
+        // En escritorio, inyectar en la tarjeta directamente
+        const viewport = document.getElementById(`sketchfab-viewport-${index}`);
+        if (viewport) {
+            viewport.innerHTML = iframeHtml;
+        }
     }
 }
 
@@ -1689,6 +1726,17 @@ function setupEventListeners() {
             document.querySelectorAll('.view-container').forEach(v => v.classList.remove('active'));
             const viewEl = document.getElementById(`${view}-view`);
             if(viewEl) viewEl.classList.add('active');
+
+            // Cerrar menú móvil y overlay de forma fluida si está abierto
+            const hamburgerBtn = document.getElementById('hamburger-btn');
+            const magicalNav = document.querySelector('.magical-nav');
+            const menuOverlay = document.getElementById('menu-overlay');
+            if (hamburgerBtn && hamburgerBtn.classList.contains('open')) {
+                hamburgerBtn.classList.remove('open');
+                if (magicalNav) magicalNav.classList.remove('open');
+                if (menuOverlay) menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
             if(view === 'map') setTimeout(() => map.invalidateSize(), 100);
             if(view === 'itinerary' && itineraryMap) setTimeout(() => itineraryMap.invalidateSize(), 100);
             if(view === 'weather') {
@@ -1755,6 +1803,13 @@ function setupEventListeners() {
 
     const loginForm = document.getElementById('login-form');
     if (loginForm) loginForm.addEventListener('submit', handleLogin);
+
+    // Botones de Google Auth
+    const btnGoogleRegister = document.getElementById('btn-google-register');
+    if (btnGoogleRegister) btnGoogleRegister.addEventListener('click', handleGoogleLogin);
+
+    const btnGoogleLogin = document.getElementById('btn-google-login');
+    if (btnGoogleLogin) btnGoogleLogin.addEventListener('click', handleGoogleLogin);
 
     // Toggle de pestañas en modal Auth
     document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -1861,107 +1916,255 @@ function handleRegister(e) {
     const user = document.getElementById('reg-fullname').value.trim();
     const email = document.getElementById('reg-email').value.trim().toLowerCase();
     const pass = document.getElementById('reg-pass').value;
+    const passConfirm = document.getElementById('reg-pass-confirm').value;
     const country = document.getElementById('reg-country').value.trim();
     const city = document.getElementById('reg-city').value.trim();
     const province = document.getElementById('reg-province').value.trim();
     const statusMsg = document.getElementById('reg-status');
 
-    if (!user || !email || !pass || !country || !city || !province) {
+    if (!user || !email || !pass || !passConfirm || !country || !city || !province) {
         statusMsg.textContent = "Por favor, completa todos los campos.";
         statusMsg.style.color = "red";
         return;
     }
 
-    let users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
-    if (users.some(u => u.email === email)) {
-        statusMsg.textContent = "Este correo ya está registrado.";
+    // Validación del formato de email con expresión regular estándar
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        statusMsg.textContent = "Por favor, introduce un correo electrónico válido.";
         statusMsg.style.color = "red";
         return;
     }
 
-    // Registrar nuevo usuario
-    const newUser = {
-        username: user,
-        email: email,
-        password: pass,
-        country: country,
-        city: city,
-        province: province,
-        visited: [],
-        role: 'user'
-    };
-    users.push(newUser);
-    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    // Validación de coincidencia de contraseñas
+    if (pass !== passConfirm) {
+        statusMsg.textContent = "Las contraseñas no coinciden.";
+        statusMsg.style.color = "red";
+        return;
+    }
 
-    // =========================================================================
-    // COMUNICACIÓN CON EL BACKEND (SISTEMA DE CORREO Y BOLETÍN QUINCENAL)
-    // =========================================================================
-    // Enviamos una petición POST al servidor local para almacenar los datos del
-    // usuario y disparar el envío del correo electrónico de verificación.
-    // Se implementa con captura de errores para no bloquear el flujo del usuario
-    // si el servidor se encuentra offline temporalmente.
-    fetch('/api/users/register', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newUser)
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error(`Error del servidor: ${response.statusText}`);
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log("Sincronización del usuario con el servidor SMTP completada con éxito:", data);
-    })
-    .catch(error => {
-        // Log de depuración no invasivo para tolerar fallos
-        console.error("No se pudo enviar el correo de verificación (servidor offline):", error);
-    });
-    // =========================================================================
+    if (pass.length < 6) {
+        statusMsg.textContent = "La contraseña debe tener al menos 6 caracteres.";
+        statusMsg.style.color = "red";
+        return;
+    }
 
-    statusMsg.textContent = "✅ ¡Registro completado con éxito! Iniciando sesión...";
-    statusMsg.style.color = "green";
+    statusMsg.textContent = "Registrando noble viajero, por favor espera...";
+    statusMsg.style.color = "blue";
 
-    setTimeout(() => {
-        setCurrentUser(newUser);
-        document.getElementById('auth-modal').classList.remove('active');
-        e.target.reset();
-        statusMsg.textContent = "";
-        
-        // Redirigir al inicio y mostrar sección de pendientes
-        document.querySelector('[data-view="list"]').click();
-        const pendingSec = document.getElementById('pending-section');
-        if (pendingSec) pendingSec.scrollIntoView({ behavior: 'smooth' });
-    }, 1500);
+    if (supabase) {
+        // Registro de usuario en Supabase (servidor realiza el hashing y validación)
+        supabase.auth.signUp({
+            email: email,
+            password: pass,
+            options: {
+                data: {
+                    username: user,
+                    country: country,
+                    city: city,
+                    province: province
+                }
+            }
+        })
+        .then(({ data, error }) => {
+            if (error) throw error;
+            statusMsg.textContent = "✅ ¡Registro enviado! Revisa tu correo electrónico para confirmar tu cuenta y acceder.";
+            statusMsg.style.color = "green";
+            e.target.reset();
+        })
+        .catch(err => {
+            console.error("Error en registro de Supabase:", err);
+            statusMsg.textContent = "❌ Error: " + err.message;
+            statusMsg.style.color = "red";
+        });
+    } else {
+        // Registro de usuario en el Servidor Local Fallback (Express + JSON)
+        const newUser = {
+            username: user,
+            email: email,
+            password: pass,
+            country: country,
+            city: city,
+            province: province,
+            visited: [],
+            role: 'user'
+        };
+
+        fetch('/api/users/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newUser)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => { throw new Error(errData.error || response.statusText); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log("Registro en backend local completado:", data);
+            statusMsg.textContent = "✅ ¡Registro recibido! Se ha enviado un pergamino de verificación a tu correo. Revisa la consola del servidor para el enlace.";
+            statusMsg.style.color = "green";
+            e.target.reset();
+            
+            // Si el servidor está usando Ethereal en desarrollo, mostramos el enlace de previsualización
+            if (data.previewUrl) {
+                console.log(`🔗 [DESARROLLO] Previsualización del correo de confirmación: ${data.previewUrl}`);
+            }
+        })
+        .catch(error => {
+            console.error("Error al sincronizar registro con servidor local:", error);
+            statusMsg.textContent = "❌ Error: " + error.message;
+            statusMsg.style.color = "red";
+        });
+    }
 }
 
 function handleLogin(e) {
     e.preventDefault();
     const email = document.getElementById('login-email').value.trim().toLowerCase();
     const pass = document.getElementById('login-pass').value;
-    
-    let user;
-    if (email === 'josevicente@gmail.com' && pass === 'Valenci@no') {
-        user = { username: 'José Vicente', email: 'josevicente@gmail.com', role: 'admin', visited: [] };
-    } else {
-        let users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
-        user = users.find(u => u.email === email && u.password === pass);
+
+    if (!email || !pass) {
+        alert("Por favor, introduce tu correo y contraseña.");
+        return;
     }
 
-    if (user) {
-        setCurrentUser(user);
-        document.getElementById('auth-modal').classList.remove('active');
-        e.target.reset();
-        
-        // Redirigir y hacer foco en pendientes
-        document.querySelector('[data-view="list"]').click();
-        const pendingSec = document.getElementById('pending-section');
-        if (pendingSec) pendingSec.scrollIntoView({ behavior: 'smooth' });
+    if (supabase) {
+        // Inicio de sesión en Supabase (el estado se propaga a través de onAuthStateChange)
+        supabase.auth.signInWithPassword({
+            email: email,
+            password: pass
+        })
+        .then(({ data, error }) => {
+            if (error) throw error;
+            document.getElementById('auth-modal').classList.remove('active');
+            e.target.reset();
+        })
+        .catch(err => {
+            console.error("Error en login Supabase:", err);
+            alert("❌ " + err.message);
+        });
     } else {
-        alert("❌ Correo o contraseña incorrectos.");
+        // Inicio de sesión en el Servidor Local Fallback
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ email, password: pass })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => { throw new Error(errData.error || "Error de inicio de sesión."); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                setCurrentUser(data.user);
+                document.getElementById('auth-modal').classList.remove('active');
+                e.target.reset();
+                
+                // Redirigir y hacer foco en pendientes
+                document.querySelector('[data-view="list"]').click();
+                const pendingSec = document.getElementById('pending-section');
+                if (pendingSec) pendingSec.scrollIntoView({ behavior: 'smooth' });
+            }
+        })
+        .catch(error => {
+            console.error("Error al autenticar en servidor local:", error);
+            alert("❌ " + error.message);
+        });
+    }
+}
+
+function handleGoogleLogin() {
+    if (supabase) {
+        // Autenticación con Google usando Supabase OAuth
+        supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin
+            }
+        })
+        .catch(err => {
+            console.error("Error en Google Auth Supabase:", err);
+            alert("❌ Error en Google Login: " + err.message);
+        });
+    } else {
+        // Autenticación con Google en Servidor Local Fallback (Simulada para desarrollo local)
+        const name = prompt("Google Auth (Simulado) - Introduce tu nombre completo:", "Viajero de Google");
+        if (!name) return;
+        const email = prompt("Google Auth (Simulado) - Introduce tu correo de Google:", "google-traveller@gmail.com");
+        if (!email) return;
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("El correo de Google introducido no es válido.");
+            return;
+        }
+
+        fetch('/api/auth/google', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, email })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errData => { throw new Error(errData.error || "Error de autenticación."); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                setCurrentUser(data.user);
+                document.getElementById('auth-modal').classList.remove('active');
+                alert("✅ Sesión iniciada correctamente con Google (Simulado).");
+                
+                // Redirigir al inicio
+                document.querySelector('[data-view="list"]').click();
+            }
+        })
+        .catch(error => {
+            console.error("Error al autenticar con Google local:", error);
+            alert("❌ Error: " + error.message);
+        });
+    }
+}
+
+function checkEmailVerificationParams() {
+    // Si venimos de la redirección del enlace de verificación del servidor local: e.g. /#profile-view?verified=true&email=...
+    const hash = window.location.hash;
+    if (hash.includes('verified=true')) {
+        // Extraer los parámetros de la URL del hash
+        const parts = hash.split('?');
+        if (parts.length > 1) {
+            const params = new URLSearchParams(parts[1]);
+            const email = params.get('email');
+            if (email) {
+                // Mostrar alerta premium
+                alert(`🎉 ¡Excelente, noble viajero! Tu correo electrónico (${email}) ha sido verificado con éxito. Ya puedes iniciar sesión en tu cuenta.`);
+                
+                // Abrir el modal de login automáticamente
+                setTimeout(() => {
+                    const authModal = document.getElementById('auth-modal');
+                    if (authModal) {
+                        authModal.classList.add('active');
+                        // Seleccionar la pestaña de login
+                        const loginBtn = document.querySelector('.tab-btn[data-tab="login"]');
+                        if (loginBtn) loginBtn.click();
+                    }
+                }, 500);
+                
+                // Limpiar el hash de verificación de forma limpia
+                history.replaceState(null, document.title, window.location.pathname + window.location.search);
+            }
+        }
     }
 }
 
@@ -3059,3 +3262,147 @@ function closeDetail() {
 // Exponer funciones globalmente
 window.closeDetail = closeDetail;
 window.handleHashRouting = handleHashRouting;
+
+/* =========================================================================
+   FUNCIONES DE COMPORTAMIENTO PARA MENÚ RESPONSIVE Y FLUIDEZ EN MÓVIL
+   ========================================================================= */
+
+// Gestión dinámica de los elementos del menú según la resolución de pantalla
+function handleResponsiveMenuLayout() {
+    const userStats = document.querySelector('.header-top .user-stats') || document.querySelector('.magical-nav .user-stats');
+    const headerTop = document.querySelector('.header-top');
+    const magicalNav = document.querySelector('.magical-nav');
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+        // En móviles, movemos la sección de estadísticas de usuario al final del menú de navegación vertical
+        if (userStats && magicalNav && userStats.parentNode !== magicalNav) {
+            magicalNav.appendChild(userStats);
+        }
+    } else {
+        // En escritorio, devolvemos las estadísticas de usuario a la cabecera antes del botón de hamburguesa
+        if (userStats && headerTop && userStats.parentNode !== headerTop) {
+            if (hamburgerBtn) {
+                headerTop.insertBefore(userStats, hamburgerBtn);
+            } else {
+                headerTop.appendChild(userStats);
+            }
+        }
+    }
+}
+
+// Inicialización y registro de eventos del Menú de Hamburguesa para móviles
+function initMobileMenu() {
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const magicalNav = document.querySelector('.magical-nav');
+    const menuOverlay = document.getElementById('menu-overlay');
+
+    if (hamburgerBtn && magicalNav && menuOverlay) {
+        const toggleMenu = () => {
+            const isOpen = hamburgerBtn.classList.contains('open');
+            if (isOpen) {
+                hamburgerBtn.classList.remove('open');
+                magicalNav.classList.remove('open');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            } else {
+                hamburgerBtn.classList.add('open');
+                magicalNav.classList.add('open');
+                menuOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Bloquear scroll de la página
+            }
+        };
+
+        // Evento de clic en el botón de hamburguesa
+        hamburgerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleMenu();
+        });
+
+        // Evento de clic en el overlay exterior para cerrar el menú
+        menuOverlay.addEventListener('click', () => {
+            if (hamburgerBtn.classList.contains('open')) {
+                toggleMenu();
+            }
+        });
+    }
+
+    // Gestionar distribución responsive del layout al iniciar y al redimensionar
+    handleResponsiveMenuLayout();
+    window.addEventListener('resize', handleResponsiveMenuLayout);
+}
+
+// Envoltura programática de mapas incrustados para activar el overlay de scroll en smartphones
+function setupMapMobileScrollOverlay(mapId, labelText = "mapa") {
+    const mapEl = document.getElementById(mapId);
+    if (!mapEl) return;
+
+    // Solo aplicar en dispositivos móviles / táctiles (ancho <= 768px)
+    if (window.innerWidth > 768) return;
+
+    // Evitar aplicar el wrapper si ya existe
+    if (mapEl.parentNode.classList.contains('map-mobile-wrapper')) return;
+
+    const originalHeight = mapEl.style.height || '350px';
+
+    // Crear contenedor wrapper para el mapa y su overlay
+    const wrapper = document.createElement('div');
+    wrapper.className = 'map-mobile-wrapper';
+    wrapper.style.position = 'relative';
+    wrapper.style.width = '100%';
+    wrapper.style.height = originalHeight;
+    wrapper.style.borderRadius = mapEl.style.borderRadius || '12px';
+    wrapper.style.overflow = 'hidden';
+    wrapper.style.boxShadow = mapEl.style.boxShadow || 'var(--shadow)';
+
+    // Reemplazar mapa por el wrapper e insertar mapa dentro
+    mapEl.parentNode.insertBefore(wrapper, mapEl);
+    wrapper.appendChild(mapEl);
+
+    // Ajustar mapa para que llene el wrapper
+    mapEl.style.height = '100%';
+    mapEl.style.marginTop = '0px';
+
+    // Crear y añadir el overlay táctil
+    const overlay = document.createElement('div');
+    overlay.className = 'map-interaction-overlay';
+    overlay.innerHTML = `
+        <span style="font-size: 1.6rem; margin-bottom: 8px;">🗺️</span>
+        <span style="font-size: 0.85rem; font-weight: 700; line-height: 1.4;">Toca el ${labelText} para interactuar</span>
+        <button class="map-interaction-btn">Activar interacción</button>
+    `;
+
+    // Crear y añadir el botón flotante de bloqueo
+    const disableBtn = document.createElement('button');
+    disableBtn.className = 'map-disable-btn';
+    disableBtn.style.display = 'none';
+    disableBtn.textContent = '🔒 Bloquear Mapa';
+
+    wrapper.appendChild(overlay);
+    wrapper.appendChild(disableBtn);
+
+    // Registrar eventos para ocultar/mostrar el overlay y activar el mapa
+    overlay.addEventListener('click', (e) => {
+        e.stopPropagation();
+        overlay.classList.add('hidden');
+        disableBtn.style.display = 'block';
+    });
+
+    disableBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        overlay.classList.remove('hidden');
+        disableBtn.style.display = 'none';
+    });
+}
+
+// Inicialización de overlays en todos los mapas del sitio en móviles
+function initMapMobileScrollOverlays() {
+    // Retrasar ligeramente para asegurar que los elementos estén renderizados
+    setTimeout(() => {
+        setupMapMobileScrollOverlay('weather-map', 'mapa climatológico');
+        setupMapMobileScrollOverlay('weather-section-map', 'mapa del tiempo');
+        setupMapMobileScrollOverlay('itinerary-map', 'mapa de itinerarios');
+        setupMapMobileScrollOverlay('relations-network-map', 'mapa de relaciones');
+    }, 500);
+}

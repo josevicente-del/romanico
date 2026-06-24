@@ -77,10 +77,13 @@
         </div>
         <button id="skip-intro">Entrar a la Experiencia</button>
     </div>
-
+    
+    <!-- Overlay para el menú lateral en móviles -->
+    <div id="menu-overlay" class="menu-overlay"></div>
+ 
     <header class="magical-header">
         <div class="header-top">
-            <div class="logo" style="margin: 0; padding: 0; display: inline-flex; flex-direction: column;">
+            <div class="logo">
                 <span class="logo-text">Románico</span>
                 <span class="logo-sub">Cantabria</span>
             </div>
@@ -95,10 +98,16 @@
                     <span id="visited-counter">0/0</span>
                     <span class="stat-label">Explorado</span>
                 </div>
-                <div id="auth-header-container" style="display:flex; align-items:center; gap:10px;">
+                <div id="auth-header-container">
                     <button id="btn-login" class="btn-auth">Iniciar Sesión</button>
                 </div>
             </div>
+            <!-- Botón de Menú de Hamburguesa para Móviles -->
+            <button id="hamburger-btn" class="hamburger-btn" aria-label="Abrir menú de navegación">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
         </div>
         <nav class="magical-nav">
             <button class="nav-item active" data-view="list">Colección</button>
@@ -145,35 +154,35 @@
         <!-- Vistas -->
         <section id="list-view" class="view-container active">
             <!-- Iglesias Pendientes de Visitar (Solo para usuarios autenticados) -->
-            <section id="pending-section" style="display:none; padding: 25px 5%; margin: 20px auto; max-width: 1400px; background: rgba(28, 58, 107, 0.05); border-radius: 12px; border: 1px solid rgba(28, 58, 107, 0.1);">
-                <h2 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:10px; display:flex; align-items:center; gap:10px; font-size: 1.8rem;">
+            <section id="pending-section" class="pending-section">
+                <h2 class="pending-section-title">
                     🏰 Tus Iglesias Pendientes de Visitar
                 </h2>
-                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">
+                <p class="pending-section-desc">
                     Aquí tienes los templos románicos de Cantabria que aún te quedan por explorar en tu cuenta de viajero. ¡Acércate a menos de 100 metros con tu GPS para marcarlos como visitados!
                 </p>
                 <div id="pending-cards-container" class="magical-grid"></div>
             </section>
 
             <!-- Panel de Administración (Solo para Administrador) -->
-            <section id="admin-panel-section" style="display:none; padding: 25px 5%; margin: 20px auto; max-width: 1400px; background: rgba(196, 48, 43, 0.05); border-radius: 12px; border: 1px solid rgba(196, 48, 43, 0.15);">
-                <h2 style="font-family:'Noto Serif', serif; color:#c4302b; margin-bottom:10px; display:flex; align-items:center; gap:10px; font-size: 1.8rem;">
+            <section id="admin-panel-section" class="admin-panel-section">
+                <h2 class="admin-section-title">
                     ⚙️ Panel de Control de Administración
                 </h2>
-                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">
+                <p class="admin-section-desc">
                     Gestión de usuarios registrados y auditoría de suscripciones para campañas de boletines/newsletters.
                 </p>
-                <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.05);">
-                    <h3 style="margin-top: 0; color: var(--primary); font-family: 'Manrope', sans-serif;">
+                <div class="admin-card">
+                    <h3>
                         📧 Usuarios Registrados (<span id="admin-users-count">0</span>)
                     </h3>
-                    <div style="overflow-x: auto; margin-top: 15px;">
-                        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem;">
+                    <div class="admin-table-container">
+                        <table class="admin-table">
                             <thead>
-                                <tr style="border-bottom: 2px solid var(--primary); color: var(--primary); font-weight: bold;">
-                                    <th style="padding: 10px;">Usuario</th>
-                                    <th style="padding: 10px;">Correo Electrónico</th>
-                                    <th style="padding: 10px;">Iglesias Visitadas</th>
+                                <tr>
+                                    <th>Usuario</th>
+                                    <th>Correo Electrónico</th>
+                                    <th>Iglesias Visitadas</th>
                                 </tr>
                             </thead>
                             <tbody id="admin-users-table-body">
@@ -184,29 +193,29 @@
                 </div>
 
                 <!-- Fotos Pendientes de Aprobación (Solo para Administrador) -->
-                <div style="background: #fff; padding: 20px; border-radius: 8px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.05); margin-top: 25px;">
-                    <h3 style="margin-top: 0; color: var(--primary); font-family: 'Manrope', sans-serif;">
+                <div class="admin-card" style="margin-top: 1.5625rem;">
+                    <h3>
                         📸 Fotos Pendientes de Aprobación (<span id="admin-photos-count">0</span>)
                     </h3>
-                    <div id="admin-pending-photos-container" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 15px;">
+                    <div id="admin-pending-photos-container">
                         <!-- Inyectado dinámicamente vía JS -->
                     </div>
                 </div>
             </section>
 
             <!-- Portada / Dashboard (Mapa de Clima de Cantabria) -->
-            <section id="community-dashboard" class="dashboard-section" style="margin-bottom: 30px; max-width: 100%;">
-                <div class="dashboard-card weather-card-full" style="width: 100%; background: var(--surface-highest); border-radius: var(--border-radius); box-shadow: var(--shadow); padding: 25px;">
+            <section id="community-dashboard" class="dashboard-section" style="margin-bottom: 1.875rem; max-width: 100%;">
+                <div class="dashboard-card weather-card-full">
                     <h3 style="margin-bottom: 15px; font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; color: var(--primary); border-bottom: 1px solid var(--surface-container); padding-bottom: 10px;">🌦️ Mapa del Tiempo de Cantabria (Open-Meteo)</h3>
                     <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">Haz clic en los marcadores del mapa para ver el clima actual de cada zona y su pronóstico para 3 y 6 días.</p>
                     
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px;">
+                    <div class="weather-dashboard-grid">
                         <!-- Mapa interactivo del tiempo en portada -->
-                        <div id="weather-map" style="height: 400px; width: 100%; border-radius: 12px; border: 1px solid rgba(28, 58, 107, 0.1); z-index: 1;"></div>
+                        <div id="weather-map" class="weather-section-map" style="height: 25rem;"></div>
                         
                         <!-- Panel detallado del tiempo -->
-                        <div id="weather-dashboard-container" style="width: 100%;">
-                            <p style="text-align: center; color: var(--text-muted); background: rgba(28, 58, 107, 0.03); padding: 30px; border-radius: 12px; border: 1px dashed rgba(28, 58, 107, 0.2); margin: 0;">
+                        <div id="weather-dashboard-container">
+                            <p class="weather-info-placeholder" style="margin: 0;">
                                 🗺️ Cargando estaciones climatológicas...
                             </p>
                         </div>
@@ -249,15 +258,15 @@
         <section id="itinerary-view" class="view-container">
             <div class="itinerary-panel">
                 <h2>🧭 Un día Románico</h2>
-                <p style="text-align:center; margin-bottom:20px;">Selecciona una zona para generar tu ruta personalizada de un día (10:00 - 18:30).</p>
-                <div style="display:flex; justify-content:center; gap:10px; margin-bottom:30px;">
-                    <select id="itinerary-zone-select" style="padding:10px 30px;">
+                <p class="itinerary-intro">Selecciona una zona para generar tu ruta personalizada de un día (10:00 - 18:30).</p>
+                <div class="itinerary-controls">
+                    <select id="itinerary-zone-select">
                         <option value="">Selecciona una zona...</option>
                     </select>
-                    <button id="btn-gen-itinerary" class="btn-primary" style="width:auto; padding:10px 30px;">Generar Ruta</button>
+                    <button id="btn-gen-itinerary" class="btn-primary">Generar Ruta</button>
                 </div>
                 <div id="itinerary-results" style="display:none;">
-                    <div id="itinerary-map" style="height:350px; width:100%; border-radius:12px; margin-bottom:30px; box-shadow:var(--shadow);"></div>
+                    <div id="itinerary-map" class="itinerary-map"></div>
                     <div id="itinerary-timeline" class="timeline"></div>
                 </div>
             </div>
@@ -273,17 +282,17 @@
         <section id="ranking-view" class="view-container">
             <div class="ranking-panel">
                 <h2>🏆 Salón de la Fama Románica</h2>
-                <div class="ranking-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:30px; margin-top:20px;">
-                    <div class="ranking-column" style="background:#fff; padding:20px; border-radius:12px; box-shadow:var(--shadow);">
-                        <h3 style="font-family:'Noto Serif', serif; color:var(--primary); border-bottom:2px solid var(--accent); padding-bottom:10px; margin-bottom:15px; font-size:1.3rem; display:flex; align-items:center; gap:8px;">
+                <div class="ranking-grid ranking-view-grid">
+                    <div class="ranking-column">
+                        <h3 class="ranking-column-title">
                             👑 Ranking de Viajeros
                         </h3>
                         <div id="user-ranking" class="ranking-list">
                             <!-- Se poblará dinámicamente con la lista de usuarios y sus visitas -->
                         </div>
                     </div>
-                    <div class="ranking-column" style="background:#fff; padding:20px; border-radius:12px; box-shadow:var(--shadow);">
-                        <h3 style="font-family:'Noto Serif', serif; color:var(--primary); border-bottom:2px solid var(--accent); padding-bottom:10px; margin-bottom:15px; font-size:1.3rem; display:flex; align-items:center; gap:8px;">
+                    <div class="ranking-column">
+                        <h3 class="ranking-column-title">
                             🏰 Iglesias más Populares
                         </h3>
                         <div id="church-ranking" class="ranking-list"></div>
@@ -295,7 +304,7 @@
         <section id="restaurants-view" class="view-container">
             <div class="restaurants-panel">
                 <h2>🍽️ Donde Comer: Gastronomía del Románico</h2>
-                <p style="text-align:center; margin-bottom:20px;">Los mejores restaurantes cerca de los tesoros románicos.</p>
+                <p class="restaurants-intro">Los mejores restaurantes cerca de los tesoros románicos.</p>
                 <div id="global-restaurants-container" class="magical-grid"></div>
             </div>
         </section>
@@ -304,57 +313,57 @@
             <div class="extra-panel">
                 <h2>🥘 Sabores del Medievo</h2>
                 <div id="recipes-container" class="magical-grid"></div>
-                <h2 style="margin-top:40px;">🍬 Dulces de Convento</h2>
+                <h2 style="margin-top: 2.5rem;">🍬 Dulces de Convento</h2>
                 <div id="sweets-container" class="magical-grid"></div>
             </div>
         </section>
 
         <section id="community-view" class="view-container">
-            <div class="extra-panel" style="padding:0 5% 50px;">
-                <h2 style="font-family:'Playfair Display', serif; color:var(--primary); text-align:center; margin-bottom:15px;">💬 Comunidad Románica</h2>
-                <p style="text-align:center; margin-bottom:30px;">Comparte tus impresiones, dudas o recomendaciones sobre las iglesias románicas de Cantabria.</p>
+            <div class="extra-panel">
+                <h2 class="community-title">💬 Comunidad Románica</h2>
+                <p class="community-intro">Comparte tus impresiones, dudas o recomendaciones sobre las iglesias románicas de Cantabria.</p>
                 
                 <!-- Contador de suscriptores verificados -->
-                <div class="subscribers-community-badge" style="max-width: 600px; margin: 0 auto 30px; text-align: center; background: rgba(28, 58, 107, 0.05); padding: 12px 20px; border-radius: 30px; font-weight: 600; color: var(--primary); border: 1px solid rgba(28, 58, 107, 0.1);">
+                <div class="subscribers-community-badge">
                     👥 ¡Ya somos <span id="community-subscribers-count" style="font-weight: 800; color: var(--accent);">0</span> viajeros registrados y verificados en nuestra comunidad!
                 </div>
                 
                 <!-- Formulario de comentarios (se renderizará o habilitará dinámicamente) -->
-                <div id="comment-form-container" style="max-width:600px; margin:0 auto 40px; background:#fff; padding:25px; border-radius:12px; box-shadow:var(--shadow); border:1px solid rgba(28, 58, 107, 0.05);">
+                <div id="comment-form-container" class="comment-form-container">
                     <!-- Habilitado vía JS -->
                 </div>
 
                 <!-- Suscripción al Boletín / Newsletter de Viajes -->
-                <div class="newsletter-card" style="max-width:600px; margin:0 auto 40px; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); padding: 30px; border-radius: 12px; box-shadow: var(--shadow); color: white; text-align: center;">
-                    <div style="font-size: 2.5rem; margin-bottom: 10px;">📧</div>
-                    <h3 style="font-family:'Noto Serif', serif; color: white; margin-bottom: 10px; font-size: 1.5rem;">Boletín del Viajero Medieval</h3>
-                    <p style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 20px; line-height: 1.5;">Suscríbete para recibir mensualmente rutas exclusivas, recomendaciones gastronómicas e investigaciones históricas sobre el románico.</p>
-                    <form id="newsletter-form" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-                        <input type="email" id="news-email" required placeholder="Tu correo electrónico..." style="flex: 1; min-width: 200px; padding: 12px 20px; border-radius: 4px; border: none; font-family: inherit; font-size: 0.9rem; color: #111;">
-                        <button type="submit" class="btn-primary" style="background: var(--accent-light); color: var(--primary); font-weight: bold; border: none; padding: 12px 25px; cursor: pointer; border-radius: 4px; text-transform: uppercase;">Suscribirse</button>
+                <div class="newsletter-card">
+                    <div class="newsletter-icon">📧</div>
+                    <h3 class="newsletter-title">Boletín del Viajero Medieval</h3>
+                    <p class="newsletter-desc">Suscríbete para recibir mensualmente rutas exclusivas, recomendaciones gastronómicas e investigaciones históricas sobre el románico.</p>
+                    <form id="newsletter-form" class="newsletter-form">
+                        <input type="email" id="news-email" required placeholder="Tu correo electrónico..." class="newsletter-input">
+                        <button type="submit" class="btn-primary btn-newsletter">Suscribirse</button>
                     </form>
-                    <div id="newsletter-status" style="margin-top: 12px; font-size: 0.85rem; font-weight: bold; display: none;"></div>
+                    <div id="newsletter-status" class="newsletter-status"></div>
                 </div>
 
                 <h3 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px;">Opiniones y Comentarios Recientes</h3>
-                <div id="comments-list" class="magical-grid" style="grid-template-columns:1fr; gap:20px; max-width:800px; margin:0 auto;">
+                <div id="comments-list" class="magical-grid comment-list-container">
                     <!-- Se cargará dinámicamente -->
                 </div>
             </div>
         </section>
 
         <section id="weather-view" class="view-container">
-            <div class="extra-panel" style="padding: 0 5% 50px;">
-                <h2 style="font-family:'Playfair Display', serif; color:var(--primary); text-align:center; margin-bottom:15px;">🌦️ Mapa del Tiempo de Cantabria</h2>
-                <p style="text-align:center; margin-bottom:30px;">Haz clic en las distintas zonas y comarcas en el mapa interactivo para ver el clima actual y previsión detallada de 3 y 6 días.</p>
+            <div class="extra-panel">
+                <h2 class="weather-title">🌦️ Mapa del Tiempo de Cantabria</h2>
+                <p class="weather-intro">Haz clic en las distintas zonas y comarcas en el mapa interactivo para ver el clima actual y previsión detallada de 3 y 6 días.</p>
                 
-                <div style="display: grid; grid-template-columns: 1fr; gap: 30px; max-width: 1200px; margin: 0 auto;">
+                <div class="weather-detail-grid">
                     <!-- Contenedor del Mapa del Tiempo -->
-                    <div id="weather-section-map" style="height: 450px; width: 100%; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid rgba(28, 58, 107, 0.1); z-index: 1;"></div>
+                    <div id="weather-section-map" class="weather-section-map"></div>
                     
                     <!-- Contenedor del Clima Detallado -->
-                    <div id="weather-detail-container" style="width: 100%;">
-                        <p style="text-align: center; color: var(--text-muted); background: rgba(28, 58, 107, 0.03); padding: 30px; border-radius: 12px; border: 1px dashed rgba(28, 58, 107, 0.2);">
+                    <div id="weather-detail-container">
+                        <p class="weather-info-placeholder">
                             🗺️ Haz clic en un marcador del mapa para cargar el informe del tiempo de esa zona.
                         </p>
                     </div>
@@ -363,20 +372,20 @@
         </section>
 
         <section id="3d-view" class="view-container">
-            <div class="3d-panel" style="padding: 0 5% 50px;">
-                <h2 style="font-family:'Playfair Display', serif; color:var(--primary); text-align:center; margin-bottom:25px;">🏛️ Visita en 3D</h2>
-                <p style="text-align:center; margin-bottom:30px;">Explora detalles arquitectónicos y modelos en 3D de las joyas del románico en Cantabria gracias a Sketchfab.</p>
+            <div class="3d-panel">
+                <h2 class="view-3d-title">🏛️ Visita en 3D</h2>
+                <p class="view-3d-intro">Explora detalles arquitectónicos y modelos en 3D de las joyas del románico en Cantabria gracias a Sketchfab.</p>
                 <div id="sketchfab-container" class="magical-grid"></div>
             </div>
         </section>
 
         <section id="learn-view" class="view-container">
-            <div class="extra-panel" style="padding: 0 5% 50px;">
-                <h2 style="font-family:'Noto Serif', serif; color:var(--primary); text-align:center; margin-bottom:15px;">📚 Centro de Conocimiento e Inspiración</h2>
-                                <p style="text-align:center; margin-bottom:30px; max-width:800px; margin-left:auto; margin-right:auto;">Amplía tus conocimientos sobre el arte medieval de Cantabria y descubre las relaciones estilísticas entre sus diferentes focos monumentales.</p>
+            <div class="extra-panel">
+                <h2 class="learn-title">📚 Centro de Conocimiento e Inspiración</h2>
+                <p class="learn-intro-text">Amplía tus conocimientos sobre el arte medieval de Cantabria y descubre las relaciones estilísticas entre sus diferentes focos monumentales.</p>
                 
                 <!-- Subnavegación de Pestañas Internas (Tabs) -->
-                <div class="learn-tabs" style="display:flex; justify-content:center; gap:15px; margin-bottom:40px; border-bottom:1px solid var(--surface-container); padding-bottom:15px;">
+                <div class="learn-tabs">
                     <button class="learn-tab-btn active" data-learn-tab="books">📰 Artículos y Libros</button>
                     <button class="learn-tab-btn" data-learn-tab="style-relations">🔬 Relaciones Estilísticas</button>
                 </div>
@@ -384,7 +393,7 @@
                 <!-- Subsección 1: Artículos y Libros -->
                 <div id="learn-tab-content-books" class="learn-tab-content active">
                     <h3 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px; font-size:1.3rem;">📰 Artículos de Interés</h3>
-                    <div id="articles-container" class="magical-grid" style="margin-bottom: 45px;"></div>
+                    <div id="articles-container" class="magical-grid"></div>
                     
                     <h3 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px; font-size:1.3rem;">📖 Libros y Monografías</h3>
                     <div id="books-container" class="magical-grid"></div>
@@ -398,68 +407,68 @@
         </section>
 
         <!-- Vista de Perfil de Viajero -->
-        <section id="profile-view" class="view-container" style="display: none; padding: 25px 5%; margin: 20px auto; max-width: 1000px;">
-            <div class="profile-card" style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: var(--border-radius); box-shadow: var(--shadow); border: 1px solid rgba(255, 255, 255, 0.5); padding: 30px;">
-                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--accent); padding-bottom: 15px; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
-                    <h2 style="font-family:'Noto Serif', serif; color:var(--primary); margin: 0; display:flex; align-items:center; gap:10px; font-size: 1.8rem;">
+        <section id="profile-view" class="profile-view-section">
+            <div class="profile-card">
+                <div class="profile-card-header">
+                    <h2>
                         👤 Mi Perfil de Viajero
                     </h2>
                     <!-- Contador de personas registradas global -->
-                    <div style="background: var(--surface-highest); padding: 8px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; color: var(--primary); border: 1px solid rgba(28, 58, 107, 0.1);">
+                    <div class="profile-travellers-badge">
                         👥 Total de Viajeros en la Red: <span id="global-subscribers-count" style="font-weight: 800; color: var(--accent);">0</span>
                     </div>
                 </div>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+                <div class="profile-view-grid">
                     <!-- Columna de Datos de Usuario -->
                     <div class="profile-info-column">
-                        <h3 style="font-family:'Manrope', sans-serif; color:var(--primary); margin-top: 0; margin-bottom: 15px; font-size: 1.2rem;">Editar Información Personal</h3>
+                        <h3 style="margin-top: 0; margin-bottom: 1.25rem;">Editar Información Personal</h3>
                         <form id="profile-form">
-                            <div class="form-group" style="margin-bottom:15px;">
-                                <label style="font-weight:600; display:block; margin-bottom:5px; font-size:0.9rem;">Correo Electrónico (No editable)</label>
-                                <input type="email" id="profile-email" disabled style="width:100%; padding:10px; border:1px solid rgba(0,0,0,0.1); border-radius:6px; background:#f5f5f5; color:#777; cursor:not-allowed;">
+                            <div class="form-group">
+                                <label>Correo Electrónico (No editable)</label>
+                                <input type="email" id="profile-email" disabled>
                             </div>
-                            <div class="form-group" style="margin-bottom:15px;">
-                                <label style="font-weight:600; display:block; margin-bottom:5px; font-size:0.9rem;">Nombre Completo</label>
-                                <input type="text" id="profile-fullname" required style="width:100%; padding:10px; border:1px solid rgba(0,0,0,0.15); border-radius:6px; font-family:inherit;">
+                            <div class="form-group">
+                                <label>Nombre Completo</label>
+                                <input type="text" id="profile-fullname" required>
                             </div>
-                            <div class="form-group" style="margin-bottom:15px;">
-                                <label style="font-weight:600; display:block; margin-bottom:5px; font-size:0.9rem;">País</label>
-                                <input type="text" id="profile-country" required style="width:100%; padding:10px; border:1px solid rgba(0,0,0,0.15); border-radius:6px; font-family:inherit;">
+                            <div class="form-group">
+                                <label>País</label>
+                                <input type="text" id="profile-country" required>
                             </div>
-                            <div class="form-group" style="margin-bottom:15px;">
-                                <label style="font-weight:600; display:block; margin-bottom:5px; font-size:0.9rem;">Ciudad</label>
-                                <input type="text" id="profile-city" required style="width:100%; padding:10px; border:1px solid rgba(0,0,0,0.15); border-radius:6px; font-family:inherit;">
+                            <div class="form-group">
+                                <label>Ciudad</label>
+                                <input type="text" id="profile-city" required>
                             </div>
-                            <div class="form-group" style="margin-bottom:20px;">
-                                <label style="font-weight:600; display:block; margin-bottom:5px; font-size:0.9rem;">Provincia de Residencia</label>
-                                <input type="text" id="profile-province" required style="width:100%; padding:10px; border:1px solid rgba(0,0,0,0.15); border-radius:6px; font-family:inherit;">
+                            <div class="form-group">
+                                <label>Provincia de Residencia</label>
+                                <input type="text" id="profile-province" required>
                             </div>
-                            <button type="submit" class="btn-primary" style="width:100%; padding:12px; font-size:1rem; font-weight:600; border-radius:6px;">Guardar Cambios</button>
-                            <div id="profile-status" class="status-msg" style="margin-top:10px; font-weight:600; text-align:center;"></div>
+                            <button type="submit" class="btn-primary">Guardar Cambios</button>
+                            <div id="profile-status" class="status-msg"></div>
                         </form>
                     </div>
 
                     <!-- Columna de Progreso y Estadísticas -->
-                    <div class="profile-stats-column" style="background: rgba(28, 58, 107, 0.03); padding: 25px; border-radius: var(--border-radius); border: 1px solid rgba(28, 58, 107, 0.05); display: flex; flex-direction: column; justify-content: space-between;">
+                    <div class="profile-stats-column">
                         <div>
-                            <h3 style="font-family:'Manrope', sans-serif; color:var(--primary); margin-top: 0; margin-bottom: 20px; font-size: 1.2rem; text-align: center;">Tu Progreso en el Viaje</h3>
+                            <h3 style="margin-top: 0; margin-bottom: 1.25rem; text-align: center;">Tu Progreso en el Viaje</h3>
                             
                             <!-- Círculo de porcentaje / progreso -->
-                            <div style="position: relative; width: 140px; height: 140px; margin: 0 auto 20px; background: radial-gradient(circle, #fff 60%, transparent 60.5%), conic-gradient(var(--accent) 0%, #e0e0e0 0%); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: var(--shadow);" id="profile-progress-ring">
-                                <div style="text-align: center; z-index: 2;">
-                                    <span id="profile-progress-percent" style="font-size: 1.6rem; font-weight: 800; color: var(--primary); display: block;">0%</span>
-                                    <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Completado</span>
+                            <div class="profile-progress-ring" id="profile-progress-ring">
+                                <div class="profile-progress-inner">
+                                    <span id="profile-progress-percent">0%</span>
+                                    <span class="profile-progress-lbl">Completado</span>
                                 </div>
                             </div>
 
-                            <p style="text-align: center; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px;">
+                            <p class="profile-progress-text">
                                 Has explorado <strong id="profile-visited-count" style="color:var(--accent); font-size:1.1rem;">0</strong> de las <strong id="profile-total-count">0</strong> colegiatas e iglesias del románico en Cantabria.
                             </p>
                         </div>
 
-                        <div style="border-top: 1px solid rgba(0,0,0,0.1); padding-top: 20px; margin-top: 20px; text-align: center;">
-                            <button id="btn-profile-logout" class="btn-auth" style="width: 100%; background: #c4302b; padding: 12px; border-radius: 6px; font-weight: 600; color: white;">Cerrar Sesión</button>
+                        <div class="profile-logout-container">
+                            <button id="btn-profile-logout" class="btn-auth btn-logout">Cerrar Sesión</button>
                         </div>
                     </div>
                 </div>
@@ -477,26 +486,26 @@
 
     <!-- Modal de Edición de Iglesia (Admin) -->
     <div id="edit-poi-modal" class="modal">
-        <div class="modal-content detail-content" style="max-width:600px;">
+        <div class="modal-content detail-content modal-edit-poi">
             <span class="close-btn">&times;</span>
             <h2 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:15px;">⚙️ Editar Iglesia (Administrador)</h2>
             <form id="edit-poi-form">
                 <input type="hidden" id="edit-poi-id">
-                <div class="form-group" style="margin-bottom:12px;">
-                    <label style="font-weight:600; display:block; margin-bottom:4px;">Nombre de la Iglesia</label>
-                    <input type="text" id="edit-poi-name" required style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                <div class="form-group">
+                    <label>Nombre de la Iglesia</label>
+                    <input type="text" id="edit-poi-name" required>
                 </div>
-                <div class="form-group" style="margin-bottom:12px;">
-                    <label style="font-weight:600; display:block; margin-bottom:4px;">Localización</label>
-                    <input type="text" id="edit-poi-location" required style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px;">
+                <div class="form-group">
+                    <label>Localización</label>
+                    <input type="text" id="edit-poi-location" required>
                 </div>
-                <div class="form-group" style="margin-bottom:12px;">
-                    <label style="font-weight:600; display:block; margin-bottom:4px;">Descripción</label>
-                    <textarea id="edit-poi-description" required rows="5" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:inherit; resize:vertical;"></textarea>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="edit-poi-description" required rows="5" style="width:100%; border:1px solid #ccc; border-radius:4px; font-family:inherit; resize:vertical;"></textarea>
                 </div>
-                <div class="form-group" style="margin-bottom:15px;">
-                    <label style="font-weight:600; display:block; margin-bottom:4px;">URLs de Imágenes (Una por línea)</label>
-                    <textarea id="edit-poi-images" rows="4" placeholder="Ejemplo: images/resumen/iglesia1.jpg" style="width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; font-family:monospace; resize:vertical;"></textarea>
+                <div class="form-group">
+                    <label>URLs de Imágenes (Una por línea)</label>
+                    <textarea id="edit-poi-images" rows="4" placeholder="Ejemplo: images/resumen/iglesia1.jpg" style="width:100%; border:1px solid #ccc; border-radius:4px; font-family:monospace; resize:vertical;"></textarea>
                 </div>
                 <div style="display:flex; gap:10px;">
                     <button type="submit" class="btn-primary" style="flex:1;">Guardar Cambios</button>
@@ -528,14 +537,40 @@
                     </div>
                     <div id="pass-strength" class="strength-meter"></div>
                 </div>
+                <div class="form-group">
+                    <label>Confirmar Contraseña</label>
+                    <div class="pass-wrapper">
+                        <input type="password" id="reg-pass-confirm" required>
+                        <button type="button" class="toggle-pass">👁️</button>
+                    </div>
+                </div>
                 <button type="submit" class="btn-primary">Registrar</button>
-                <div id="reg-status" class="status-msg"></div>
+                <button type="button" class="btn-google" id="btn-google-register">
+                    <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    Registrarse con Google
+                </button>
+                <div id="reg-status" class="status-msg" style="margin-top: 10px;"></div>
             </form>
             <form id="login-form" class="auth-form">
                 <h3>Bienvenido</h3>
                 <div class="form-group"><label>Email</label><input type="email" id="login-email" required></div>
                 <div class="form-group"><label>Contraseña</label><input type="password" id="login-pass" required></div>
                 <button type="submit" class="btn-primary">Entrar</button>
+                <button type="button" class="btn-google" id="btn-google-login">
+                    <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                    </svg>
+                    Iniciar sesión con Google
+                </button>
+                <div id="login-status" class="status-msg" style="margin-top: 10px;"></div>
             </form>
         </div>
     </div>
@@ -559,9 +594,9 @@
                 <h3>Románico Cantabria</h3>
                 <p>Tu guía interactiva para descubrir el patrimonio medieval y las iglesias románicas de Cantabria.</p>
             </div>
-            <div class="footer-links" style="display: flex; flex-direction: column; gap: 10px;">
-                <p style="margin: 0; font-weight: 600; color: var(--accent);">Mapa del Sitio / Navegación Interna:</p>
-                <div class="footer-nav-grid" style="display: flex; flex-wrap: wrap; gap: 8px 15px; font-size: 0.85rem; max-width: 600px;">
+            <div class="footer-links" class="footer-links-flex">
+                <p class="footer-nav-title">Mapa del Sitio / Navegación Interna:</p>
+                <div class="footer-nav-grid">
                     <a href="#list-view" class="footer-seo-link" onclick="document.querySelector('[data-view=list]').click()">🏰 Colección Románica</a>
                     <a href="#map-view" class="footer-seo-link" onclick="document.querySelector('[data-view=map]').click()">🗺️ Mapa Interactivo</a>
                     <a href="#itinerary-view" class="footer-seo-link" onclick="document.querySelector('[data-view=itinerary]').click()">🧭 Itinerarios de un Día</a>
