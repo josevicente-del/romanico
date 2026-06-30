@@ -49,30 +49,48 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- Google Fonts: Noto Serif & Manrope -->
+    <!-- Preconnect to external CDN domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Noto+Serif:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://unpkg.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    
+    <!-- Preload critical stylesheets -->
+    <link rel="preload" href="styles.css?v=5" as="style">
+    
+    <!-- Google Fonts: Noto Serif & Manrope (Asynchronous and optimized) -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Noto+Serif:ital,wght@0,500;0,600;0,700;1,500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <!-- Font: Neue Montreal (Premium Sans-Serif) -->
+    <link rel="preload" href="https://fonts.cdnfonts.com/css/neue-montreal" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Noto+Serif:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+        <link href="https://fonts.cdnfonts.com/css/neue-montreal" rel="stylesheet">
+    </noscript>
     
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
 
-    <!-- Supabase JS Client v2 & Configuration -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase_config.js"></script>
+    <!-- Supabase JS Client v2 & Configuration (Deferred) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="supabase_config.js" defer></script>
+    
+    <!-- Leaflet JS & Data & Application scripts (Deferred, maintaining execution order) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
+    <script src="data.js?v=5" defer></script>
+    <script src="app.js?v=5" defer></script>
 
     <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=5">
 </head>
 <body>
     <!-- Intro Hero Animation -->
     <div id="intro-hero" class="intro-container">
         <div class="intro-overlay stress-bg">
-            <img src="atasco_trafico_estres_1777204502546.png" alt="Atasco" class="intro-img">
+            <img src="atasco_trafico_estres_1777204502546.webp" alt="Atasco" class="intro-img" width="1920" height="1080" loading="eager">
             <div class="intro-text">¿Cansado de la ciudad?</div>
         </div>
         <div class="intro-overlay peace-bg">
-            <img src="colegiata_santa_juliana_santillana_1777204517020.png" alt="Colegiata" class="intro-img">
+            <img src="colegiata_santa_juliana_santillana_1777204517020.webp" alt="Colegiata" class="intro-img" width="1920" height="1080" loading="eager">
             <div class="intro-text">Respira el Románico</div>
         </div>
         <button id="skip-intro">Entrar a la Experiencia</button>
@@ -116,11 +134,11 @@
             <button class="nav-item" data-view="agenda">Agenda</button>
             <button class="nav-item" data-view="ranking">Ranking Mágico</button>
             <button class="nav-item" data-view="restaurants">Donde Comer</button>
-            <button class="nav-item" data-view="extra">Recetas y Dulces</button>
             <button class="nav-item" data-view="community">Comunidad</button>
-            <button class="nav-item" data-view="weather">El Tiempo</button>
             <button class="nav-item" data-view="3d">Visita 3D</button>
             <button class="nav-item" data-view="learn">Saber Más</button>
+            <!-- Enlace a la sección Buy Me A Coffee para apoyar el desarrollo del proyecto -->
+            <button class="nav-item" data-view="coffee">Invítanos a un café ☕</button>
             <button class="nav-item" id="nav-profile" data-view="profile" style="display: none;">Mi Perfil</button>
         </nav>
     </header>
@@ -203,25 +221,6 @@
                 </div>
             </section>
 
-            <!-- Portada / Dashboard (Mapa de Clima de Cantabria) -->
-            <section id="community-dashboard" class="dashboard-section" style="margin-bottom: 1.875rem; max-width: 100%;">
-                <div class="dashboard-card weather-card-full">
-                    <h3 style="margin-bottom: 15px; font-size: 1.25rem; text-transform: uppercase; letter-spacing: 0.05em; font-family: 'Manrope', sans-serif; color: var(--primary); border-bottom: 1px solid var(--surface-container); padding-bottom: 10px;">🌦️ Mapa del Tiempo de Cantabria (Open-Meteo)</h3>
-                    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px;">Haz clic en los marcadores del mapa para ver el clima actual de cada zona y su pronóstico para 3 y 6 días.</p>
-                    
-                    <div class="weather-dashboard-grid">
-                        <!-- Mapa interactivo del tiempo en portada -->
-                        <div id="weather-map" class="weather-section-map" style="height: 25rem;"></div>
-                        
-                        <!-- Panel detallado del tiempo -->
-                        <div id="weather-dashboard-container">
-                            <p class="weather-info-placeholder" style="margin: 0;">
-                                🗺️ Cargando estaciones climatológicas...
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
             <div id="cards-container" class="magical-grid"></div>
         </section>
 
@@ -309,14 +308,6 @@
             </div>
         </section>
 
-        <section id="extra-view" class="view-container">
-            <div class="extra-panel">
-                <h2>🥘 Sabores del Medievo</h2>
-                <div id="recipes-container" class="magical-grid"></div>
-                <h2 style="margin-top: 2.5rem;">🍬 Dulces de Convento</h2>
-                <div id="sweets-container" class="magical-grid"></div>
-            </div>
-        </section>
 
         <section id="community-view" class="view-container">
             <div class="extra-panel">
@@ -352,24 +343,6 @@
             </div>
         </section>
 
-        <section id="weather-view" class="view-container">
-            <div class="extra-panel">
-                <h2 class="weather-title">🌦️ Mapa del Tiempo de Cantabria</h2>
-                <p class="weather-intro">Haz clic en las distintas zonas y comarcas en el mapa interactivo para ver el clima actual y previsión detallada de 3 y 6 días.</p>
-                
-                <div class="weather-detail-grid">
-                    <!-- Contenedor del Mapa del Tiempo -->
-                    <div id="weather-section-map" class="weather-section-map"></div>
-                    
-                    <!-- Contenedor del Clima Detallado -->
-                    <div id="weather-detail-container">
-                        <p class="weather-info-placeholder">
-                            🗺️ Haz clic en un marcador del mapa para cargar el informe del tiempo de esa zona.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </section>
 
         <section id="3d-view" class="view-container">
             <div class="3d-panel">
@@ -406,8 +379,41 @@
             </div>
         </section>
 
+        <!-- Sección de Donación: Buy Me A Coffee con código QR de PayPal (Diseño Centrado) -->
+        <section id="coffee-view" class="view-container">
+            <div class="coffee-panel">
+                <h2>☕ Apoya el Proyecto</h2>
+                <p class="coffee-intro">Si disfrutas descubriendo el arte medieval con esta guía, considera invitarnos a un café para ayudarnos a mantener los servidores y seguir cartografiando el románico cántabro.</p>
+                
+                <div class="coffee-card-centered">
+                    <!-- Bloque del Código QR de PayPal -->
+                    <div class="coffee-qr-wrapper">
+                        <div class="qr-box">
+                            <!-- Código QR dinámico que redirige al enlace de donación de PayPal -->
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=https%3A%2F%2Fwww.paypal.com%2Fcgi-bin%2Fwebscr%3Fcmd%3D_donations%26business%3Djosevicente%40gmail.com%26item_name%3DApoyo%2520a%2520Romanico%2520Cantabria%26currency_code%3DEUR" alt="Código QR para PayPal" class="qr-image" width="220" height="220" loading="lazy">
+                        </div>
+                        <p class="qr-text">Escanea el código QR con tu móvil</p>
+                    </div>
+                    
+                    <!-- Divisor visual entre métodos de pago -->
+                    <div class="coffee-divider">
+                        <span>o también</span>
+                    </div>
+                    
+                    <!-- Bloque del botón de enlace directo de PayPal -->
+                    <div class="coffee-action-wrapper">
+                        <!-- Enlace de donación directa configurado para josevicente@gmail.com -->
+                        <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=josevicente@gmail.com&item_name=Apoyo%20a%20Romanico%20Cantabria&currency_code=EUR" target="_blank" class="btn-coffee-action-centered">
+                            Donar con PayPal 💳
+                        </a>
+                        <p class="paypal-email-text">Cuenta de PayPal: <strong>josevicente@gmail.com</strong></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Vista de Perfil de Viajero -->
-        <section id="profile-view" class="profile-view-section">
+        <section id="profile-view" class="view-container profile-view-section">
             <div class="profile-card">
                 <div class="profile-card-header">
                     <h2>
@@ -603,11 +609,11 @@
                     <a href="#agenda-view" class="footer-seo-link" onclick="document.querySelector('[data-view=agenda]').click()">📅 Agenda de Eventos 2026</a>
                     <a href="#ranking-view" class="footer-seo-link" onclick="document.querySelector('[data-view=ranking]').click()">🏆 Ranking de Viajeros</a>
                     <a href="#restaurants-view" class="footer-seo-link" onclick="document.querySelector('[data-view=restaurants]').click()">🍽️ Dónde Comer (Gastronomía)</a>
-                    <a href="#extra-view" class="footer-seo-link" onclick="document.querySelector('[data-view=extra]').click()">🥘 Dulces y Recetas</a>
                     <a href="#community-view" class="footer-seo-link" onclick="document.querySelector('[data-view=community]').click()">💬 Comunidad Románica</a>
-                    <a href="#weather-view" class="footer-seo-link" onclick="document.querySelector('[data-view=weather]').click()">🌦️ Previsión del Tiempo</a>
                     <a href="#3d-view" class="footer-seo-link" onclick="document.querySelector('[data-view=3d]').click()">🏛️ Modelos y Visita 3D</a>
                     <a href="#learn-view" class="footer-seo-link" onclick="document.querySelector('[data-view=learn]').click()">📚 Artículos y Libros</a>
+                    <!-- Enlace rápido en el pie de página para donaciones -->
+                    <a href="#coffee-view" class="footer-seo-link" onclick="document.querySelector('[data-view=coffee]').click()">☕ Apoya el Proyecto (Donar)</a>
                     <a href="/llms.txt" class="footer-seo-link" target="_blank">🤖 Guía de IA (llms.txt)</a>
                     <a href="/sitemap.xml" class="footer-seo-link" target="_blank">🗺️ Sitemap XML</a>
                 </div>
@@ -617,10 +623,5 @@
             <p>&copy; 2026 Románico Cantabria - Turismo Cultural y Patrimonio</p>
         </div>
     </footer>
-
-    <!-- Scripts -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-    <script src="data.js"></script>
-    <script src="app.js"></script>
 </body>
 </html>

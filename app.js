@@ -14,6 +14,21 @@ let eventsData = window.eventsData || [];
 const recipesData = window.recipesData || [];
 const conventSweets = window.conventSweets || [];
 
+// --- Función para optimizar URLs de Wikimedia Commons ---
+function getOptimizedImageUrl(url, width = 640) {
+    if (!url) return '';
+    if (url.includes('upload.wikimedia.org/wikipedia/commons/')) {
+        if (url.includes('/thumb/')) return url; // Ya es un thumbnail
+        const parts = url.split('upload.wikimedia.org/wikipedia/commons/');
+        if (parts.length === 2) {
+            const path = parts[1];
+            const filename = path.substring(path.lastIndexOf('/') + 1);
+            return `https://upload.wikimedia.org/wikipedia/commons/thumb/${path}/${width}px-${filename}`;
+        }
+    }
+    return url;
+}
+
 // Keys
 const VISITED_KEY = 'romanico_visited';
 const CONTRIBUTIONS_KEY = 'romanico_contributions';
@@ -25,10 +40,10 @@ const CHURCH_VISITS_KEY = 'romanico_church_visits'; // Para el ranking de iglesi
 let currentUser = JSON.parse(localStorage.getItem(CURRENT_USER_KEY) || 'null');
 
 // --- Inicialización de Supabase ---
-let supabase = null;
+let supabaseClient = null;
 if (window.checkSupabaseConfig && window.checkSupabaseConfig()) {
     // Si la configuración es correcta, creamos el cliente de Supabase
-    supabase = window.supabase.createClient(window.supabaseUrl, window.supabaseAnonKey);
+    supabaseClient = window.supabase.createClient(window.supabaseUrl, window.supabaseAnonKey);
     console.log("Supabase inicializado correctamente para autenticación.");
 } else {
     console.log("Supabase no configurado. Utilizando fallback a servidor local (Express).");
@@ -64,15 +79,10 @@ async function initApp() {
     // Cargar eventos de la agenda asíncronamente
     loadEvents();
     
-    // Cargar clima dinámico de Meteosource
-    loadWeather();
-    
     renderRanking();
     renderRestaurants();
-    renderExtra();
     renderSketchfab();
     renderLearnSection();
-    initCommentsIfNeeded();
     renderComments();
     checkEmailVerificationParams();
 
@@ -374,7 +384,7 @@ function renderList() {
         
         const hasRealImages = poi.images && poi.images.length > 0;
         const imgHTML = hasRealImages 
-            ? `<img src="${poi.images[0]}" alt="${poi.name}">`
+            ? `<img src="${getOptimizedImageUrl(poi.images[0], 400)}" alt="${poi.name}" width="400" height="250" loading="lazy">`
             : `<div class="card-img-placeholder" title="Foto próximamente"><span>Foto próximamente</span></div>`;
 
         card.innerHTML = `
@@ -607,7 +617,11 @@ function openDetail(poi) {
     const hasRealImages = poi.images && poi.images.length > 0;
     const galleryHTML = hasRealImages
         ? `<div class="modal-gallery">
-            ${poi.images.slice(0, (poi.order === 'Colegiata' || (poi.name && poi.name.toLowerCase().includes('colegiata'))) ? 6 : 4).map(img => `<img src="${img}" class="gallery-img">`).join('')}
+            ${poi.images.slice(0, (poi.order === 'Colegiata' || (poi.name && poi.name.toLowerCase().includes('colegiata'))) ? 6 : 4).map((img, idx) => {
+                const lazyAttr = idx === 0 ? '' : ' loading="lazy"';
+                const optimizedUrl = getOptimizedImageUrl(img, idx === 0 ? 800 : 400);
+                return `<img src="${optimizedUrl}" class="gallery-img" width="300" height="200" ${lazyAttr} alt="${poi.name} - Imagen ${idx + 1}">`;
+            }).join('')}
            </div>`
         : `<div class="detail-img-placeholder" title="Foto próximamente">
             <span>Foto próximamente</span>
@@ -650,7 +664,7 @@ function openDetail(poi) {
                 ${poi.bestiary.images.map(img => `
                     <div class="bestiary-item">
                         <div class="bestiary-img-container">
-                            <img src="${img.url}" alt="${img.caption}" loading="lazy"
+                            <img src="${getOptimizedImageUrl(img.url, 400)}" alt="${img.caption}" loading="lazy" width="300" height="200"
                                 onerror="this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;color:#999;font-size:2rem;\\'>🏛️</div>'">
                         </div>
                         <p class="bestiary-caption">${img.caption}</p>
@@ -683,7 +697,7 @@ function openDetail(poi) {
         <div class="user-gallery-section">
             <h3>📸 Galería de Usuarios</h3>
             <div class="user-gallery-container">
-                ${poi.userGallery.map(img => `<img src="${img}" class="user-gallery-img">`).join('')}
+                ${poi.userGallery.map(img => `<img src="${img}" class="user-gallery-img" width="150" height="100" loading="lazy" alt="Foto de viajero">`).join('')}
             </div>
         </div>` : ''}
 
@@ -894,62 +908,6 @@ function renderAgenda() {
             </div>
         `;
     }).join('');
-}
-
-async function renderExtra() {
-    const recipesCont = document.getElementById('recipes-container');
-    const sweetsCont = document.getElementById('sweets-container');
-    const searchInput = document.getElementById('search-extra');
-    const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
-    
-    if(recipesCont) {
-        // Habilitar filtro de búsqueda también para las recetas medievales
-        const filteredRecipes = recipesData.filter(r => 
-            !search || r.name.toLowerCase().includes(search) || r.origin.toLowerCase().includes(search) || r.ingredients.some(ing => ing.toLowerCase().includes(search))
-        );
-        recipesCont.innerHTML = filteredRecipes.map(r => `
-            <div class="card" style="cursor:default">
-                ${r.thumbnail ? `
-                <div class="card-img-container" style="height:150px; position:relative;">
-                    <img src="${r.thumbnail}" alt="${r.name}" style="width:100%; height:100%; object-fit:cover;">
-                    ${r.video ? `
-                    <a href="${r.video}" target="_blank" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background:rgba(0,0,0,0.7); color:white; border-radius:50%; width:45px; height:45px; display:flex; align-items:center; justify-content:center; text-decoration:none; font-size:20px; transition: background 0.3s;" onmouseover="this.style.background='red'" onmouseout="this.style.background='rgba(0,0,0,0.7)'">▶️</a>
-                    ` : ''}
-                </div>
-                ` : ''}
-                <div class="card-content">
-                    <h3 class="card-title">${r.name}</h3>
-                    <p style="color:var(--accent); font-weight:600; font-size:0.8rem">Origen: ${r.origin}</p>
-                    <p style="font-size:0.8rem; margin-top:5px"><b>Ingredientes:</b> ${r.ingredients.join(', ')}</p>
-                    <p style="font-size:0.8rem; margin-top:5px"><b>Preparación:</b> ${r.preparation}</p>
-                    ${r.video ? `
-                    <div style="margin-top:12px; text-align:right;">
-                        <a href="${r.video}" target="_blank" class="btn-primary" style="display:inline-block; font-size:0.75rem; padding:6px 12px; width:auto; text-decoration:none; background:#c4302b; border-color:#c4302b;">📺 Ver Receta en Vídeo</a>
-                    </div>
-                    ` : ''}
-                </div>
-            </div>
-        `).join('');
-    }
-
-    if(sweetsCont) {
-        const filteredSweets = conventSweets.filter(s => 
-            !search || s.name.toLowerCase().includes(search) || s.location.toLowerCase().includes(search) || s.specialty.toLowerCase().includes(search)
-        );
-        sweetsCont.innerHTML = filteredSweets.map(s => `
-            <div class="card" style="cursor:default">
-                <div class="card-img-container" style="height:150px">
-                    <img src="${s.image}" alt="${s.name}">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-title" style="font-size:1.1rem">${s.name}</h3>
-                    <p style="font-size:0.8rem; color:var(--text-muted)">📍 ${s.location}</p>
-                    <p style="font-size:0.85rem; margin-top:5px"><b>Especialidad:</b> ${s.specialty}</p>
-                    <p style="font-size:0.85rem; color:var(--primary); font-weight:600">🌐 ${s.contact}</p>
-                </div>
-            </div>
-        `).join('');
-    }
 }
 
 // --- Helpers de Visita ---
@@ -1739,19 +1697,13 @@ function setupEventListeners() {
             }
             if(view === 'map') setTimeout(() => map.invalidateSize(), 100);
             if(view === 'itinerary' && itineraryMap) setTimeout(() => itineraryMap.invalidateSize(), 100);
-            if(view === 'weather') {
-                setTimeout(() => {
-                    initWeatherMapIfNeeded();
-                    if (weatherMap) weatherMap.invalidateSize();
-                }, 100);
-            }
             if(view === 'community') renderComments();
             if(view === 'profile') updateProfileForm();
             
             // Mostrar o ocultar controles de búsqueda según la sección activa
             const controlsSection = document.querySelector('.controls-section');
             if (controlsSection) {
-                if (view === 'list' || view === 'restaurants' || view === 'extra') {
+                if (view === 'list' || view === 'restaurants') {
                     controlsSection.style.display = 'block';
                     const secondarySearch = document.querySelector('.secondary-search');
                     const primarySearch = document.querySelector('.search-bar:not(.secondary-search)');
@@ -1776,7 +1728,7 @@ function setupEventListeners() {
     document.getElementById('filter-culture').addEventListener('change', () => { renderList(); renderMarkers(); });
     document.getElementById('sort-by').addEventListener('change', () => { renderList(); renderMarkers(); });
     document.getElementById('search-input').addEventListener('input', () => { renderList(); renderMarkers(); updateLocalityInfo(); });
-    document.getElementById('search-extra').addEventListener('input', () => { renderAgenda(); renderExtra(); });
+    document.getElementById('search-extra').addEventListener('input', () => { renderAgenda(); });
 
     // Listeners para controles del mapa general
     const mapLayerSelect = document.getElementById('map-layer-select');
@@ -1952,9 +1904,9 @@ function handleRegister(e) {
     statusMsg.textContent = "Registrando noble viajero, por favor espera...";
     statusMsg.style.color = "blue";
 
-    if (supabase) {
+    if (supabaseClient) {
         // Registro de usuario en Supabase (servidor realiza el hashing y validación)
-        supabase.auth.signUp({
+        supabaseClient.auth.signUp({
             email: email,
             password: pass,
             options: {
@@ -2032,9 +1984,9 @@ function handleLogin(e) {
         return;
     }
 
-    if (supabase) {
+    if (supabaseClient) {
         // Inicio de sesión en Supabase (el estado se propaga a través de onAuthStateChange)
-        supabase.auth.signInWithPassword({
+        supabaseClient.auth.signInWithPassword({
             email: email,
             password: pass
         })
@@ -2082,9 +2034,9 @@ function handleLogin(e) {
 }
 
 function handleGoogleLogin() {
-    if (supabase) {
+    if (supabaseClient) {
         // Autenticación con Google usando Supabase OAuth
-        supabase.auth.signInWithOAuth({
+        supabaseClient.auth.signInWithOAuth({
             provider: 'google',
             options: {
                 redirectTo: window.location.origin
@@ -3223,7 +3175,7 @@ function handleHashRouting() {
         const targetId = hash.substring(1);
         
         // Excluir hashes de vistas generales
-        const mainViews = ['list-view', 'map-view', 'itinerary-view', 'agenda-view', 'ranking-view', 'restaurants-view', 'extra-view', 'community-view', 'weather-view', '3d-view', 'learn-view', 'profile-view'];
+        const mainViews = ['list-view', 'map-view', 'itinerary-view', 'agenda-view', 'ranking-view', 'restaurants-view', 'community-view', '3d-view', 'learn-view', 'profile-view'];
         if (mainViews.includes(targetId)) return;
         
         const poi = window.poiData.find(p => p.id === targetId);

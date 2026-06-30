@@ -1,0 +1,47 @@
+[
+  {
+    "id": "1",
+    "username": "Carlos M.",
+    "churchId": "colegiata-de-santa-juliana-santillana-del-mar",
+    "churchName": "Colegiata de Santa Juliana (Santillana del Mar)",
+    "stars": 5,
+    "text": "El claustro es espectacular. Recomiendo fijarse en los capiteles historiados, hay un nivel de detalle increíble en la escultura de las escenas bíblicas.",
+    "date": "2026-06-05"
+  },
+  {
+    "id": "2",
+    "username": "Lucía G.",
+    "churchId": "colegiata-de-san-pedro-de-cervatos",
+    "churchName": "Colegiata de San Pedro de Cervatos",
+    "stars": 4,
+    "text": "Muy curiosa la temática erótica de los canecillos. El entorno de Cervatos en la sierra es muy tranquilo y propicio para hacer fotos.",
+    "date": "2026-06-06"
+  },
+  {
+    "id": "3",
+    "username": "María J.",
+    "churchId": "iglesia-de-santa-maria-lebeña",
+    "churchName": "Iglesia de Santa María (Lebeña)",
+    "stars": 5,
+    "text": "Una joya prerrománica mozárabe sin igual en la comarca de Liébana. Los arcos de herradura y el tejo milenario exterior te transportan en el tiempo.",
+    "date": "2026-06-07"
+  },
+  {
+    "id": "4",
+    "username": "David R.",
+    "churchId": "iglesia-de-santa-maria-piasca",
+    "churchName": "Iglesia de Santa María (Piasca)",
+    "stars": 5,
+    "text": "Excelente muestra del románico pleno con unos relieves escultóricos de portadas soberbios. Los capiteles del ábside tienen una finura increíble.",
+    "date": "2026-06-07"
+  },
+  {
+    "id": "5",
+    "username": "Sofía P.",
+    "churchId": "iglesia-de-santa-maria-de-puerto",
+    "churchName": "Iglesia de Santa María de Puerto",
+    "stars": 4,
+    "text": "Ubicada en Santoña, es preciosa con su mezcla de estilos y su vinculación histórica con los marineros locales. Vale mucho la pena visitarla.",
+    "date": "2026-06-07"
+  }
+]

@@ -1,16 +1,16 @@
 :root {
-    --primary: #03192e; /* Deep Ocean Blue */
-    --primary-light: #1a2e44;
-    --accent: #904d00; /* Terrestrial Orange */
-    --accent-light: #fe932c;
-    --bg-light: #f8f9fa; /* Stone Gray (surface) */
-    --surface-container: #edeeef;
+    --primary: #0a0a0a; /* Matte Black */
+    --primary-light: #1f1f1f; /* Charcoal Hover */
+    --accent: #ff3b00; /* Safety Orange - The Single Accent Color */
+    --accent-light: #ff5522;
+    --bg-light: #ffffff; /* Clean White Canvas */
+    --surface-container: #eaeaea; /* Light border / separator */
     --surface-highest: #ffffff;
-    --text-main: #191c1d;
-    --text-muted: #43474d;
+    --text-main: #0c0c0c; /* Crisp dark text */
+    --text-muted: #737373; /* Refined gray for helper text */
     --white: #ffffff;
-    --shadow: 0 10px 40px rgba(3, 25, 46, 0.04); /* Ambient Shadow */
-    --border-radius: 4px; /* Soft 0.25rem */
+    --shadow: none; /* Modern flat design, no cheap gradients/shadows */
+    --border-radius: 0px; /* Sharp corners for premium editorial look */
 }
 
 * {
@@ -20,14 +20,15 @@
 }
 
 body {
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Neue Montreal', sans-serif;
     background-color: var(--bg-light);
     color: var(--text-main);
-    line-height: 1.6;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
     overflow-x: hidden;
 }
 
-/* Imágenes fluidas para evitar desbordamiento */
+/* Fluid images with aspect ratio support */
 img {
     max-width: 100%;
     height: auto;
@@ -35,12 +36,14 @@ img {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     color: var(--primary);
-    font-weight: 600;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
 }
 
-/* Intro Hero Animation */
+/* Intro Hero Animation - Editorial Cover Style */
 .intro-container {
     position: fixed;
     top: 0; left: 0;
@@ -49,8 +52,8 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: opacity 1s ease-out, visibility 1s;
-    background: var(--primary);
+    transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 1.2s;
+    background: #000000;
 }
 
 .intro-container.fade-out {
@@ -63,14 +66,14 @@ h1, h2, h3, h4, h5, h6 {
     width: 100%; height: 100%;
     display: flex; flex-direction: column;
     justify-content: center; align-items: center;
-    transition: opacity 2s ease-in-out;
+    transition: opacity 2.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .intro-img {
     position: absolute;
     width: 100%; height: 100%;
     object-fit: cover;
-    filter: brightness(0.6);
+    filter: brightness(0.35) contrast(1.05); /* Editorial dark overlay */
 }
 
 .stress-bg { z-index: 2; }
@@ -79,84 +82,85 @@ h1, h2, h3, h4, h5, h6 {
 .intro-text {
     position: relative;
     z-index: 3;
-    font-family: 'Noto Serif', serif;
-    font-size: 3.5rem;
-    font-weight: 700;
-    line-height: 1.2;
-    color: white;
+    font-family: 'Neue Montreal', sans-serif;
+    font-size: clamp(3rem, 8vw, 7.5rem); /* Giant XXL Heading */
+    font-weight: 800;
+    line-height: 0.95;
+    color: var(--white);
     text-align: center;
-    text-shadow: 0 0.625rem 2.5rem rgba(0,0,0,0.85);
-    padding: 1.875rem;
-    letter-spacing: -0.03em;
-    max-width: 56.25rem;
+    padding: 2rem;
+    letter-spacing: -0.05em;
+    max-width: 80rem;
+    text-transform: uppercase;
 }
 
 #skip-intro {
     position: absolute;
-    bottom: 3.125rem;
+    bottom: 4rem;
     z-index: 10;
     background: transparent;
-    border: 0.0625rem solid rgba(255,255,255,0.5);
-    backdrop-filter: blur(0.625rem);
-    color: white;
-    padding: 0.9375rem 2.5rem;
-    font-family: 'Manrope', sans-serif;
-    font-size: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--white);
+    padding: 1rem 2.5rem;
+    font-family: 'Neue Montreal', sans-serif;
+    font-size: 0.9rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.2em;
     font-weight: 700;
-    border-radius: 2.5rem;
+    border-radius: var(--border-radius);
     cursor: pointer;
-    transition: all 0.3s;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 #skip-intro:hover {
-    background: white;
-    color: var(--primary);
+    background: var(--white);
+    color: #000000;
+    border-color: var(--white);
 }
 
-/* Header Glassmorphism */
+/* Header Glassmorphism - Minimalist Editorial Header */
 .magical-header {
-    background: rgba(248, 249, 250, 0.85);
-    backdrop-filter: blur(1.25rem);
-    -webkit-backdrop-filter: blur(1.25rem);
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(1.5rem);
+    -webkit-backdrop-filter: blur(1.5rem);
     color: var(--primary);
-    padding: 1.25rem 5%;
+    padding: 1.5rem 5%;
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 0.0625rem solid rgba(0,0,0,0.05);
+    border-bottom: 1px solid var(--surface-container);
 }
 
 .header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 0.9375rem;
+    margin-bottom: 1rem;
 }
 
 .logo-text {
-    font-family: 'Noto Serif', serif;
-    font-size: 2.8rem;
-    font-weight: 700;
-    letter-spacing: -0.0625rem;
+    font-family: 'Neue Montreal', sans-serif;
+    font-size: clamp(2rem, 4vw, 3.2rem); /* Large elegant typographic branding */
+    font-weight: 800;
+    letter-spacing: -0.05em;
     color: var(--primary);
-    line-height: 1.1;
+    line-height: 0.95;
+    text-transform: uppercase;
 }
 
 .logo-sub {
-    font-size: 1.1rem;
+    font-size: 0.8rem;
     text-transform: uppercase;
     font-weight: 700;
-    letter-spacing: 0.15em;
-    color: var(--accent);
-    margin-top: -0.125rem;
+    letter-spacing: 0.4em; /* Broad elegant tracking */
+    color: var(--accent); /* Only color accent */
+    margin-top: 0.15rem;
     display: block;
 }
 
 .user-stats {
     display: flex;
-    gap: 1.5625rem;
+    gap: 2rem;
     align-items: center;
 }
 
@@ -168,34 +172,36 @@ h1, h2, h3, h4, h5, h6 {
 
 #site-views, #visited-counter {
     font-weight: 700;
-    font-size: 1.1rem;
-    font-family: 'Noto Serif', serif;
+    font-size: 1.2rem;
+    font-family: 'Neue Montreal', sans-serif;
+    color: var(--primary);
 }
 
 .stat-label {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    opacity: 0.6;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
 }
 
 .btn-auth {
     background: var(--primary);
-    border: none;
-    color: white;
-    padding: 0.75rem 1.5625rem;
+    border: 1px solid var(--primary);
+    color: var(--white);
+    padding: 0.75rem 1.75rem;
     border-radius: var(--border-radius);
     cursor: pointer;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: 0.85rem;
-    transition: background 0.3s, transform 0.2s;
+    letter-spacing: 0.1em;
+    font-size: 0.8rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-auth:hover {
-    background: var(--primary-light);
-    transform: translateY(-0.125rem);
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--white);
 }
 
 /* Navigation */
@@ -214,13 +220,15 @@ h1, h2, h3, h4, h5, h6 {
     background: none;
     border: none;
     color: var(--text-muted);
-    font-family: 'Manrope', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
+    font-family: 'Neue Montreal', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
     cursor: pointer;
-    transition: color 0.3s;
+    transition: color 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
-    padding-bottom: 0.3125rem;
+    padding-bottom: 0.5rem;
     white-space: nowrap;
 }
 
@@ -238,7 +246,7 @@ h1, h2, h3, h4, h5, h6 {
     bottom: -0.3125rem;
     left: 0;
     width: 100%;
-    height: 0.125rem;
+    height: 2px;
     background: var(--accent);
 }
 
@@ -259,17 +267,18 @@ h1, h2, h3, h4, h5, h6 {
     background: var(--surface-highest);
     padding: 1.875rem;
     border-radius: var(--border-radius);
+    border: 1px solid var(--surface-container);
     box-shadow: var(--shadow);
 }
 
 .dashboard-card h3 {
     margin-bottom: 1.25rem;
-    font-size: 1.25rem;
+    font-size: 1rem;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-family: 'Manrope', sans-serif;
+    letter-spacing: 0.1em;
+    font-family: 'Neue Montreal', sans-serif;
     color: var(--primary);
-    border-bottom: 0.0625rem solid var(--surface-container);
+    border-bottom: 1px solid var(--surface-container);
     padding-bottom: 0.625rem;
 }
 
@@ -302,40 +311,42 @@ h1, h2, h3, h4, h5, h6 {
 
 .search-bar input {
     width: 100%;
-    padding: 1.125rem 1.5625rem;
-    border-radius: 0.25rem;
-    border: none;
-    border-bottom: 0.125rem solid var(--surface-container);
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--surface-container);
     background: var(--surface-highest);
     box-shadow: var(--shadow);
-    font-family: 'Manrope', sans-serif;
-    font-size: 1rem;
-    transition: border-color 0.3s;
+    font-family: 'Neue Montreal', sans-serif;
+    font-size: 0.95rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .search-bar input:focus {
     outline: none;
-    border-bottom-color: var(--accent);
+    border-color: var(--accent);
 }
 
 .secondary-search input {
-    background-color: #fff9ed;
-    border-color: #ffe0b2;
+    background-color: var(--bg-light);
+    border-color: var(--surface-container);
 }
 
 .filters-scroll {
     display: flex;
-    gap: 0.9375rem;
+    gap: 0.75rem;
     flex-wrap: wrap;
 }
 
 select {
-    padding: 0.75rem 1.25rem;
-    border-radius: 2.5rem;
-    border: 0.0625rem solid var(--surface-container);
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--surface-container);
     background: var(--surface-highest);
-    font-family: 'Manrope', sans-serif;
-    font-weight: 600;
+    font-family: 'Neue Montreal', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     color: var(--text-main);
     cursor: pointer;
     box-shadow: var(--shadow);
@@ -345,7 +356,7 @@ select {
 /* Cards Grid */
 .magical-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
     gap: 2.5rem;
     padding: 0 5% 5rem;
     max-width: 80rem;
@@ -356,75 +367,80 @@ select {
     background: var(--surface-highest);
     border-radius: var(--border-radius);
     overflow: hidden;
+    border: 1px solid var(--surface-container);
     box-shadow: var(--shadow);
-    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     cursor: pointer;
-    border: none;
     display: flex;
     flex-direction: column;
 }
 
 .card:hover {
-    transform: translateY(-0.5rem);
-    box-shadow: 0 1.25rem 3.125rem rgba(3, 25, 46, 0.08);
+    transform: translateY(-4px);
+    border-color: var(--primary);
 }
 
 .card-img-container {
-    height: 15rem;
+    height: 16rem;
     overflow: hidden;
     position: relative;
+    background: var(--surface-container);
 }
 
 .card-img-container img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.7s ease;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .card:hover .card-img-container img {
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
 
 .card-content {
-    padding: 1.875rem;
+    padding: 1.5rem;
     position: relative;
     background: var(--surface-highest);
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .card-title {
-    font-size: 1.6rem;
-    margin-bottom: 0.9375rem;
-    line-height: 1.3;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+    color: var(--primary);
 }
 
 .tag {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
+    padding: 0.3rem 0.75rem;
     background: var(--surface-container);
-    border-radius: 1.25rem;
-    font-size: 0.75rem;
+    border-radius: var(--border-radius);
+    font-size: 0.65rem;
     color: var(--primary);
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
-    font-weight: 700;
+    margin-right: 0.35rem;
+    margin-bottom: 0.35rem;
+    font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.05rem;
 }
 
 /* Clases dinámicas de tarjetas */
 .card-location {
     font-size: 0.8rem;
     color: var(--text-muted);
-    margin-bottom: 0.625rem;
+    margin-bottom: 0.75rem;
 }
 
 .tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.625rem;
+    gap: 0.25rem;
+    margin-top: auto;
 }
 
 .tag-order {
@@ -433,38 +449,43 @@ select {
 }
 
 .tag-distance {
-    background: #27ae60 !important;
+    background: #00875a !important; /* Premium flat emerald green */
     color: white !important;
 }
 
 .mini-map-container {
     height: 12.5rem;
     width: 100%;
-    border-radius: 0.5rem;
-    margin: 0.9375rem 0;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--surface-container);
+    margin: 1rem 0;
 }
 
 .bestiary-source {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     color: var(--text-muted);
     margin-top: 0.75rem;
     margin-bottom: 0;
 }
 
 .upload-form-container {
-    margin-top: 1.25rem;
-    background: #f9f9f9;
-    padding: 0.9375rem;
-    border-radius: 0.5rem;
+    margin-top: 1.5rem;
+    background: #fafafa;
+    border: 1px solid var(--surface-container);
+    padding: 1.25rem;
+    border-radius: var(--border-radius);
 }
 
 .upload-form-container h4 {
     margin-top: 0;
-    margin-bottom: 0.625rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .upload-form-container input[type="file"] {
-    margin-bottom: 0.625rem;
+    margin-bottom: 0.75rem;
 }
 
 .upload-form-status {
@@ -475,7 +496,7 @@ select {
 
 .modal-footer {
     margin-top: 1.5625rem;
-    border-top: 0.0625rem solid var(--surface-container);
+    border-top: 1px solid var(--surface-container);
     padding-top: 0.9375rem;
     display: flex;
     justify-content: flex-end;
@@ -486,32 +507,37 @@ select {
     color: var(--primary);
     border: none;
     padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
+    border-radius: var(--border-radius);
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     transition: background 0.2s;
 }
 
 .modal-footer button:hover {
-    background: rgba(28, 58, 107, 0.1);
+    background: var(--primary);
+    color: var(--white);
 }
 
 .user-gallery-section {
-    margin-top: 1.25rem;
+    margin-top: 1.5rem;
 }
 
 .user-gallery-container {
     display: flex;
-    gap: 0.625rem;
+    gap: 0.75rem;
     overflow-x: auto;
-    padding-bottom: 0.3125rem;
+    padding-bottom: 0.5rem;
 }
 
 .user-gallery-img {
     width: 9.375rem;
     height: 6.25rem;
     object-fit: cover;
-    border-radius: 0.25rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--surface-container);
     flex-shrink: 0;
 }
 
@@ -520,10 +546,10 @@ select {
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    background: rgba(3, 25, 46, 0.7);
+    background: rgba(0, 0, 0, 0.85); /* Solid dark editorial screen overlay */
     display: none;
     z-index: 10000;
-    backdrop-filter: blur(0.625rem);
+    backdrop-filter: blur(0.5rem);
 }
 
 .modal.active {
@@ -534,50 +560,55 @@ select {
 
 .modal-content {
     background: var(--surface-highest);
-    padding: 3.125rem;
-    border-radius: 0.5rem;
+    padding: 2.5rem;
+    border-radius: var(--border-radius);
     width: 90%;
-    max-width: 43.75rem;
+    max-width: 45rem;
     position: relative;
     max-height: 90vh;
     overflow-y: auto;
-    box-shadow: 0 1.5625rem 3.125rem -0.75rem rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--primary); /* Sharp minimal border outline */
+    box-shadow: none;
 }
 
 .close-btn {
     position: absolute;
-    right: 1.5625rem;
-    top: 1.5625rem;
-    font-size: 2rem;
+    right: 1.5rem;
+    top: 1.5rem;
+    font-size: 1.75rem;
     cursor: pointer;
     color: var(--text-muted);
-    transition: color 0.3s;
+    transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    line-height: 1;
 }
 
 .close-btn:hover {
-    color: var(--primary);
+    color: var(--accent);
 }
 
 /* Auth Modal Styles */
 .auth-tabs {
     display: flex;
-    gap: 1.25rem;
+    gap: 1.5rem;
     margin-bottom: 1.875rem;
-    border-bottom: 0.125rem solid var(--surface-container);
+    border-bottom: 1px solid var(--surface-container);
 }
 
 .tab-btn {
     background: none;
     border: none;
-    padding: 0.625rem;
-    font-weight: 600;
+    padding: 0.5rem 0;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.05em;
     cursor: pointer;
     color: var(--text-muted);
 }
 
 .tab-btn.active {
     color: var(--primary);
-    border-bottom: 0.125rem solid var(--accent);
+    border-bottom: 2px solid var(--accent);
 }
 
 .auth-form {
@@ -594,16 +625,26 @@ select {
 
 .form-group label {
     display: block;
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 700;
     margin-bottom: 0.5rem;
 }
 
 .form-group input {
     width: 100%;
-    padding: 0.75rem 0.9375rem;
-    border: 0.0625rem solid var(--surface-container);
-    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--surface-container);
+    border-radius: var(--border-radius);
+    font-family: 'Neue Montreal', sans-serif;
+    font-size: 0.9rem;
+    background: var(--bg-light);
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent);
 }
 
 .pass-wrapper {
@@ -612,7 +653,7 @@ select {
 
 .toggle-pass {
     position: absolute;
-    right: 0.625rem;
+    right: 0.75rem;
     top: 50%;
     transform: translateY(-50%);
     background: none;
@@ -621,10 +662,10 @@ select {
 }
 
 .strength-meter {
-    height: 0.25rem;
+    height: 3px;
     background: var(--surface-container);
-    margin-top: 0.3125rem;
-    border-radius: 0.125rem;
+    margin-top: 0.5rem;
+    border-radius: var(--border-radius);
     overflow: hidden;
 }
 
@@ -632,24 +673,26 @@ select {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.625rem;
+    gap: 0.75rem;
     width: 100%;
     background: white;
-    color: #333;
-    border: 0.0625rem solid #dadce0;
-    padding: 0.75rem;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    font-size: 0.9rem;
+    color: var(--primary);
+    border: 1px solid var(--surface-container);
+    padding: 0.8rem;
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: 0.8rem;
     cursor: pointer;
-    margin-top: 0.625rem;
-    transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+    margin-top: 0.75rem;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .btn-google:hover {
-    background-color: #f8f9fa;
-    border-color: #c6c6c6;
-    box-shadow: 0 0.0625rem 0.1875rem 0 rgba(60,64,67,0.15);
+    background-color: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
 }
 
 .btn-google svg {
@@ -676,7 +719,7 @@ select {
 .ranking-list {
     display: flex;
     flex-direction: column;
-    gap: 1.25rem;
+    gap: 1rem;
     margin-top: 1.875rem;
 }
 
@@ -687,12 +730,18 @@ select {
     padding: 1.25rem 1.875rem;
     background: var(--surface-highest);
     border-radius: var(--border-radius);
+    border: 1px solid var(--surface-container);
     box-shadow: var(--shadow);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.ranking-item:hover {
+    border-color: var(--primary);
 }
 
 .rank-number {
-    font-weight: 700;
-    font-family: 'Noto Serif', serif;
+    font-weight: 800;
+    font-family: 'Neue Montreal', sans-serif;
     font-size: 1.5rem;
     color: var(--accent);
     width: 3.125rem;
@@ -700,9 +749,9 @@ select {
 
 .rank-name {
     flex: 1;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.1rem;
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     color: var(--primary);
 }
 
@@ -710,9 +759,11 @@ select {
     background: var(--surface-container);
     color: var(--primary);
     padding: 0.375rem 0.9375rem;
-    border-radius: 1.25rem;
+    border-radius: var(--border-radius);
     font-size: 0.85rem;
-    font-weight: 700;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 /* Vistas */
@@ -729,10 +780,37 @@ select {
     padding: 0 5% 5rem;
 }
 
-.agenda-panel h2, .ranking-panel h2, .extra-panel h2, .itinerary-panel h2, .restaurants-panel h2 {
-    font-size: 2.5rem;
-    margin-bottom: 2.5rem;
-    text-align: center;
+/* Typographic XXL panel headers with single visual accent */
+.agenda-panel h2, 
+.ranking-panel h2, 
+.extra-panel h2, 
+.itinerary-panel h2, 
+.restaurants-panel h2, 
+.3d-panel h2,
+.pending-section h2,
+.admin-panel-section h2 {
+    font-size: clamp(2.2rem, 5.5vw, 4rem) !important;
+    font-weight: 800 !important;
+    line-height: 1.05 !important;
+    letter-spacing: -0.05em !important;
+    text-transform: uppercase !important;
+    text-align: left !important; /* Elegant asymmetrical editorial look */
+    margin-bottom: 1.5rem !important;
+    font-family: 'Neue Montreal', sans-serif !important;
+    color: var(--primary) !important;
+}
+
+/* Single red-orange accent point at the end of headings */
+.agenda-panel h2::after, 
+.ranking-panel h2::after, 
+.extra-panel h2::after, 
+.itinerary-panel h2::after, 
+.restaurants-panel h2::after, 
+.3d-panel h2::after,
+.pending-section h2::after,
+.admin-panel-section h2::after {
+    content: '.' !important;
+    color: var(--accent) !important;
 }
 
 /* Banner de localidad */
@@ -742,7 +820,8 @@ select {
     border-radius: var(--border-radius);
     font-size: 1rem;
     color: var(--primary);
-    border-left: 0.25rem solid var(--accent);
+    border: 1px solid var(--surface-container);
+    border-left: 4px solid var(--accent); /* Intentional structural accent */
     box-shadow: var(--shadow);
     animation: slideDown 0.3s ease-out;
 }
@@ -839,7 +918,7 @@ select {
     border-radius: var(--border-radius);
     font-weight: 700;
     cursor: pointer;
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Neue Montreal', sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     transition: background 0.3s, transform 0.2s;
@@ -889,7 +968,7 @@ select {
 
 .timeline-item .time {
     font-weight: 700;
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Neue Montreal', sans-serif;
     color: var(--accent);
     margin-bottom: 0.5rem;
 }
@@ -916,7 +995,7 @@ select {
 
 .auth-form h3 {
     margin-bottom: 1.25rem;
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     color: var(--primary);
 }
 
@@ -983,7 +1062,7 @@ select {
 .control-group-map select {
     padding: 0.5rem 0.75rem;
     font-size: 0.85rem;
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Neue Montreal', sans-serif;
     border: 0.0625rem solid rgba(28, 58, 107, 0.2);
     border-radius: 0.375rem;
     background: #fff;
@@ -1082,7 +1161,7 @@ select {
 .main-seo-title {
     text-align: center;
     margin: 2.5rem auto 0.625rem;
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     font-size: 2.2rem;
     font-weight: 600;
     color: var(--primary);
@@ -1096,7 +1175,7 @@ select {
     text-decoration: none;
     opacity: 0.65;
     transition: opacity 0.3s, color 0.3s;
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Neue Montreal', sans-serif;
     font-weight: 600;
 }
 
@@ -1114,7 +1193,7 @@ select {
     background: transparent;
     border: 0.0625rem solid var(--surface-container);
     color: var(--text-muted);
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Neue Montreal', sans-serif;
     font-weight: 700;
     font-size: 0.95rem;
     padding: 0.75rem 1.5rem;
@@ -1271,7 +1350,7 @@ select {
     align-items: center;
     justify-content: center;
     color: rgba(255, 255, 255, 0.85);
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Neue Montreal', sans-serif;
     font-size: 0.85rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -1305,7 +1384,7 @@ select {
     align-items: center;
     justify-content: center;
     color: white;
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     font-size: 1.25rem;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -1352,7 +1431,7 @@ select {
 }
 
 .relations-map-title {
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     color: var(--primary);
     font-size: 1.2rem;
     margin-top: 0;
@@ -1386,7 +1465,7 @@ select {
 }
 
 .relation-selector-card label {
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Neue Montreal', sans-serif;
     font-weight: 700;
     font-size: 0.95rem;
     color: var(--primary);
@@ -1399,7 +1478,7 @@ select {
     padding: 0.875rem 1.25rem;
     border-radius: 0.5rem;
     border: 0.0625rem solid rgba(28, 58, 107, 0.15);
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Neue Montreal', sans-serif;
     font-size: 0.95rem;
     color: var(--primary);
     background: var(--surface-highest);
@@ -1475,7 +1554,7 @@ select {
 }
 
 .relation-card-title {
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     font-size: 1.05rem;
     color: var(--primary);
     margin: 0;
@@ -1540,7 +1619,7 @@ select {
 }
 
 .modal-related-title {
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     color: var(--primary);
     font-size: 1.2rem;
     margin-top: 0;
@@ -1606,7 +1685,7 @@ select {
 }
 
 .modal-related-card-title {
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     font-size: 0.88rem;
     font-weight: 700;
     color: var(--primary);
@@ -1767,6 +1846,11 @@ select {
    MEDIA QUERY PARA SMARTPHONES (HASTA 48rem / 768PX)
    ========================================================================= */
 @media (max-width: 48rem) {
+    /* Ajuste de botón skip-intro para evitar barra de navegación en móviles */
+    #skip-intro {
+        bottom: 8rem !important;
+    }
+
     /* Mostrar botón hamburguesa */
     .hamburger-btn {
         display: flex;
@@ -1959,7 +2043,7 @@ select {
    NUEVAS CLASES ADAPTATIVAS PARA ELIMINAR ESTILOS EN LÍNEA
    ========================================================================= */
 .modal-detail-title {
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     color: var(--primary);
     font-size: 1.8rem;
     margin-bottom: 0.625rem;
@@ -2043,7 +2127,7 @@ select {
 }
 
 .bestiary-title {
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     color: var(--primary);
     font-size: 1.15rem;
     margin-top: 0;
@@ -2113,7 +2197,7 @@ select {
     font-size: 1rem;
     border-bottom: 0.0625rem solid #eee;
     padding-bottom: 0.3125rem;
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     color: var(--primary);
     margin-top: 1.25rem;
 }
@@ -2220,7 +2304,7 @@ select {
 }
 
 .pending-section-title {
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     color: var(--primary);
     margin-bottom: 0.625rem;
     display: flex;
@@ -2246,7 +2330,7 @@ select {
 }
 
 .admin-section-title {
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     color: #c4302b;
     margin-bottom: 0.625rem;
     display: flex;
@@ -2272,7 +2356,7 @@ select {
 .admin-card h3 {
     margin-top: 0;
     color: var(--primary);
-    font-family: 'Manrope', sans-serif;
+    font-family: 'Neue Montreal', sans-serif;
 }
 
 .admin-table-container {
@@ -2328,7 +2412,7 @@ select {
 }
 
 .ranking-column-title {
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     color: var(--primary);
     border-bottom: 0.125rem solid var(--accent);
     padding-bottom: 0.625rem;
@@ -2587,7 +2671,7 @@ select {
 }
 
 .newsletter-title {
-    font-family: 'Noto Serif', serif;
+    font-family: 'Neue Montreal', sans-serif;
     color: white;
     margin-bottom: 0.625rem;
     font-size: 1.5rem;
@@ -2631,4 +2715,166 @@ select {
     margin-top: 0.625rem;
     font-weight: 600;
     text-align: center;
+}
+
+/* =========================================================================
+   VISTA DE COMPRA DE CAFÉ / DONACIÓN CENTRADA (BUY ME A COFFEE)
+   ========================================================================= */
+
+/* Contenedor general del panel de donaciones */
+.coffee-panel {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 3rem 5% 5rem;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+/* Título principal de la sección */
+.coffee-panel h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    color: var(--primary);
+}
+
+/* Introducción explicativa sobre la donación */
+.coffee-intro {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 45rem;
+    margin: 0 auto 3rem;
+    line-height: 1.6;
+}
+
+/* Tarjeta contenedora principal, centrada con sombra suave */
+.coffee-card-centered {
+    background: var(--surface-highest);
+    border-radius: 12px;
+    box-shadow: 0 15px 50px rgba(3, 25, 46, 0.08);
+    padding: 3.5rem 2rem;
+    max-width: 32rem;
+    margin: 0 auto;
+    border: 1px solid rgba(3, 25, 46, 0.05);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Contenedor del bloque de código QR */
+.coffee-qr-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+/* Caja blanca con sombra para resaltar el código QR */
+.qr-box {
+    background: white;
+    padding: 1.25rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Animación sutil de escala al pasar el ratón por el código QR */
+.qr-box:hover {
+    transform: scale(1.04);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+}
+
+/* Ajustes de imagen del código QR */
+.qr-image {
+    width: 220px;
+    height: 220px;
+    display: block;
+}
+
+/* Texto de ayuda debajo de la imagen QR */
+.qr-text {
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+/* Línea divisoria decorativa */
+.coffee-divider {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5rem 0 2rem;
+    position: relative;
+}
+
+/* Línea horizontal en background de la división */
+.coffee-divider::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--surface-container);
+    z-index: 1;
+}
+
+/* Texto interior del divisor */
+.coffee-divider span {
+    background: var(--surface-highest);
+    padding: 0 1rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    font-style: italic;
+    z-index: 2;
+}
+
+/* Contenedor del botón de acción y texto del email */
+.coffee-action-wrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Botón estilizado centrado para realizar la donación directa en PayPal */
+.btn-coffee-action-centered {
+    width: 100%;
+    max-width: 20rem;
+    padding: 1.1rem 2.2rem;
+    font-size: 1.1rem;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 30px;
+    font-weight: 700;
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 8px 25px rgba(144, 77, 0, 0.2);
+    background-color: var(--accent);
+    color: var(--white) !important;
+    border: none;
+    cursor: pointer;
+    display: inline-block;
+}
+
+/* Efecto hover interactivo sobre el botón del café */
+.btn-coffee-action-centered:hover {
+    background: var(--accent-light);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 30px rgba(254, 147, 44, 0.35);
+    color: var(--white) !important;
+}
+
+/* Leyenda informativa de la cuenta destino de PayPal */
+.paypal-email-text {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+}
+
+.paypal-email-text strong {
+    color: var(--primary);
 }
