@@ -615,7 +615,7 @@ window.poiData = [
     "zone": "Cantabria",
     "pop": 1000,
     "images": [
-      "colegiata_santa_juliana_santillana_1777204517020.png"
+      "https://arteviajero.com/wp-content/uploads/2025/02/Iglesia-de-Arenillas-de-Ebro-Cantabria-Arte.jpg"
     ],
     "description": "La iglesia o ermita de Santa María es un templo católico de estilo transitorio entre el románico y el gótico, situado en la localidad cántabra de Arenillas de Ebro, en el valle de Valderredible. Todas sus fachadas están hechas con sillares de piedra arenisca caliza, muy abundante en la comarca. A pesar de sus reducidas dimensiones y lo sencillo de su factura es uno de los mejores ejemplos de la arquitectura religiosa románico tardía de todo Valderredible, en la que las reformas han alterado muy poco la estructura original.",
     "restaurants": [
