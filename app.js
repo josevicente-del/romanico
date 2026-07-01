@@ -15,9 +15,13 @@ const recipesData = window.recipesData || [];
 const conventSweets = window.conventSweets || [];
 
 function getOptimizedImageUrl(url, width = 640) {
-    // Para evitar errores HTTP 400 Bad Request de Wikimedia al intentar redimensionar
-    // a anchos no pre-generados o que exceden el tamaño de la imagen original,
-    // devolvemos directamente la URL original. El navegador se encargará de escalarla.
+    if (!url) return '';
+    // Usar el proxy global de imágenes de Cloudflare (images.weserv.nl) para redimensionar,
+    // optimizar y convertir a WebP cualquier imagen remota, haciéndola extremadamente ligera.
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+        if (url.includes('images.weserv.nl')) return url;
+        return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=${width}&output=webp&q=80`;
+    }
     return url;
 }
 
