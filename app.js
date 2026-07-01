@@ -1145,7 +1145,7 @@ function renderLearnSection() {
         articlesCont.innerHTML = learnData.articles.map(art => `
             <div class="card" style="cursor:default; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
                 <div class="card-img-container" style="height:160px;">
-                    <img src="${art.image}" alt="${art.title}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='colegiata_santa_juliana_santillana_1777204517020.png'">
+                    <img src="${getOptimizedImageUrl(art.image, 400)}" alt="${art.title}" style="width:100%; height:100%; object-fit:cover;" onerror="this.src='colegiata_santa_juliana_santillana_1777204517020.png'">
                 </div>
                 <div class="card-content" style="padding:15px; flex-grow:1; display:flex; flex-direction:column; justify-content:space-between;">
                     <div>
@@ -1165,7 +1165,7 @@ function renderLearnSection() {
         booksCont.innerHTML = learnData.books.map(book => `
             <div class="card" style="cursor:default; display:flex; flex-direction:column; justify-content:space-between; height:100%;">
                 <div class="card-img-container" style="height:200px; display:flex; justify-content:center; align-items:center; background:#f4f7f6; padding:10px;">
-                    <img src="${book.image}" alt="${book.title}" style="max-height:100%; max-width:100%; object-fit:contain; border-radius:4px; box-shadow:0 4px 6px rgba(0,0,0,0.1);" onerror="this.src='colegiata_santa_juliana_santillana_1777204517020.png'">
+                    <img src="${getOptimizedImageUrl(book.image, 300)}" alt="${book.title}" style="max-height:100%; max-width:100%; object-fit:contain; border-radius:4px; box-shadow:0 4px 6px rgba(0,0,0,0.1);" onerror="this.src='colegiata_santa_juliana_santillana_1777204517020.png'">
                 </div>
                 <div class="card-content" style="padding:15px; flex-grow:1; display:flex; flex-direction:column; justify-content:space-between;">
                     <div>
@@ -2296,7 +2296,7 @@ function renderPendingChurches() {
         card.style.border = '1px solid rgba(28, 58, 107, 0.1)';
         card.innerHTML = `
              <div class="card-img-container" style="height: 140px;">
-                <img src="${(poi.images && poi.images.length > 0) ? poi.images[0] : 'colegiata_santa_juliana_santillana_1777204517020.png'}" alt="${poi.name}" onerror="this.src='colegiata_santa_juliana_santillana_1777204517020.png'">
+                <img src="${(poi.images && poi.images.length > 0) ? getOptimizedImageUrl(poi.images[0], 300) : 'colegiata_santa_juliana_santillana_1777204517020.png'}" alt="${poi.name}" onerror="this.src='colegiata_santa_juliana_santillana_1777204517020.png'">
             </div>
             <div class="card-content" style="padding: 12px;">
                 <h4 style="font-size:0.95rem; font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:5px; height: 40px; overflow:hidden; text-overflow:ellipsis;">${poi.name}</h4>

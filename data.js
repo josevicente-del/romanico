@@ -1278,7 +1278,8 @@ window.poiData = [
     "zone": "Campoo-Los Valles",
     "pop": 500,
     "images": [
-      "https://www.cantabriarural.com/wp-content/uploads/2016/07/Iglesia-de-San-Julian-de-Bustasur-Cantabria-Cantabriarural-A-800x533.jpg"
+      "https://arteviajero.com/wp-content/uploads/2025/07/Iglesia-de-San-Julian-de-Bustasur-Cantabria.jpg",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFRGh8m958wnETmilWv0p6RK3WwnL6J05d05rBoNzm2Q&s=10"
     ],
     "description": "La iglesia de Santa Eulalia de Bustasur (también conocida como San Julián) es un pequeño templo de estilo románico rural de principios del siglo XII, declarada Bien de Interés Cultural en 2013. Destaca por su nave única, ábside semicircular con canecillos de caveto y un arco triunfal de medio punto en su interior que descansa sobre capiteles decorados con motivos de animales y rostros humanos. Cuenta además con una singular pila bautismal de traza cuadrada y una valiosa inscripción fundacional del año 1112 grabada en la columna izquierda de la puerta de acceso.",
     "restaurants": [
