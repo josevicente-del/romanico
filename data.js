@@ -1416,7 +1416,10 @@ window.poiData = [
     "zone": "Asón-Agüera",
     "pop": 500,
     "images": [
-      "colegiata_santa_juliana_santillana_1777204517020.png"
+      "images/rasines_exterior_1.png",
+      "images/rasines_canecillos.png",
+      "images/rasines_exterior_2.png",
+      "images/rasines_exterior_3.png"
     ],
     "description": "La iglesia de Iglesia de San Cipriano (Rasines) es un destacado templo de arquitectura románica rural situado en Cantabria. Presenta las características propias del románico de la comarca, con nave única, ábside...",
     "restaurants": [
