@@ -1,32 +1,39 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <!-- Verificación Google Search Console -->
     <meta name="google-site-verification" content="bo1KIKC7SG6zkYlFvIJqQ6W3Ujb5PQ7SG9wYHVD6wyU" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1c3a6b">
-    <meta name="description" content="Guía del Románico en Cantabria: explora colegiatas y templos románicos de Santillana, Cervatos o Elines, planifica rutas y descubre patrimonio medieval.">
-    <meta name="keywords" content="románico cantabria, turismo cantabria, iglesias románicas, colegiata santillana del mar, rutas medievales, patrimonio cantabria, arte medieval">
+    <meta name="description"
+        content="Guía del Románico en Cantabria: explora colegiatas y templos románicos de Santillana, Cervatos o Elines, planifica rutas y descubre patrimonio medieval.">
+    <meta name="keywords"
+        content="románico cantabria, turismo cantabria, iglesias románicas, colegiata santillana del mar, rutas medievales, patrimonio cantabria, arte medieval">
     <meta name="author" content="Románico Cantabria">
     <link rel="canonical" href="https://romanicocantabria.es/">
-    
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://romanicocantabria.es/">
     <meta property="og:title" content="Románico Cantabria | Guía Interactiva de Arte Medieval">
-    <meta property="og:description" content="Explora las joyas del románico en Cantabria: Santillana del Mar, Cervatos, San Martín de Elines y más.">
-    <meta property="og:image" content="https://romanicocantabria.es/colegiata_santa_juliana_santillana_1777204517020.png">
+    <meta property="og:description"
+        content="Explora las joyas del románico en Cantabria: Santillana del Mar, Cervatos, San Martín de Elines y más.">
+    <meta property="og:image"
+        content="https://romanicocantabria.es/colegiata_santa_juliana_santillana_1777204517020.png">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://romanicocantabria.es/">
     <meta property="twitter:title" content="Románico Cantabria | Guía Interactiva">
-    <meta property="twitter:description" content="Descubre el patrimonio medieval de Cantabria con nuestra aplicación interactiva.">
-    <meta property="twitter:image" content="https://romanicocantabria.es/colegiata_santa_juliana_santillana_1777204517020.png">
+    <meta property="twitter:description"
+        content="Descubre el patrimonio medieval de Cantabria con nuestra aplicación interactiva.">
+    <meta property="twitter:image"
+        content="https://romanicocantabria.es/colegiata_santa_juliana_santillana_1777204517020.png">
 
     <title>Guía del Románico en Cantabria | Colegiatas y Rutas Medievales</title>
-    
+
     <!-- Structured Data (JSON-LD) -->
     <script type="application/ld+json">
     {
@@ -45,35 +52,40 @@
       }
     }
     </script>
-    
+
     <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
-    
+
     <!-- Preconnect to external CDN domains -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://unpkg.com">
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    
+
     <!-- Preload critical stylesheets -->
     <link rel="preload" href="styles.css?v=5" as="style">
-    
+
     <!-- Google Fonts: Noto Serif & Manrope (Asynchronous and optimized) -->
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Noto+Serif:ital,wght@0,500;0,600;0,700;1,500&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload"
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Noto+Serif:ital,wght@0,500;0,600;0,700;1,500&display=swap"
+        as="style" onload="this.onload=null;this.rel='stylesheet'">
     <!-- Font: Neue Montreal (Premium Sans-Serif) -->
-    <link rel="preload" href="https://fonts.cdnfonts.com/css/neue-montreal" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fonts.cdnfonts.com/css/neue-montreal" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Noto+Serif:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
+        <link
+            href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Noto+Serif:ital,wght@0,500;0,600;0,700;1,500&display=swap"
+            rel="stylesheet">
         <link href="https://fonts.cdnfonts.com/css/neue-montreal" rel="stylesheet">
     </noscript>
-    
+
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
 
     <!-- Supabase JS Client v2 & Configuration (Deferred) -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <script src="supabase_config.js" defer></script>
-    
+
     <!-- Leaflet JS & Data & Application scripts (Deferred, maintaining execution order) -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin="" defer></script>
     <script src="data.js?v=5" defer></script>
@@ -82,23 +94,26 @@
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css?v=5">
 </head>
+
 <body>
     <!-- Intro Hero Animation -->
     <div id="intro-hero" class="intro-container">
         <div class="intro-overlay stress-bg">
-            <img src="atasco_trafico_estres_1777204502546.webp" alt="Atasco" class="intro-img" width="1920" height="1080" loading="eager">
+            <img src="atasco_trafico_estres_1777204502546.webp" alt="Atasco" class="intro-img" width="1920"
+                height="1080" loading="eager">
             <div class="intro-text">¿Cansado de la ciudad?</div>
         </div>
         <div class="intro-overlay peace-bg">
-            <img src="colegiata_santa_juliana_santillana_1777204517020.webp" alt="Colegiata" class="intro-img" width="1920" height="1080" loading="eager">
+            <img src="colegiata_santa_juliana_santillana_1777204517020.webp" alt="Colegiata" class="intro-img"
+                width="1920" height="1080" loading="eager">
             <div class="intro-text">Respira el Románico</div>
         </div>
         <button id="skip-intro">Entrar a la Experiencia</button>
     </div>
-    
+
     <!-- Overlay para el menú lateral en móviles -->
     <div id="menu-overlay" class="menu-overlay"></div>
- 
+
     <header class="magical-header">
         <div class="header-top">
             <div class="logo">
@@ -150,7 +165,8 @@
         <section class="controls-section">
             <div class="search-group">
                 <div class="search-bar">
-                    <input type="text" id="search-input" list="localidades-list" placeholder="🔍 Buscar iglesia, localidad (ej: Potes, Reinosa, Comillas)...">
+                    <input type="text" id="search-input" list="localidades-list"
+                        placeholder="🔍 Buscar iglesia, localidad (ej: Potes, Reinosa, Comillas)...">
                     <datalist id="localidades-list"></datalist>
                 </div>
                 <div class="search-bar secondary-search">
@@ -158,9 +174,15 @@
                 </div>
             </div>
             <div class="filters-scroll">
-                <select id="filter-zone"><option value="">Todas las Zonas</option></select>
-                <select id="filter-order"><option value="">Tipo</option></select>
-                <select id="filter-culture"><option value="">Periodo Histórico</option></select>
+                <select id="filter-zone">
+                    <option value="">Todas las Zonas</option>
+                </select>
+                <select id="filter-order">
+                    <option value="">Tipo</option>
+                </select>
+                <select id="filter-culture">
+                    <option value="">Periodo Histórico</option>
+                </select>
                 <select id="sort-by">
                     <option value="popularity">Más Buscados</option>
                     <option value="default">A-Z</option>
@@ -177,7 +199,8 @@
                     🏰 Tus Iglesias Pendientes de Visitar
                 </h2>
                 <p class="pending-section-desc">
-                    Aquí tienes los templos románicos de Cantabria que aún te quedan por explorar en tu cuenta de viajero. ¡Acércate a menos de 100 metros con tu GPS para marcarlos como visitados!
+                    Aquí tienes los templos románicos de Cantabria que aún te quedan por explorar en tu cuenta de
+                    viajero. ¡Acércate a menos de 100 metros con tu GPS para marcarlos como visitados!
                 </p>
                 <div id="pending-cards-container" class="magical-grid"></div>
             </section>
@@ -257,7 +280,8 @@
         <section id="itinerary-view" class="view-container">
             <div class="itinerary-panel">
                 <h2>🧭 Un día Románico</h2>
-                <p class="itinerary-intro">Selecciona una zona para generar tu ruta personalizada de un día (10:00 - 18:30).</p>
+                <p class="itinerary-intro">Selecciona una zona para generar tu ruta personalizada de un día (10:00 -
+                    18:30).</p>
                 <div class="itinerary-controls">
                     <select id="itinerary-zone-select">
                         <option value="">Selecciona una zona...</option>
@@ -312,13 +336,16 @@
         <section id="community-view" class="view-container">
             <div class="extra-panel">
                 <h2 class="community-title">💬 Comunidad Románica</h2>
-                <p class="community-intro">Comparte tus impresiones, dudas o recomendaciones sobre las iglesias románicas de Cantabria.</p>
-                
+                <p class="community-intro">Comparte tus impresiones, dudas o recomendaciones sobre las iglesias
+                    románicas de Cantabria.</p>
+
                 <!-- Contador de suscriptores verificados -->
                 <div class="subscribers-community-badge">
-                    👥 ¡Ya somos <span id="community-subscribers-count" style="font-weight: 800; color: var(--accent);">0</span> viajeros registrados y verificados en nuestra comunidad!
+                    👥 ¡Ya somos <span id="community-subscribers-count"
+                        style="font-weight: 800; color: var(--accent);">0</span> viajeros registrados y verificados en
+                    nuestra comunidad!
                 </div>
-                
+
                 <!-- Formulario de comentarios (se renderizará o habilitará dinámicamente) -->
                 <div id="comment-form-container" class="comment-form-container">
                     <!-- Habilitado vía JS -->
@@ -328,15 +355,19 @@
                 <div class="newsletter-card">
                     <div class="newsletter-icon">📧</div>
                     <h3 class="newsletter-title">Boletín del Viajero Medieval</h3>
-                    <p class="newsletter-desc">Suscríbete para recibir mensualmente rutas exclusivas, recomendaciones gastronómicas e investigaciones históricas sobre el románico.</p>
+                    <p class="newsletter-desc">Suscríbete para recibir mensualmente rutas exclusivas, recomendaciones
+                        gastronómicas e investigaciones históricas sobre el románico.</p>
                     <form id="newsletter-form" class="newsletter-form">
-                        <input type="email" id="news-email" required placeholder="Tu correo electrónico..." class="newsletter-input">
+                        <input type="email" id="news-email" required placeholder="Tu correo electrónico..."
+                            class="newsletter-input">
                         <button type="submit" class="btn-primary btn-newsletter">Suscribirse</button>
                     </form>
                     <div id="newsletter-status" class="newsletter-status"></div>
                 </div>
 
-                <h3 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px;">Opiniones y Comentarios Recientes</h3>
+                <h3
+                    style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px;">
+                    Opiniones y Comentarios Recientes</h3>
                 <div id="comments-list" class="magical-grid comment-list-container">
                     <!-- Se cargará dinámicamente -->
                 </div>
@@ -347,7 +378,8 @@
         <section id="3d-view" class="view-container">
             <div class="3d-panel">
                 <h2 class="view-3d-title">🏛️ Visita en 3D</h2>
-                <p class="view-3d-intro">Explora detalles arquitectónicos y modelos en 3D de las joyas del románico en Cantabria gracias a Sketchfab.</p>
+                <p class="view-3d-intro">Explora detalles arquitectónicos y modelos en 3D de las joyas del románico en
+                    Cantabria gracias a Sketchfab.</p>
                 <div id="sketchfab-container" class="magical-grid"></div>
             </div>
         </section>
@@ -355,20 +387,25 @@
         <section id="learn-view" class="view-container">
             <div class="extra-panel">
                 <h2 class="learn-title">📚 Centro de Conocimiento e Inspiración</h2>
-                <p class="learn-intro-text">Amplía tus conocimientos sobre el arte medieval de Cantabria y descubre las relaciones estilísticas entre sus diferentes focos monumentales.</p>
-                
+                <p class="learn-intro-text">Amplía tus conocimientos sobre el arte medieval de Cantabria y descubre las
+                    relaciones estilísticas entre sus diferentes focos monumentales.</p>
+
                 <!-- Subnavegación de Pestañas Internas (Tabs) -->
                 <div class="learn-tabs">
                     <button class="learn-tab-btn active" data-learn-tab="books">📰 Artículos y Libros</button>
                     <button class="learn-tab-btn" data-learn-tab="style-relations">🔬 Relaciones Estilísticas</button>
                 </div>
-                
+
                 <!-- Subsección 1: Artículos y Libros -->
                 <div id="learn-tab-content-books" class="learn-tab-content active">
-                    <h3 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px; font-size:1.3rem;">📰 Artículos de Interés</h3>
+                    <h3
+                        style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px; font-size:1.3rem;">
+                        📰 Artículos de Interés</h3>
                     <div id="articles-container" class="magical-grid"></div>
-                    
-                    <h3 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px; font-size:1.3rem;">📖 Libros y Monografías</h3>
+
+                    <h3
+                        style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:20px; border-bottom:2px solid var(--accent); padding-bottom:10px; font-size:1.3rem;">
+                        📖 Libros y Monografías</h3>
                     <div id="books-container" class="magical-grid"></div>
                 </div>
 
@@ -383,27 +420,30 @@
         <section id="coffee-view" class="view-container">
             <div class="coffee-panel">
                 <h2>☕ Apoya el Proyecto</h2>
-                <p class="coffee-intro">Si disfrutas descubriendo el arte medieval con esta guía, considera invitarnos a un café para ayudarnos a mantener los servidores y seguir cartografiando el románico cántabro.</p>
-                
+                <p class="coffee-intro">Si disfrutas descubriendo el arte medieval con esta guía, considera invitarnos a
+                    un café para ayudarnos a mantener los servidores y seguir cartografiando el románico cántabro.</p>
+
                 <div class="coffee-card-centered">
                     <!-- Bloque del Código QR de PayPal -->
                     <div class="coffee-qr-wrapper">
                         <div class="qr-box">
                             <!-- Código QR dinámico que redirige al enlace de donación de PayPal -->
-                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=https%3A%2F%2Fwww.paypal.com%2Fcgi-bin%2Fwebscr%3Fcmd%3D_donations%26business%3Djosevicente%40gmail.com%26item_name%3DApoyo%2520a%2520Romanico%2520Cantabria%26currency_code%3DEUR" alt="Código QR para PayPal" class="qr-image" width="220" height="220" loading="lazy">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=10&data=https%3A%2F%2Fwww.paypal.com%2Fcgi-bin%2Fwebscr%3Fcmd%3D_donations%26business%3Djosevicente%40gmail.com%26item_name%3DApoyo%2520a%2520Romanico%2520Cantabria%26currency_code%3DEUR"
+                                alt="Código QR para PayPal" class="qr-image" width="220" height="220" loading="lazy">
                         </div>
                         <p class="qr-text">Escanea el código QR con tu móvil</p>
                     </div>
-                    
+
                     <!-- Divisor visual entre métodos de pago -->
                     <div class="coffee-divider">
                         <span>o también</span>
                     </div>
-                    
+
                     <!-- Bloque del botón de enlace directo de PayPal -->
                     <div class="coffee-action-wrapper">
                         <!-- Enlace de donación directa configurado para josevicente@gmail.com -->
-                        <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=josevicente@gmail.com&item_name=Apoyo%20a%20Romanico%20Cantabria&currency_code=EUR" target="_blank" class="btn-coffee-action-centered">
+                        <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=josevicente@gmail.com&item_name=Apoyo%20a%20Romanico%20Cantabria&currency_code=EUR"
+                            target="_blank" class="btn-coffee-action-centered">
                             Donar con PayPal 💳
                         </a>
                         <p class="paypal-email-text">Cuenta de PayPal: <strong>josevicente@gmail.com</strong></p>
@@ -421,7 +461,8 @@
                     </h2>
                     <!-- Contador de personas registradas global -->
                     <div class="profile-travellers-badge">
-                        👥 Total de Viajeros en la Red: <span id="global-subscribers-count" style="font-weight: 800; color: var(--accent);">0</span>
+                        👥 Total de Viajeros en la Red: <span id="global-subscribers-count"
+                            style="font-weight: 800; color: var(--accent);">0</span>
                     </div>
                 </div>
 
@@ -458,8 +499,9 @@
                     <!-- Columna de Progreso y Estadísticas -->
                     <div class="profile-stats-column">
                         <div>
-                            <h3 style="margin-top: 0; margin-bottom: 1.25rem; text-align: center;">Tu Progreso en el Viaje</h3>
-                            
+                            <h3 style="margin-top: 0; margin-bottom: 1.25rem; text-align: center;">Tu Progreso en el
+                                Viaje</h3>
+
                             <!-- Círculo de porcentaje / progreso -->
                             <div class="profile-progress-ring" id="profile-progress-ring">
                                 <div class="profile-progress-inner">
@@ -469,7 +511,9 @@
                             </div>
 
                             <p class="profile-progress-text">
-                                Has explorado <strong id="profile-visited-count" style="color:var(--accent); font-size:1.1rem;">0</strong> de las <strong id="profile-total-count">0</strong> colegiatas e iglesias del románico en Cantabria.
+                                Has explorado <strong id="profile-visited-count"
+                                    style="color:var(--accent); font-size:1.1rem;">0</strong> de las <strong
+                                    id="profile-total-count">0</strong> colegiatas e iglesias del románico en Cantabria.
                             </p>
                         </div>
 
@@ -494,7 +538,8 @@
     <div id="edit-poi-modal" class="modal">
         <div class="modal-content detail-content modal-edit-poi">
             <span class="close-btn">&times;</span>
-            <h2 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:15px;">⚙️ Editar Iglesia (Administrador)</h2>
+            <h2 style="font-family:'Noto Serif', serif; color:var(--primary); margin-bottom:15px;">⚙️ Editar Iglesia
+                (Administrador)</h2>
             <form id="edit-poi-form">
                 <input type="hidden" id="edit-poi-id">
                 <div class="form-group">
@@ -507,15 +552,19 @@
                 </div>
                 <div class="form-group">
                     <label>Descripción</label>
-                    <textarea id="edit-poi-description" required rows="5" style="width:100%; border:1px solid #ccc; border-radius:4px; font-family:inherit; resize:vertical;"></textarea>
+                    <textarea id="edit-poi-description" required rows="5"
+                        style="width:100%; border:1px solid #ccc; border-radius:4px; font-family:inherit; resize:vertical;"></textarea>
                 </div>
                 <div class="form-group">
                     <label>URLs de Imágenes (Una por línea)</label>
-                    <textarea id="edit-poi-images" rows="4" placeholder="Ejemplo: images/resumen/iglesia1.jpg" style="width:100%; border:1px solid #ccc; border-radius:4px; font-family:monospace; resize:vertical;"></textarea>
+                    <textarea id="edit-poi-images" rows="4" placeholder="Ejemplo: images/resumen/iglesia1.jpg"
+                        style="width:100%; border:1px solid #ccc; border-radius:4px; font-family:monospace; resize:vertical;"></textarea>
                 </div>
                 <div style="display:flex; gap:10px;">
                     <button type="submit" class="btn-primary" style="flex:1;">Guardar Cambios</button>
-                    <button type="button" class="btn-auth" onclick="document.getElementById('edit-poi-modal').classList.remove('active')" style="flex:1; background:#7f8c8d;">Cancelar</button>
+                    <button type="button" class="btn-auth"
+                        onclick="document.getElementById('edit-poi-modal').classList.remove('active')"
+                        style="flex:1; background:#7f8c8d;">Cancelar</button>
                 </div>
             </form>
         </div>
@@ -530,11 +579,16 @@
             </div>
             <form id="register-form" class="auth-form active">
                 <h3>Registro de Viajero</h3>
-                <div class="form-group"><label>Nombre Completo</label><input type="text" id="reg-fullname" required placeholder="Ej: Juan Pérez"></div>
-                <div class="form-group"><label>País</label><input type="text" id="reg-country" required placeholder="Ej: España"></div>
-                <div class="form-group"><label>Ciudad</label><input type="text" id="reg-city" required placeholder="Ej: Santander"></div>
-                <div class="form-group"><label>Provincia de residencia</label><input type="text" id="reg-province" required placeholder="Ej: Cantabria"></div>
-                <div class="form-group"><label>Email</label><input type="email" id="reg-email" required placeholder="Ej: juan@example.com"></div>
+                <div class="form-group"><label>Nombre Completo</label><input type="text" id="reg-fullname" required
+                        placeholder="Ej: Juan Pérez"></div>
+                <div class="form-group"><label>País</label><input type="text" id="reg-country" required
+                        placeholder="Ej: España"></div>
+                <div class="form-group"><label>Ciudad</label><input type="text" id="reg-city" required
+                        placeholder="Ej: Santander"></div>
+                <div class="form-group"><label>Provincia de residencia</label><input type="text" id="reg-province"
+                        required placeholder="Ej: Cantabria"></div>
+                <div class="form-group"><label>Email</label><input type="email" id="reg-email" required
+                        placeholder="Ej: juan@example.com"></div>
                 <div class="form-group">
                     <label>Contraseña</label>
                     <div class="pass-wrapper">
@@ -553,10 +607,18 @@
                 <button type="submit" class="btn-primary">Registrar</button>
                 <button type="button" class="btn-google" id="btn-google-register">
                     <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
-                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        <path
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                            fill="#4285F4" />
+                        <path
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                            fill="#34A853" />
+                        <path
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                            fill="#FBBC05" />
+                        <path
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                            fill="#EA4335" />
                     </svg>
                     Registrarse con Google
                 </button>
@@ -569,10 +631,18 @@
                 <button type="submit" class="btn-primary">Entrar</button>
                 <button type="button" class="btn-google" id="btn-google-login">
                     <svg viewBox="0 0 24 24" width="18" height="18" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" fill="#FBBC05"/>
-                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                        <path
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                            fill="#4285F4" />
+                        <path
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                            fill="#34A853" />
+                        <path
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                            fill="#FBBC05" />
+                        <path
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                            fill="#EA4335" />
                     </svg>
                     Iniciar sesión con Google
                 </button>
@@ -603,17 +673,28 @@
             <div class="footer-links" class="footer-links-flex">
                 <p class="footer-nav-title">Mapa del Sitio / Navegación Interna:</p>
                 <div class="footer-nav-grid">
-                    <a href="#list-view" class="footer-seo-link" onclick="document.querySelector('[data-view=list]').click()">🏰 Colección Románica</a>
-                    <a href="#map-view" class="footer-seo-link" onclick="document.querySelector('[data-view=map]').click()">🗺️ Mapa Interactivo</a>
-                    <a href="#itinerary-view" class="footer-seo-link" onclick="document.querySelector('[data-view=itinerary]').click()">🧭 Itinerarios de un Día</a>
-                    <a href="#agenda-view" class="footer-seo-link" onclick="document.querySelector('[data-view=agenda]').click()">📅 Agenda de Eventos 2026</a>
-                    <a href="#ranking-view" class="footer-seo-link" onclick="document.querySelector('[data-view=ranking]').click()">🏆 Ranking de Viajeros</a>
-                    <a href="#restaurants-view" class="footer-seo-link" onclick="document.querySelector('[data-view=restaurants]').click()">🍽️ Dónde Comer (Gastronomía)</a>
-                    <a href="#community-view" class="footer-seo-link" onclick="document.querySelector('[data-view=community]').click()">💬 Comunidad Románica</a>
-                    <a href="#3d-view" class="footer-seo-link" onclick="document.querySelector('[data-view=3d]').click()">🏛️ Modelos y Visita 3D</a>
-                    <a href="#learn-view" class="footer-seo-link" onclick="document.querySelector('[data-view=learn]').click()">📚 Artículos y Libros</a>
+                    <a href="#list-view" class="footer-seo-link"
+                        onclick="document.querySelector('[data-view=list]').click()">🏰 Colección Románica</a>
+                    <a href="#map-view" class="footer-seo-link"
+                        onclick="document.querySelector('[data-view=map]').click()">🗺️ Mapa Interactivo</a>
+                    <a href="#itinerary-view" class="footer-seo-link"
+                        onclick="document.querySelector('[data-view=itinerary]').click()">🧭 Itinerarios de un Día</a>
+                    <a href="#agenda-view" class="footer-seo-link"
+                        onclick="document.querySelector('[data-view=agenda]').click()">📅 Agenda de Eventos 2026</a>
+                    <a href="#ranking-view" class="footer-seo-link"
+                        onclick="document.querySelector('[data-view=ranking]').click()">🏆 Ranking de Viajeros</a>
+                    <a href="#restaurants-view" class="footer-seo-link"
+                        onclick="document.querySelector('[data-view=restaurants]').click()">🍽️ Dónde Comer
+                        (Gastronomía)</a>
+                    <a href="#community-view" class="footer-seo-link"
+                        onclick="document.querySelector('[data-view=community]').click()">💬 Comunidad Románica</a>
+                    <a href="#3d-view" class="footer-seo-link"
+                        onclick="document.querySelector('[data-view=3d]').click()">🏛️ Modelos y Visita 3D</a>
+                    <a href="#learn-view" class="footer-seo-link"
+                        onclick="document.querySelector('[data-view=learn]').click()">📚 Artículos y Libros</a>
                     <!-- Enlace rápido en el pie de página para donaciones -->
-                    <a href="#coffee-view" class="footer-seo-link" onclick="document.querySelector('[data-view=coffee]').click()">☕ Apoya el Proyecto (Donar)</a>
+                    <a href="#coffee-view" class="footer-seo-link"
+                        onclick="document.querySelector('[data-view=coffee]').click()">☕ Apoya el Proyecto (Donar)</a>
                     <a href="/llms.txt" class="footer-seo-link" target="_blank">🤖 Guía de IA (llms.txt)</a>
                     <a href="/sitemap.xml" class="footer-seo-link" target="_blank">🗺️ Sitemap XML</a>
                 </div>
@@ -624,4 +705,5 @@
         </div>
     </footer>
 </body>
+
 </html>

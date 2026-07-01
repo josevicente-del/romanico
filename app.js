@@ -14,18 +14,10 @@ let eventsData = window.eventsData || [];
 const recipesData = window.recipesData || [];
 const conventSweets = window.conventSweets || [];
 
-// --- Función para optimizar URLs de Wikimedia Commons ---
 function getOptimizedImageUrl(url, width = 640) {
-    if (!url) return '';
-    if (url.includes('upload.wikimedia.org/wikipedia/commons/')) {
-        if (url.includes('/thumb/')) return url; // Ya es un thumbnail
-        const parts = url.split('upload.wikimedia.org/wikipedia/commons/');
-        if (parts.length === 2) {
-            const path = parts[1];
-            const filename = path.substring(path.lastIndexOf('/') + 1);
-            return `https://upload.wikimedia.org/wikipedia/commons/thumb/${path}/${width}px-${filename}`;
-        }
-    }
+    // Para evitar errores HTTP 400 Bad Request de Wikimedia al intentar redimensionar
+    // a anchos no pre-generados o que exceden el tamaño de la imagen original,
+    // devolvemos directamente la URL original. El navegador se encargará de escalarla.
     return url;
 }
 
