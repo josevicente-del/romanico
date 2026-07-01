@@ -813,8 +813,11 @@ window.poiData = [
     "zone": "Cantabria",
     "pop": 1000,
     "images": [
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTKy5KIqDMceY5sZCDoWIFm-Hi6UmmNprBZtXImB-cKkw&s=10",
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMzH5lL3QwwGbxdPcdwUGX6h3ILc_dknVD5YYvLXTBlQ&s=10"
+      "images/mata_de_hoz_exterior.png",
+      "images/mata_de_hoz_fresco_nacimiento.png",
+      "images/mata_de_hoz_capitel.png",
+      "images/mata_de_hoz_portada.png",
+      "images/mata_de_hoz_abside_interior.png"
     ],
     "description": "La Iglesia de San Juan Bautista, en Mata de Hoz, en el municipio de Valdeolea (Cantabria, España), fue declarada bien de interés cultural en el año 1993. Se encuentra en el centro del pueblo, a donde se llega por carretera desde Matamorosa o desde la capital municipal.\n\n\n**Historia**\n\n\nSe trata de una iglesia románica con elementos protogóticos, del siglo XIII, con reformas desde el siglo XV al XVIII, añadiéndosele la sacristía y dos capillas.\n\n\n**Descripción**\n\n\nSe trata de una iglesia sencilla, con [[presbiterio\n\n(arquitectura)|presbiterio]] recto, de una\n\nsola nave rematada por un ábside semicircular y muros de sillería. En la puerta de acceso que hay en la fachada meridional pueden verse arquivoltas de medio punto, apoyadas en capiteles geométricos y vegetales. Sobresale respecto al lienzo del muro, con una cornisa sostenida por canecillos y decorada con rombos. El ábside, al exterior, tiene un solo vano, una ventana flanqueada por contrafuertes sobre los que se alzan columnas; está coronado por una cornisa apoyada en canecillos simples.",
     "restaurants": [
@@ -1278,8 +1281,11 @@ window.poiData = [
     "zone": "Campoo-Los Valles",
     "pop": 500,
     "images": [
-      "https://arteviajero.com/wp-content/uploads/2025/07/Iglesia-de-San-Julian-de-Bustasur-Cantabria.jpg",
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRFRGh8m958wnETmilWv0p6RK3WwnL6J05d05rBoNzm2Q&s=10"
+      "images/bustasur_exterior.png",
+      "images/bustasur_fresco_cena.png",
+      "images/bustasur_fresco_infierno.png",
+      "images/bustasur_fresco_angel.png",
+      "images/bustasur_fresco_combate.png"
     ],
     "description": "La iglesia de Santa Eulalia de Bustasur (también conocida como San Julián) es un pequeño templo de estilo románico rural de principios del siglo XII, declarada Bien de Interés Cultural en 2013. Destaca por su nave única, ábside semicircular con canecillos de caveto y un arco triunfal de medio punto en su interior que descansa sobre capiteles decorados con motivos de animales y rostros humanos. Cuenta además con una singular pila bautismal de traza cuadrada y una valiosa inscripción fundacional del año 1112 grabada en la columna izquierda de la puerta de acceso.",
     "restaurants": [
