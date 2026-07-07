@@ -15,7 +15,8 @@
     "city": "Valencia",
     "province": "Valencia",
     "createdAt": "2026-06-18T19:42:35.328Z",
-    "verified": false
+    "verified": false,
+    "loginCount": 6
   },
   {
     "username": "Test User",
@@ -54,6 +55,19 @@
     "createdAt": "2026-06-24T21:06:34.479Z",
     "verified": false,
     "verificationToken": "9574d90328e46735465156945cf8b2cf435a31c269ce5b52db951824135905a9",
+    "visited": [],
+    "role": "user"
+  },
+  {
+    "username": "Tester",
+    "email": "tester@example.com",
+    "passwordHash": "scrypt$ac00288b9ca7483e880969388b05fdbb$a220a9ea34cc018fce2bfde8940cc8494a850a6bc2daba29d5d942c46fe745d0aa92ba8ac82afb31fd90311bc277ccaddc46aa2a2a33a4014cf2b415e68d9eb4",
+    "country": "España",
+    "city": "Santander",
+    "province": "Cantabria",
+    "createdAt": "2026-07-01T22:35:51.778Z",
+    "verified": false,
+    "verificationToken": "62eaa54413a2e4e9a8d183eb1382469989d698c0620ef7e1bf671ea3e19c2c38",
     "visited": [],
     "role": "user"
   }

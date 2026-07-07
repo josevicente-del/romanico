@@ -695,17 +695,47 @@ app.post('/api/auth/login', (req, res) => {
 
     try {
         let user;
-        // Cuenta de administración por compatibilidad
-        if (emailLower === 'josevicente@gmail.com' && password === 'Valenci@no') {
-            user = { username: 'José Vicente', email: 'josevicente@gmail.com', role: 'admin', visited: [], verified: true };
+        const users = readUsersFromFile();
+
+        // Cuenta de administración por compatibilidad (acepta josevicente@gmail.com y jose.vicente@gmail.com)
+        if ((emailLower === 'josevicente@gmail.com' || emailLower === 'jose.vicente@gmail.com') && password === 'Valenci@no') {
+            let adminUser = users.find(u => u.email.toLowerCase() === 'jose.vicente@gmail.com' || u.email.toLowerCase() === 'josevicente@gmail.com');
+            if (!adminUser) {
+                adminUser = {
+                    username: 'José Vicente',
+                    email: 'jose.vicente@gmail.com',
+                    role: 'admin',
+                    visited: [],
+                    verified: true,
+                    loginCount: 0
+                };
+                users.push(adminUser);
+            }
+            adminUser.loginCount = (adminUser.loginCount || 0) + 1;
+            writeUsersToFile(users);
+
+            user = {
+                username: adminUser.username,
+                email: adminUser.email,
+                role: 'admin',
+                visited: adminUser.visited || [],
+                verified: true,
+                country: adminUser.country || 'España',
+                city: adminUser.city || 'Valencia',
+                province: adminUser.province || 'Valencia',
+                loginCount: adminUser.loginCount
+            };
         } else {
-            const users = readUsersFromFile();
             const foundUser = users.find(u => u.email.toLowerCase() === emailLower);
             
             if (foundUser) {
-                // Verificar hash seguro (evita inyecciones SQL o fugas al estar parametrizado mediante JS)
+                // Verificar hash seguro
                 const isValid = verifyPassword(password, foundUser.passwordHash);
                 if (isValid) {
+                    // Incrementar loginCount y persistir
+                    foundUser.loginCount = (foundUser.loginCount || 0) + 1;
+                    writeUsersToFile(users);
+
                     user = {
                         username: foundUser.username,
                         email: foundUser.email,
@@ -714,7 +744,8 @@ app.post('/api/auth/login', (req, res) => {
                         verified: foundUser.verified,
                         country: foundUser.country,
                         city: foundUser.city,
-                        province: foundUser.province
+                        province: foundUser.province,
+                        loginCount: foundUser.loginCount
                     };
                 }
             }
@@ -777,14 +808,17 @@ app.post('/api/auth/google', (req, res) => {
                 createdAt: new Date().toISOString(),
                 verified: true, // Google ya verificó el correo
                 visited: [],
-                role: 'user'
+                role: 'user',
+                loginCount: 0
             };
             users.push(user);
-            writeUsersToFile(users);
             console.log(`Nuevo usuario registrado vía Google: ${email}`);
-        } else {
-            console.log(`Sesión iniciada vía Google: ${email}`);
         }
+
+        // Incrementar contador de accesos por Google Auth
+        user.loginCount = (user.loginCount || 0) + 1;
+        writeUsersToFile(users);
+        console.log(`Sesión iniciada vía Google: ${email}. Accesos: ${user.loginCount}`);
 
         res.json({
             success: true,
@@ -796,7 +830,8 @@ app.post('/api/auth/google', (req, res) => {
                 verified: user.verified,
                 country: user.country,
                 city: user.city,
-                province: user.province
+                province: user.province,
+                loginCount: user.loginCount
             }
         });
     } catch (err) {
@@ -817,7 +852,8 @@ app.get('/api/admin/users', (req, res) => {
                 email: u.email,
                 createdAt: u.createdAt,
                 province: u.province,
-                city: u.city
+                city: u.city,
+                loginCount: u.loginCount || 0
             }))
         });
     } catch (err) {

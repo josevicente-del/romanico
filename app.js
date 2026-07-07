@@ -35,12 +35,72 @@ const CHURCH_VISITS_KEY = 'romanico_church_visits'; // Para el ranking de iglesi
 
 let currentUser = JSON.parse(localStorage.getItem(CURRENT_USER_KEY) || 'null');
 
+// Recuperación de seguridad (Self-healing): Si es el administrador José Vicente, asegurar rol 'admin'
+if (currentUser && (currentUser.email === 'jose.vicente@gmail.com' || currentUser.email === 'josevicente@gmail.com')) {
+    if (currentUser.role !== 'admin') {
+        console.log("⚙️ [Self-healing] Asignando rol 'admin' al usuario administrador José Vicente.");
+        currentUser.role = 'admin';
+        localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(currentUser));
+    }
+}
+
 // --- Inicialización de Supabase ---
 let supabaseClient = null;
 if (window.checkSupabaseConfig && window.checkSupabaseConfig()) {
     // Si la configuración es correcta, creamos el cliente de Supabase
     supabaseClient = window.supabase.createClient(window.supabaseUrl, window.supabaseAnonKey);
     console.log("Supabase inicializado correctamente para autenticación.");
+
+    // Configurar listener de cambios de autenticación para persistencia y propagación de estado
+    supabaseClient.auth.onAuthStateChange(async (event, session) => {
+        console.log("Supabase Auth Event:", event, session);
+        if (session && session.user) {
+            try {
+                // Obtener datos del perfil público
+                const { data: profile, error } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+
+                const isLocalAdmin = session.user.email === 'josevicente@gmail.com' || session.user.email === 'jose.vicente@gmail.com';
+                const userRole = (profile && (profile.role === 'admin') || isLocalAdmin) ? 'admin' : 'user';
+
+                if (profile) {
+                    setCurrentUser({
+                        id: session.user.id,
+                        username: profile.full_name || session.user.user_metadata.username || 'Noble Viajero',
+                        email: session.user.email,
+                        role: userRole,
+                        visited: profile.visited || [],
+                        country: profile.country || '',
+                        city: profile.city || '',
+                        province: profile.province || '',
+                        loginCount: profile.login_count || 1
+                    });
+                } else {
+                    setCurrentUser({
+                        id: session.user.id,
+                        username: session.user.user_metadata.username || 'Noble Viajero',
+                        email: session.user.email,
+                        role: userRole,
+                        visited: [],
+                        country: session.user.user_metadata.country || '',
+                        city: session.user.user_metadata.city || '',
+                        province: session.user.user_metadata.province || '',
+                        loginCount: 1
+                    });
+                }
+            } catch (err) {
+                console.error("Error al sincronizar perfil de Supabase:", err);
+            }
+        } else {
+            // Si la sesión de Supabase expiró o se cerró, y teníamos un usuario de Supabase activo, lo deslogueamos
+            if (currentUser && currentUser.id) {
+                setCurrentUser(null);
+            }
+        }
+    });
 } else {
     console.log("Supabase no configurado. Utilizando fallback a servidor local (Express).");
 }
@@ -88,6 +148,15 @@ async function initApp() {
             navigator.serviceWorker.register('./sw.js')
                 .then(reg => console.log('Service Worker registrado correctamente.', reg.scope))
                 .catch(err => console.error('Error al registrar Service Worker:', err));
+        });
+
+        // Recargar la página automáticamente si el Service Worker cambia de control (actualización)
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+                refreshing = true;
+                window.location.reload();
+            }
         });
     }
 }
@@ -682,7 +751,7 @@ function openDetail(poi) {
                     <div class="restaurant-meta">${r.foodType} • 📞 ${r.contact}</div>
                     <div class="restaurant-actions">
                         <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((r.name || 'Restaurante') + ' ' + poi.location)}" target="_blank">📍 Ver en Mapa</a>
-                        ${r.tripadvisor ? `<a href="${r.tripadvisor}" target="_blank" style="color:#00aa6c;">🟢 TripAdvisor</a>` : ''}
+                        <a href="${(!r.tripadvisor || r.tripadvisor.includes('/Restaurants-')) ? `https://www.google.com/search?q=${encodeURIComponent('site:tripadvisor.es "' + r.name + '" ' + (poi.location || 'Cantabria'))}` : r.tripadvisor}" target="_blank" style="color:#00aa6c;">🟢 TripAdvisor</a>
                         <button onclick="shareContent('whatsapp', 'Cómo llegar a ${r.name || 'Restaurante'}', 'Ubicado cerca de ${poi.name}. Aquí tienes la ruta para llegar:', 'https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(r.name + ' ' + poi.location)}')" style="color: #25D366;">💬 Enviar Ruta WhatsApp</button>
                     </div>
                 </div>
@@ -967,7 +1036,7 @@ function renderRestaurants() {
                 <p style="font-size:0.8rem; color:var(--primary); font-weight:600;">📍 Cerca de: ${r.poiName}</p>
                 <p style="font-size:0.8rem; color:var(--text-muted);">📞 ${r.contact}</p>
                 <div style="display:flex; gap:10px; margin-top:10px; align-items:center;">
-                    ${r.tripadvisor ? `<a href="${r.tripadvisor}" target="_blank" class="btn-auth" style="text-decoration:none; display:inline-block; font-size:0.8rem; background:#00aa6c; border:none; width:auto; padding:5px 15px;">🟢 TripAdvisor</a>` : ''}
+                    <a href="${(!r.tripadvisor || r.tripadvisor.includes('/Restaurants-')) ? `https://www.google.com/search?q=${encodeURIComponent('site:tripadvisor.es "' + r.name + '" ' + (r.poiLocation || 'Cantabria'))}` : r.tripadvisor}" target="_blank" class="btn-auth" style="text-decoration:none; display:inline-block; font-size:0.8rem; background:#00aa6c; border:none; width:auto; padding:5px 15px; color: white;">🟢 TripAdvisor</a>
                     <button onclick="shareContent('whatsapp', 'Cómo llegar a ${r.name || 'Restaurante'}', 'Ubicado cerca de ${r.poiName}. Aquí tienes la ruta para llegar:', 'https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(r.name + ' ' + r.poiLocation)}')" class="btn-auth" style="background: #25D366; border: none; font-size: 0.8rem; width: auto; padding: 5px 15px; color: white; cursor: pointer;">💬 Enviar por WhatsApp</button>
                 </div>
             </div>
@@ -1908,6 +1977,7 @@ function handleRegister(e) {
             options: {
                 data: {
                     username: user,
+                    full_name: user, // Sincronizado para que coincida con el trigger SQL de public.profiles
                     country: country,
                     city: city,
                     province: province
@@ -1986,8 +2056,28 @@ function handleLogin(e) {
             email: email,
             password: pass
         })
-        .then(({ data, error }) => {
+        .then(async ({ data, error }) => {
             if (error) throw error;
+
+            // Incrementar login_count en profiles de Supabase para este usuario
+            try {
+                if (data && data.user) {
+                    const { data: profile } = await supabaseClient
+                        .from('profiles')
+                        .select('login_count')
+                        .eq('id', data.user.id)
+                        .single();
+
+                    const currentCount = profile ? (profile.login_count || 0) : 0;
+                    await supabaseClient
+                        .from('profiles')
+                        .update({ login_count: currentCount + 1 })
+                        .eq('id', data.user.id);
+                }
+            } catch (err) {
+                console.error("Error al incrementar login_count en Supabase:", err);
+            }
+
             document.getElementById('auth-modal').classList.remove('active');
             e.target.reset();
         })
@@ -2330,44 +2420,72 @@ async function renderAdminPanel() {
 
         // 1. Cargar Usuarios Registrados
         try {
-            const response = await fetch('/api/admin/users');
-            const data = await response.json();
-            
-            if (data.success) {
-                const serverUsers = data.users || [];
-                if (countSpan) countSpan.textContent = data.total;
+            let serverUsers = [];
+            let totalUsers = 0;
 
-                if (tableBody) {
-                    if (serverUsers.length === 0) {
-                        tableBody.innerHTML = `
-                            <tr>
-                                <td colspan="3" style="text-align: center; padding: 15px; color: var(--text-muted); font-style: italic;">
-                                    No hay usuarios registrados en el servidor.
+            if (supabaseClient) {
+                // Leer perfiles registrados en Supabase
+                const { data: profiles, error } = await supabaseClient
+                    .from('profiles')
+                    .select('*');
+                
+                if (error) throw error;
+                serverUsers = (profiles || []).map(p => ({
+                    username: p.full_name || p.email.split('@')[0],
+                    email: p.email,
+                    province: p.province,
+                    city: p.city,
+                    loginCount: p.login_count || 0
+                }));
+                totalUsers = serverUsers.length;
+            } else {
+                // Fallback local
+                const response = await fetch('/api/admin/users');
+                const data = await response.json();
+                if (data.success) {
+                    serverUsers = data.users || [];
+                    totalUsers = data.total || serverUsers.length;
+                } else {
+                    throw new Error(data.error || "Error al obtener usuarios locales.");
+                }
+            }
+
+            if (countSpan) countSpan.textContent = totalUsers;
+
+            if (tableBody) {
+                if (serverUsers.length === 0) {
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 15px; color: var(--text-muted); font-style: italic;">
+                                No hay usuarios registrados.
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    tableBody.innerHTML = serverUsers.map(u => {
+                        const locationInfo = `${u.province || 'Desconocida'} (${u.city || 'Desconocida'})`;
+                        const loginCount = u.loginCount !== undefined ? u.loginCount : 0;
+                        return `
+                            <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
+                                <td style="padding: 12px; font-weight: bold; color: var(--primary);">👤 ${u.username}</td>
+                                <td style="padding: 12px; font-family: monospace; color: var(--text);">${u.email}</td>
+                                <td style="padding: 12px; text-align: center;">
+                                    <span class="tag" style="background: var(--primary); color: white; font-size: 0.8rem; font-weight: bold; padding: 4px 10px; border-radius: 10px;">
+                                        📍 ${locationInfo}
+                                    </span>
+                                </td>
+                                <td style="padding: 12px; text-align: center; font-weight: bold; color: var(--accent); font-size: 1.1rem;">
+                                    🔑 ${loginCount}
                                 </td>
                             </tr>
                         `;
-                    } else {
-                        tableBody.innerHTML = serverUsers.map(u => {
-                            const locationInfo = `${u.province || 'Desconocida'} (${u.city || 'Desconocida'})`;
-                            return `
-                                <tr style="border-bottom: 1px solid rgba(0,0,0,0.05);">
-                                    <td style="padding: 12px; font-weight: bold; color: var(--primary);">👤 ${u.username}</td>
-                                    <td style="padding: 12px; font-family: monospace; color: var(--text);">${u.email}</td>
-                                    <td style="padding: 12px; text-align: center;">
-                                        <span class="tag" style="background: var(--primary); color: white; font-size: 0.8rem; font-weight: bold; padding: 4px 10px; border-radius: 10px;">
-                                            📍 ${locationInfo}
-                                        </span>
-                                    </td>
-                                </tr>
-                            `;
-                        }).join('');
-                    }
+                    }).join('');
                 }
             }
         } catch (err) {
-            console.error("Error al obtener la lista de usuarios del backend:", err);
+            console.error("Error al obtener la lista de usuarios:", err);
             if (tableBody) {
-                tableBody.innerHTML = `<tr><td colspan="3" style="text-align: center; padding: 15px; color: red;">Error de conexión.</td></tr>`;
+                tableBody.innerHTML = `<tr><td colspan="4" style="text-align: center; padding: 15px; color: red;">Error al conectar con la base de datos de usuarios.</td></tr>`;
             }
         }
 

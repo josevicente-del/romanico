@@ -1,4 +1,4 @@
-const CACHE_NAME = 'romanico-v5';
+const CACHE_NAME = 'romanico-v7';
 const ASSETS = [
   './',
   './index.html',
@@ -13,6 +13,7 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', event => {
+  self.skipWaiting(); // Forzar la activación del Service Worker en cuanto se descargue
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll(ASSETS);
@@ -22,15 +23,17 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cache => {
-          if (cache !== CACHE_NAME) {
-            console.log('Service Worker: Limpiando caché obsoleta', cache);
-            return caches.delete(cache);
-          }
-        })
-      );
+    clients.claim().then(() => { // Tomar el control de los clientes activos inmediatamente
+      return caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cache => {
+            if (cache !== CACHE_NAME) {
+              console.log('Service Worker: Limpiando caché obsoleta', cache);
+              return caches.delete(cache);
+            }
+          })
+        );
+      });
     })
   );
 });
