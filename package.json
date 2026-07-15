@@ -30,5 +30,8 @@
     "nodemailer": "^9.0.1",
     "playwright": "^1.60.0",
     "puppeteer": "^25.3.0"
+  },
+  "devDependencies": {
+    "mcp-remote": "^0.1.38"
   }
 }

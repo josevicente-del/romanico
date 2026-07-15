@@ -43,59 +43,5 @@
     "desc": "Apertura extraordinaria nocturna del claustro románico para contemplar sus 50 capiteles iluminados. Aforo limitado. Reserva imprescindible.",
     "url": "https://www.santillana-del-mar.com",
     "isNew": true
-  },
-  {
-    "title": "Centro de Interpretación del Románico: Villacantid",
-    "date": "Apertura Permanente 2026",
-    "location": "Iglesia de Santa María la Mayor, Villacantid",
-    "type": "Centro Cultural",
-    "desc": "Alojado dentro de una magnífica iglesia románica del siglo XII. Situado en la zona con mayor concentración de románico en Cantabria, ofrece una excelente introducción didáctica e interactiva a la arquitectura medieval de la región.",
-    "url": "https://centros.culturadecantabria.com/romanico/",
-    "isNew": true
-  },
-  {
-    "title": "JdRL: Viaje a la Puerta del Reino",
-    "date": "26 de septiembre de 2026",
-    "location": "Asturias y León (Salida desde Gijón y Oviedo)",
-    "type": "Jornada Guiada",
-    "desc": "Jornada de Románico Local organizada por la Coordinación AdR Asturias-Cantabria. Visitas guiadas por Iván Muñiz López a monumentos de la zona como Santa Cristina de Lena, San Antolín de Sotiello, Santa María de Arbás y Santolaya de Uxo. Requiere inscripción.",
-    "url": "https://www.amigosdelromanico.org/actividades/jdrl-puertas-del-reino?c=actividades-2026",
-    "isNew": true
-  },
-  {
-    "title": "Rutas y Actividades: Valle de Valdeolea",
-    "date": "Temporada 2026",
-    "location": "Valle de Valdeolea (Cantabria)",
-    "type": "Ruta de Senderismo",
-    "desc": "Circuitos guiados y señalizados que permiten explorar y descubrir la rica concentración de iglesias románicas y monumentos megalíticos situados en la zona sur de Cantabria.",
-    "url": "",
-    "isNew": true
-  },
-  {
-    "title": "Apertura de Iglesias en Verano - Diócesis de Santander",
-    "date": "Julio, agosto y septiembre 2026",
-    "location": "Varios templos de Cantabria",
-    "type": "Apertura Estival",
-    "desc": "La Diócesis de Santander abre sus templos históricos y románicos al público en época de verano. Gracias a un convenio con el Gobierno de Cantabria, guías locales contratados se encargarán de mostrar el patrimonio artístico al visitante.",
-    "url": "https://diocesisdesantander.com/noticias/la-diocesis-de-santander-abre-sus-iglesias-en-verano-a-las-visitas-turisticas/",
-    "isNew": true
-  },
-  {
-    "title": "V Ciclo de Conferencias del Valle de Toranzo (UC)",
-    "date": "7 y 8 de julio de 2026",
-    "location": "Escuela Oficial de Idiomas, Laredo",
-    "type": "Curso de Verano / Conferencia",
-    "desc": "Bajo el título 'Una historia en llamas: brujas, demonios y exorcismos, de la edad oscura a la modernidad', este curso monográfico de la Universidad de Cantabria analiza las creencias, la magia y la superstición en la transición de la Edad Media a la moderna.",
-    "url": "https://web.unican.es/cursosdeverano/cursos-monograficos/curso?c=3720",
-    "isNew": true
-  },
-  {
-    "title": "Visita Guiada: Santa Marina de Udalla y San Bartolomé de los Montes",
-    "date": "Todos los domingos a las 16:30",
-    "location": "Udalla y Montes, Ampuero",
-    "type": "Visita Guiada",
-    "desc": "Visitas guiadas gratuitas organizadas por el Ayuntamiento de Ampuero para conocer estos tesoros medievales. Traslados por medios propios. Reserva obligatoria por WhatsApp al 621 156 507, Teléfono 638 955 736 o email turismoaltoasonampuero@gmail.com.",
-    "url": "https://turismodecantabria.com/proximamente-evento/visita-guiada-a-santa-marina-de-udalla-y-san-bartolome-de-los-monte/",
-    "isNew": true
   }
 ]

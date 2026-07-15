@@ -560,10 +560,15 @@ app.post('/api/users/register', async (req, res) => {
             return res.status(400).json({ error: "El correo electrónico ya está registrado." });
         }
 
-        // Hashing seguro en servidor y token de verificación
-        const passwordHash = hashPassword(password);
-        const verificationToken = crypto.randomBytes(32).toString('hex');
+        // Determinamos si hay un servidor de correo SMTP real configurado
+        const isSmtpConfigured = !!process.env.SMTP_HOST;
 
+        // Hasheado seguro de la contraseña y generación de token de verificación (solo si SMTP está activo)
+        const passwordHash = hashPassword(password);
+        const verificationToken = isSmtpConfigured ? crypto.randomBytes(32).toString('hex') : null;
+
+        // Crear la estructura del nuevo usuario
+        // Si no hay SMTP configurado, el usuario se crea directamente verificado (verified: true) para evitar bloqueos en local
         const newUser = {
             username,
             email: email.toLowerCase(),
@@ -572,7 +577,7 @@ app.post('/api/users/register', async (req, res) => {
             city: city || "",
             province: province || "",
             createdAt: new Date().toISOString(),
-            verified: false,
+            verified: !isSmtpConfigured,
             verificationToken,
             visited: [],
             role: 'user'
@@ -580,7 +585,16 @@ app.post('/api/users/register', async (req, res) => {
 
         users.push(newUser);
         writeUsersToFile(users);
-        console.log(`Usuario registrado en backend: ${email}`);
+        console.log(`Usuario registrado en backend: ${email} (Autoverificado automáticamente: ${!isSmtpConfigured})`);
+
+        // Si no hay SMTP configurado, respondemos inmediatamente indicando que la cuenta se autoverificó
+        if (!isSmtpConfigured) {
+            return res.json({ 
+                success: true, 
+                message: "Usuario registrado y autoverificado automáticamente por estar en entorno de desarrollo.", 
+                autoVerified: true 
+            });
+        }
 
         // Construir URL de verificación dinámica adaptada al puerto del servidor
         const protocol = req.secure ? 'https' : 'http';

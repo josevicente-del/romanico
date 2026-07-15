@@ -1016,11 +1016,24 @@ function renderRestaurants() {
     const container = document.getElementById('global-restaurants-container');
     if (!container) return;
     
+    // Leer el término de búsqueda del buscador secundario
+    const searchInput = document.getElementById('search-extra');
+    const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
+    
     const allRestaurants = [];
     poiData.forEach(poi => {
         if (poi.restaurants) {
             poi.restaurants.forEach(r => {
-                allRestaurants.push({ ...r, poiName: poi.name, poiLocation: poi.location });
+                // Filtrar según coincidencia con el nombre del restaurante, tipo de comida, nombre del templo cercano o localidad (poi.location)
+                const matchesSearch = !search || 
+                    r.name.toLowerCase().includes(search) || 
+                    r.foodType.toLowerCase().includes(search) || 
+                    poi.name.toLowerCase().includes(search) ||
+                    (poi.location && poi.location.toLowerCase().includes(search));
+                
+                if (matchesSearch) {
+                    allRestaurants.push({ ...r, poiName: poi.name, poiLocation: poi.location });
+                }
             });
         }
     });
@@ -1766,9 +1779,10 @@ function setupEventListeners() {
             if(view === 'profile') updateProfileForm();
             
             // Mostrar o ocultar controles de búsqueda según la sección activa
+            // Modificado: Se incluye 'agenda' para que el buscador sea visible al ver los eventos culturales
             const controlsSection = document.querySelector('.controls-section');
             if (controlsSection) {
-                if (view === 'list' || view === 'restaurants') {
+                if (view === 'list' || view === 'restaurants' || view === 'agenda') {
                     controlsSection.style.display = 'block';
                     const secondarySearch = document.querySelector('.secondary-search');
                     const primarySearch = document.querySelector('.search-bar:not(.secondary-search)');
@@ -1793,7 +1807,11 @@ function setupEventListeners() {
     document.getElementById('filter-culture').addEventListener('change', () => { renderList(); renderMarkers(); });
     document.getElementById('sort-by').addEventListener('change', () => { renderList(); renderMarkers(); });
     document.getElementById('search-input').addEventListener('input', () => { renderList(); renderMarkers(); updateLocalityInfo(); });
-    document.getElementById('search-extra').addEventListener('input', () => { renderAgenda(); });
+    // Registrar evento de búsqueda para actualizar la agenda y el catálogo de restaurantes al escribir
+    document.getElementById('search-extra').addEventListener('input', () => { 
+        renderAgenda(); 
+        renderRestaurants(); 
+    });
 
     // Listeners para controles del mapa general
     const mapLayerSelect = document.getElementById('map-layer-select');
@@ -1899,11 +1917,21 @@ function setupEventListeners() {
                     localStorage.setItem('romanico_subscribers', JSON.stringify(subscribers));
                 }
                 
-                // Actualizar UI
+                // Actualizar la interfaz con mensaje de éxito
                 statusDiv.style.display = 'block';
                 statusDiv.style.color = '#27ae60';
                 statusDiv.textContent = '¡Gracias por suscribirte! Te hemos enviado un correo de bienvenida.';
                 emailInput.value = '';
+                
+                // Ocultar mensaje tras 5 segundos
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                }, 5000);
+            } else {
+                // Mostrar advertencia visual si el correo está vacío
+                statusDiv.style.display = 'block';
+                statusDiv.style.color = '#e74c3c';
+                statusDiv.textContent = 'Por favor, introduce una dirección de correo electrónico.';
                 
                 // Ocultar mensaje tras 5 segundos
                 setTimeout(() => {
@@ -2023,11 +2051,20 @@ function handleRegister(e) {
         })
         .then(data => {
             console.log("Registro en backend local completado:", data);
-            statusMsg.textContent = "✅ ¡Registro recibido! Se ha enviado un pergamino de verificación a tu correo. Revisa la consola del servidor para el enlace.";
-            statusMsg.style.color = "green";
+            
+            // Si el servidor ha verificado automáticamente la cuenta (sin SMTP)
+            if (data.autoVerified) {
+                statusMsg.textContent = "✅ ¡Registro completado con éxito! Tu cuenta se ha activado automáticamente por estar en entorno de desarrollo. Ya puedes iniciar sesión.";
+                statusMsg.style.color = "green";
+            } else {
+                statusMsg.textContent = "✅ ¡Registro recibido! Se ha enviado un pergamino de verificación a tu correo. Revisa la consola del servidor para el enlace.";
+                statusMsg.style.color = "green";
+            }
+            
+            // Reiniciar el formulario de registro
             e.target.reset();
             
-            // Si el servidor está usando Ethereal en desarrollo, mostramos el enlace de previsualización
+            // Si el servidor está usando Ethereal en desarrollo y hay previsualización de correo
             if (data.previewUrl) {
                 console.log(`🔗 [DESARROLLO] Previsualización del correo de confirmación: ${data.previewUrl}`);
             }

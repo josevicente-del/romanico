@@ -43,14 +43,16 @@ CREATE POLICY "Permitir actualización al propio usuario"
 ON public.profiles FOR UPDATE 
 USING (auth.uid() = id);
 
--- 4. Función de trigger para copiar metadatos tras la verificación de email
+-- 4. Función de trigger para copiar metadatos tras la creación del usuario en Auth
 -- Esta función se ejecuta automáticamente cuando un usuario se registra o confirma su email en auth.users.
--- Solo inserta el perfil público si el email ha sido verificado (email_confirmed_at no es nulo)
--- y si el perfil no existe ya en la base de datos.
+-- Se crea el perfil público de inmediato al registrarse (sin requerir confirmación inmediata por email)
+-- para evitar que el usuario quede en un estado inconsistente en el frontend.
 CREATE OR REPLACE FUNCTION public.handle_user_verification_or_creation()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF new.email_confirmed_at IS NOT NULL AND NOT EXISTS (SELECT 1 FROM public.profiles WHERE id = new.id) THEN
+    -- Verificamos si el perfil público de este usuario ya existe en profiles
+    IF NOT EXISTS (SELECT 1 FROM public.profiles WHERE id = new.id) THEN
+        -- Insertamos el perfil público utilizando los metadatos de registro
         INSERT INTO public.profiles (id, email, full_name, country, city, province, visited, login_count)
         VALUES (
             new.id,
@@ -60,7 +62,7 @@ BEGIN
             COALESCE(new.raw_user_meta_data->>'city', ''),
             COALESCE(new.raw_user_meta_data->>'province', ''),
             '{}'::TEXT[],
-            1 -- El primer login o verificación cuenta como acceso 1
+            1 -- Primer login o registro inicializado
         );
     END IF;
     RETURN NEW;

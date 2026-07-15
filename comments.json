@@ -43,5 +43,14 @@
     "stars": 4,
     "text": "Ubicada en Santoña, es preciosa con su mezcla de estilos y su vinculación histórica con los marineros locales. Vale mucho la pena visitarla.",
     "date": "2026-06-07"
+  },
+  {
+    "id": "1783970097782",
+    "username": "Viajero Románico",
+    "churchId": "colegiata-de-san-pedro-de-cervatos",
+    "churchName": "Colegiata de San Pedro de Cervatos",
+    "stars": 5,
+    "text": "¡Una maravilla del románico erótico!",
+    "date": "2026-07-13"
   }
 ]

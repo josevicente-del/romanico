@@ -1,4 +1,5 @@
-const CACHE_NAME = 'romanico-v7';
+// Nombre de la caché - Incrementado a v10 para invalidar cachés obsoletas y forzar la recarga de app.js con los filtros corregidos por localidad
+const CACHE_NAME = 'romanico-v10';
 const ASSETS = [
   './',
   './index.html',
