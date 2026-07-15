@@ -14,6 +14,17 @@ let eventsData = window.eventsData || [];
 const recipesData = window.recipesData || [];
 const conventSweets = window.conventSweets || [];
 
+// Función auxiliar para procesar respuestas JSON de forma robusta frente a respuestas vacías o corruptas
+async function safeJson(response, defaultValue = {}) {
+    try {
+        const text = await response.text();
+        return text ? JSON.parse(text) : defaultValue;
+    } catch (e) {
+        console.warn("Advertencia al parsear JSON de respuesta:", e);
+        return defaultValue;
+    }
+}
+
 function getOptimizedImageUrl(url, width = 640) {
     if (!url) return '';
     // Usar el proxy global de imágenes de Cloudflare (images.weserv.nl) para redimensionar,
@@ -166,7 +177,7 @@ async function loadEvents() {
         // Intentar obtener los eventos desde la API del backend
         const res = await fetch('/api/events');
         if (res.ok) {
-            eventsData = await res.json();
+            eventsData = await safeJson(res, []);
             console.log("Eventos cargados desde la API del backend.");
             renderAgenda();
             return;
@@ -181,7 +192,7 @@ async function loadEvents() {
         // Fallback: Intentar obtener el archivo events.json estático directamente
         const staticRes = await fetch('./events.json');
         if (staticRes.ok) {
-            eventsData = await staticRes.json();
+            eventsData = await safeJson(staticRes, []);
             console.log("Eventos cargados desde el archivo events.json estático.");
         } else {
             console.warn("No se pudo cargar events.json, usando window.eventsData.");
@@ -844,7 +855,7 @@ async function handleUpload(e, poiId) {
             method: 'POST',
             body: formData
         });
-        const data = await res.json();
+        const data = await safeJson(res);
         if (data.success) {
             status.innerHTML = "✅ " + data.message;
             status.style.color = "green";
@@ -2043,11 +2054,12 @@ function handleRegister(e) {
             },
             body: JSON.stringify(newUser)
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
-                return response.json().then(errData => { throw new Error(errData.error || response.statusText); });
+                const errData = await safeJson(response);
+                throw new Error(errData.error || response.statusText);
             }
-            return response.json();
+            return safeJson(response);
         })
         .then(data => {
             console.log("Registro en backend local completado:", data);
@@ -2131,11 +2143,12 @@ function handleLogin(e) {
             },
             body: JSON.stringify({ email, password: pass })
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
-                return response.json().then(errData => { throw new Error(errData.error || "Error de inicio de sesión."); });
+                const errData = await safeJson(response);
+                throw new Error(errData.error || "Error de inicio de sesión.");
             }
-            return response.json();
+            return safeJson(response);
         })
         .then(data => {
             if (data.success) {
@@ -2189,11 +2202,12 @@ function handleGoogleLogin() {
             },
             body: JSON.stringify({ name, email })
         })
-        .then(response => {
+        .then(async response => {
             if (!response.ok) {
-                return response.json().then(errData => { throw new Error(errData.error || "Error de autenticación."); });
+                const errData = await safeJson(response);
+                throw new Error(errData.error || "Error de autenticación.");
             }
-            return response.json();
+            return safeJson(response);
         })
         .then(data => {
             if (data.success) {
@@ -2478,7 +2492,7 @@ async function renderAdminPanel() {
             } else {
                 // Fallback local
                 const response = await fetch('/api/admin/users');
-                const data = await response.json();
+                const data = await safeJson(response);
                 if (data.success) {
                     serverUsers = data.users || [];
                     totalUsers = data.total || serverUsers.length;
@@ -2529,7 +2543,7 @@ async function renderAdminPanel() {
         // 2. Cargar Fotos Pendientes de Moderación
         try {
             const res = await fetch('/api/admin/pending-photos');
-            const pendingPhotos = await res.json();
+            const pendingPhotos = await safeJson(res, []);
 
             if (photosCountSpan) photosCountSpan.textContent = pendingPhotos.length;
 
@@ -2581,7 +2595,7 @@ window.approvePhoto = async (photoId) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ photoId })
         });
-        const data = await res.json();
+        const data = await safeJson(res);
         if (data.success) {
             alert('✅ Foto aprobada con éxito.');
             renderAdminPanel();
@@ -2603,7 +2617,7 @@ window.rejectPhoto = async (photoId) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ photoId })
         });
-        const data = await res.json();
+        const data = await safeJson(res);
         if (data.success) {
             alert('✅ Foto rechazada y eliminada.');
             renderAdminPanel();
@@ -2774,7 +2788,7 @@ async function handleEditPoiSubmit(e) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ id, name, location, description, images })
         });
-        const data = await res.json();
+        const data = await safeJson(res);
         if (data.success) {
             alert('✅ Iglesia actualizada con éxito.');
             // Actualizar datos locales en memoria
@@ -2845,7 +2859,7 @@ async function renderComments() {
     try {
         const res = await fetch('/api/comments');
         if (!res.ok) throw new Error("No se pudieron cargar los comentarios.");
-        const comments = await res.json();
+        const comments = await safeJson(res, []);
 
         if (comments.length === 0) {
             commentsList.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:20px;">Aún no hay opiniones en la comunidad. ¡Sé el primero en aportar!</p>`;
@@ -2905,7 +2919,7 @@ window.handleCommentSubmit = async (e) => {
                 text
             })
         });
-        const data = await res.json();
+        const data = await safeJson(res);
         if (data.success) {
             textTextarea.value = '';
             renderComments();
@@ -2922,7 +2936,7 @@ window.deleteComment = async (id) => {
     if (!confirm('🛡️ ¿Estás seguro de que deseas eliminar permanentemente este comentario de la Comunidad?')) return;
     try {
         const res = await fetch(`/api/admin/comments/${id}`, { method: 'DELETE' });
-        const data = await res.json();
+        const data = await safeJson(res);
         if (data.success) {
             renderComments();
             alert('✅ Comentario eliminado con éxito.');
@@ -2974,7 +2988,7 @@ async function loadWeatherMapMarkers() {
             const url = `https://api.open-meteo.com/v1/forecast?latitude=${zone.lat}&longitude=${zone.lon}&current=temperature_2m,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
             const response = await fetch(url);
             if (!response.ok) continue;
-            const data = await response.json();
+            const data = await safeJson(response);
             
             const temp = Math.round(data.current.temperature_2m);
             const status = getWeatherStatusByCode(data.current.weather_code);
@@ -3145,7 +3159,7 @@ async function loadWeather() {
                 const url = `https://api.open-meteo.com/v1/forecast?latitude=${zone.lat}&longitude=${zone.lon}&current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto`;
                 const response = await fetch(url);
                 if (!response.ok) continue;
-                const data = await response.json();
+                const data = await safeJson(response);
                 
                 const temp = Math.round(data.current.temperature_2m);
                 const status = getWeatherStatusByCode(data.current.weather_code);
