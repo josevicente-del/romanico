@@ -631,12 +631,11 @@ app.post('/api/users/register', async (req, res) => {
             role: 'user'
         };
 
-        users.push(newUser);
-        writeUsersToFile(users);
-        console.log(`Usuario registrado en backend: ${email} (Autoverificado automáticamente: ${!isSmtpConfigured})`);
-
-        // Si no hay SMTP configurado, respondemos inmediatamente indicando que la cuenta se autoverificó
+        // Si no hay SMTP configurado (Entorno de desarrollo local/fallback)
         if (!isSmtpConfigured) {
+            users.push(newUser);
+            writeUsersToFile(users);
+            console.log(`Usuario registrado en backend (autoverificado): ${email}`);
             return res.json({ 
                 success: true, 
                 message: "Usuario registrado y autoverificado automáticamente por estar en entorno de desarrollo.", 
@@ -644,6 +643,7 @@ app.post('/api/users/register', async (req, res) => {
             });
         }
 
+        // Si hay SMTP configurado (Entorno real / producción)
         // Construir URL de verificación dinámica adaptada al puerto del servidor
         const protocol = req.secure ? 'https' : 'http';
         const host = req.get('host') || `localhost:${PORT}`;
@@ -659,7 +659,7 @@ app.post('/api/users/register', async (req, res) => {
                     ¡Albricias y regocijo! Tu pergamino de inscripción ha llegado a los muros de nuestra fortaleza digital. Nosotros, los guardianes del <strong>Románico en Cantabria</strong>, te damos la más cálida de las bienvenidas al gremio de viajeros.
                 </p>
                 <p style="font-size: 1.1rem; line-height: 1.6; color: #333;">
-                    Has sido registrado oficialmente como <strong>${username}</strong>. A partir de ahora, tu mapa de exploración está listo para ser marcado con cada colegiata, ermita y ábside medieval que visites.
+                    Has sido registrado oficialmente como <strong>${username}</strong>. A partir de ahora, tu mapa de exploration está listo para ser marcado con cada colegiata, ermita y ábside medieval que visites.
                 </p>
                 <div style="background-color: #f4f7f6; padding: 15px; border-radius: 8px; border-left: 5px solid #1c3a6b; margin: 20px 0;">
                     <h3 style="margin-top: 0; color: #1c3a6b;">📝 Tu Credencial de Viajero:</h3>
@@ -690,8 +690,15 @@ app.post('/api/users/register', async (req, res) => {
             html: emailHtml
         };
 
+        // Intentar enviar el correo electrónico primero. Si falla, entrará en el catch y lanzará error al frontend,
+        // pero el usuario no se guardará en users.json, lo que le permite corregir el correo o reintentar.
         const info = await transporter.sendMail(mailOptions);
         
+        // Guardamos al usuario en la base de datos solo tras enviar el correo con éxito
+        users.push(newUser);
+        writeUsersToFile(users);
+        console.log(`Usuario registrado en backend (pendiente de verificar): ${email}`);
+
         // Si usamos Ethereal, mostramos el enlace de previsualización en la consola
         const previewUrl = nodemailer.getTestMessageUrl(info);
         if (previewUrl) {
@@ -706,6 +713,7 @@ app.post('/api/users/register', async (req, res) => {
         res.status(500).json({ error: "Error interno en el proceso de registro." });
     }
 });
+
 
 // Endpoint para verificar el token del correo
 app.get('/api/auth/verify', (req, res) => {

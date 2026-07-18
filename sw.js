@@ -1,5 +1,5 @@
-// Nombre de la caché - Incrementado a v10 para invalidar cachés obsoletas y forzar la recarga de app.js con los filtros corregidos por localidad
-const CACHE_NAME = 'romanico-v10';
+// Nombre de la caché - Incrementado a v11 para invalidar cachés obsoletas y asegurar la carga segura de app.js e index.html actualizados
+const CACHE_NAME = 'romanico-v11';
 const ASSETS = [
   './',
   './index.html',
@@ -40,6 +40,12 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Excluir peticiones que no sean GET (como el POST de registro o inicio de sesión)
+  // y cualquier llamada a los endpoints de la API del backend (/api/) para que vayan directas a red
+  if (event.request.method !== 'GET' || event.request.url.includes('/api/')) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true }).then(response => {
       return response || fetch(event.request);
