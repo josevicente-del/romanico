@@ -2,7 +2,7 @@
   {
     "username": "SanchoPanza",
     "email": "sancho.panza@cervantes.com",
-    "country": "Espa�a",
+    "country": "España",
     "city": "Bustasur",
     "province": "Campoo",
     "createdAt": "2026-06-18T19:21:49.915Z",
@@ -16,12 +16,12 @@
     "province": "Valencia",
     "createdAt": "2026-06-18T19:42:35.328Z",
     "verified": false,
-    "loginCount": 6
+    "loginCount": 9
   },
   {
     "username": "Test User",
     "email": "test@example.com",
-    "country": "EspaEspana",
+    "country": "España",
     "city": "Santander",
     "province": "Cantabria",
     "createdAt": "2026-06-19T20:36:36.577Z",
@@ -30,7 +30,7 @@
   {
     "username": "Playwright Tester",
     "email": "test_1781901790170@example.com",
-    "country": "Espana",
+    "country": "España",
     "city": "Santander",
     "province": "Cantabria",
     "createdAt": "2026-06-19T20:43:10.359Z",
@@ -39,7 +39,7 @@
   {
     "username": "Viajero De Prueba",
     "email": "viajero.prueba2026@ejemplo.co",
-    "country": "Espa",
+    "country": "España",
     "city": "Santander",
     "province": "Cantabria",
     "createdAt": "2026-06-19T20:45:57.384Z",
@@ -92,6 +92,34 @@
     "city": "Santander",
     "province": "Cantabria",
     "createdAt": "2026-07-13T18:50:52.290Z",
+    "verified": true,
+    "verificationToken": null,
+    "visited": [],
+    "role": "user",
+    "loginCount": 1
+  },
+  {
+    "username": "Noble Test 1784376092222",
+    "email": "test_viajero_1784376092222@gremio.com",
+    "passwordHash": "scrypt$7db059b23bbc4a3d9073aa32a9ad7331$ced4ec16a4cc304d912c820748bc9688b6757ec8b30c49307024a790756bd6a2b00bebd1ce6a47b1cbef1eb2e0e7551ac7c8cccaae7d94f286ff90fca76f18d1",
+    "country": "España",
+    "city": "Santander",
+    "province": "Cantabria",
+    "createdAt": "2026-07-18T12:01:32.365Z",
+    "verified": true,
+    "verificationToken": null,
+    "visited": [],
+    "role": "user",
+    "loginCount": 1
+  },
+  {
+    "username": "Noble Test 1784376136378",
+    "email": "test_viajero_1784376136378@gremio.com",
+    "passwordHash": "scrypt$0c34071dc820c9152a914020df729930$9016b8a360acd2331bd8f9d6ab0190903de89d4966b152f0bcb02b475fd6d5eda4065e9b2c03e3a5949a0a84430495b79a68527d60b8dbd918b593cae7279687",
+    "country": "España",
+    "city": "Santander",
+    "province": "Cantabria",
+    "createdAt": "2026-07-18T12:02:16.578Z",
     "verified": true,
     "verificationToken": null,
     "visited": [],

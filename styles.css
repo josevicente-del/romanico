@@ -2878,3 +2878,58 @@ select {
 .paypal-email-text strong {
     color: var(--primary);
 }
+
+/* =========================================================================
+   ESTILOS PREMIUM PARA LA SECCIÓN DE AGENDA Y CRÓNICAS DE PRENSA (RSS)
+   ========================================================================= */
+
+.agenda-tabs {
+    margin-bottom: 25px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    padding-bottom: 10px;
+}
+
+.agenda-tab-btn {
+    transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.agenda-tab-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.agenda-tab-btn.active {
+    box-shadow: 0 4px 12px rgba(28, 58, 107, 0.25);
+}
+
+/* Spinner Medieval / Dorado interactivo de Carga para Noticias */
+.spinner {
+    border: 4px solid rgba(28, 58, 107, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-left-color: var(--accent); /* Dorado/Ámbar de la app */
+    animation: spin 1s linear infinite;
+    margin: 0 auto 15px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Transiciones de opacidad para el cambio de contenido en las pestañas */
+.agenda-tab-content {
+    animation: fadeInTab 0.4s ease;
+}
+
+@keyframes fadeInTab {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

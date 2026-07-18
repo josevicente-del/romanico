@@ -11,6 +11,7 @@ rawPoiData.forEach(poi => {
 });
 
 let eventsData = window.eventsData || [];
+let newsData = []; // Guardará las noticias de prensa del románico obtenidas vía API RSS
 const recipesData = window.recipesData || [];
 const conventSweets = window.conventSweets || [];
 
@@ -986,6 +987,102 @@ function renderAgenda() {
     }).join('');
 }
 
+/**
+ * Carga de forma asíncrona las noticias de prensa del románico desde la API
+ * local (/api/news), mostrando un spinner animado durante el proceso.
+ */
+async function loadNews() {
+    const container = document.getElementById('news-container');
+    if (!container) return;
+
+    // Pintamos un spinner premium de carga con estética medieval
+    container.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-muted);">
+            <div class="spinner"></div>
+            <span style="font-family: 'Noto Serif', serif; font-style: italic;">Buscando crónicas en los reinos de Cantabria...</span>
+        </div>
+    `;
+
+    try {
+        const res = await fetch('/api/news');
+        if (res.ok) {
+            const data = await safeJson(res, { success: false, news: [] });
+            if (data.success) {
+                newsData = data.news || [];
+                console.log("WEB_APP: Noticias de prensa cargadas desde el backend.");
+                renderNews();
+                return;
+            }
+        }
+    } catch(e) {
+        console.error("WEB_APP: Error al cargar noticias de prensa:", e);
+    }
+
+    // Fallback con estética medieval si hay algún error
+    container.innerHTML = `
+        <div style="grid-column: 1/-1; text-align: center; padding: 30px; background: rgba(231, 76, 60, 0.05); border: 1px solid rgba(231, 76, 60, 0.2); border-radius: 8px; color: #c0392b; font-family: 'Noto Serif', serif;">
+            🛡️ Las palomas mensajeras no han podido regresar con las crónicas. Inténtalo de nuevo más tarde o comprueba tu conexión real con el servidor.
+        </div>
+    `;
+}
+
+/**
+ * Renderiza la lista de noticias de prensa filtradas según el buscador secundario
+ */
+function renderNews() {
+    const container = document.getElementById('news-container');
+    if(!container) return;
+
+    const searchInput = document.getElementById('search-extra');
+    const search = searchInput ? searchInput.value.toLowerCase().trim() : '';
+
+    // Filtrar según coincidencia de título o descripción
+    const filtered = newsData.filter(n => 
+        !search || n.title.toLowerCase().includes(search) || (n.desc && n.desc.toLowerCase().includes(search))
+    );
+
+    if (filtered.length === 0) {
+        container.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--text-muted); font-style: italic; font-family: 'Noto Serif', serif;">
+                No se encontraron crónicas en esta comarca que coincidan con tu búsqueda.
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = filtered.map(n => {
+        // Formatear fecha RSS de manera legible para viajeros
+        let dateStr = "Reciente";
+        if (n.pubDate) {
+            try {
+                const dateObj = new Date(n.pubDate);
+                if (!isNaN(dateObj)) {
+                    dateStr = dateObj.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+                }
+            } catch(e) {}
+        }
+
+        return `
+            <div class="card event-card" onclick="window.open('${n.link}', '_blank')" style="cursor:pointer; transition: transform 0.2s, box-shadow 0.2s;">
+                <div class="card-content" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%;">
+                    <div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="tag" style="background:#8c2512; color:white">Prensa 📰</span>
+                        </div>
+                        <h3 class="card-title" style="margin-top:10px; color:#8c2512; font-family: 'Noto Serif', serif;">${n.title}</h3>
+                        <p style="font-size:0.8rem; font-weight:600; color:var(--text-muted)">📅 ${dateStr}</p>
+                        <p style="font-size:0.85rem; margin-top:10px; line-height: 1.4; color: var(--text);">${n.desc || 'Haz clic para leer la crónica completa en el diario de origen.'}</p>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <a href="${n.link}" target="_blank" class="btn-primary" style="display: block; text-align: center; font-size: 0.8rem; text-decoration: none; padding: 8px 12px; width: 100%; background: #8c2512; border-color: #751f0e;">⚔️ Leer Crónica Completa</a>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+
 // --- Helpers de Visita ---
 function getVisited() {
     if (currentUser) {
@@ -1818,10 +1915,43 @@ function setupEventListeners() {
     document.getElementById('filter-culture').addEventListener('change', () => { renderList(); renderMarkers(); });
     document.getElementById('sort-by').addEventListener('change', () => { renderList(); renderMarkers(); });
     document.getElementById('search-input').addEventListener('input', () => { renderList(); renderMarkers(); updateLocalityInfo(); });
-    // Registrar evento de búsqueda para actualizar la agenda y el catálogo de restaurantes al escribir
+    // Registrar evento de búsqueda para actualizar la agenda, crónicas de prensa y el catálogo de restaurantes al escribir
     document.getElementById('search-extra').addEventListener('input', () => { 
         renderAgenda(); 
+        renderNews();
         renderRestaurants(); 
+    });
+
+    // Control de pestañas en la Agenda (Eventos vs Crónicas de Prensa)
+    const agendaTabBtns = document.querySelectorAll('.agenda-tab-btn');
+    agendaTabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tab = btn.dataset.agendaTab;
+            
+            agendaTabBtns.forEach(b => {
+                b.classList.remove('active');
+                b.style.background = 'rgba(0,0,0,0.05)';
+                b.style.color = 'var(--text)';
+            });
+            btn.classList.add('active');
+            btn.style.background = 'var(--primary)';
+            btn.style.color = 'white';
+
+            const eventsContent = document.getElementById('events-tab-content');
+            const newsContent = document.getElementById('news-tab-content');
+
+            if (tab === 'events') {
+                if (eventsContent) eventsContent.style.display = 'block';
+                if (newsContent) newsContent.style.display = 'none';
+            } else {
+                if (eventsContent) eventsContent.style.display = 'none';
+                if (newsContent) newsContent.style.display = 'block';
+                // Si la sección de noticias está vacía, cargamos por primera vez
+                if (newsData.length === 0) {
+                    loadNews();
+                }
+            }
+        });
     });
 
     // Listeners para controles del mapa general
@@ -2580,6 +2710,90 @@ async function renderAdminPanel() {
             if (photosContainer) {
                 photosContainer.innerHTML = `<div style="grid-column:1/-1; text-align:center; color:red;">Error de conexión con el moderador de imágenes.</div>`;
             }
+        }
+
+        // =========================================================================
+        // 3. CONFIGURAR CONTROLES DEL AGENTE DE NOTICIAS
+        // =========================================================================
+        const btnTriggerNews = document.getElementById('btn-trigger-news-agent');
+        const btnTriggerEvents = document.getElementById('btn-trigger-events-agent');
+        const agentStatus = document.getElementById('admin-agent-status');
+
+        if (btnTriggerNews && !btnTriggerNews.dataset.listenerSet) {
+            btnTriggerNews.dataset.listenerSet = 'true';
+            btnTriggerNews.addEventListener('click', async () => {
+                btnTriggerNews.disabled = true;
+                btnTriggerNews.textContent = "⚔️ Enviando cuervos...";
+                if (agentStatus) {
+                    agentStatus.style.display = 'block';
+                    agentStatus.style.background = '#fbfaf2';
+                    agentStatus.style.color = '#5a3c1c';
+                    agentStatus.style.border = '2px solid #5a3c1c';
+                    agentStatus.innerHTML = `📜 Iniciando la marcha del Agente de Noticias... Por favor, espera a que los sabios del reino completen el pergamino.`;
+                }
+
+                try {
+                    const res = await fetch('/api/test/send-news-bulletin');
+                    const data = await safeJson(res, { success: false });
+                    if (data.success) {
+                        agentStatus.style.background = '#d4edda';
+                        agentStatus.style.color = '#155724';
+                        agentStatus.style.border = '1px solid #c3e6cb';
+                        const details = data.details || {};
+                        agentStatus.innerHTML = `🛡️ <strong>¡Victoria!</strong> Boletín medieval enviado con éxito. <br>
+                            👥 <b>Suscriptores notificados:</b> ${details.count || 0} <br>
+                            📰 <b>Crónicas de prensa recopiladas:</b> ${details.newsCount || 0}`;
+                    } else {
+                        throw new Error(data.error || "Fallo en la comunicación con el reino.");
+                    }
+                } catch(err) {
+                    console.error("Error al ejecutar el agente de noticias:", err);
+                    agentStatus.style.background = '#f8d7da';
+                    agentStatus.style.color = '#721c24';
+                    agentStatus.style.border = '1px solid #f5c6cb';
+                    agentStatus.innerHTML = `❌ El Agente reportó un fallo crítico: ${err.message}`;
+                } finally {
+                    btnTriggerNews.disabled = false;
+                    btnTriggerNews.textContent = "📜 Ejecutar Agente de Noticias (Mensual)";
+                }
+            });
+        }
+
+        if (btnTriggerEvents && !btnTriggerEvents.dataset.listenerSet) {
+            btnTriggerEvents.dataset.listenerSet = 'true';
+            btnTriggerEvents.addEventListener('click', async () => {
+                btnTriggerEvents.disabled = true;
+                btnTriggerEvents.textContent = "🎺 Trompetas sonando...";
+                if (agentStatus) {
+                    agentStatus.style.display = 'block';
+                    agentStatus.style.background = '#fbfaf2';
+                    agentStatus.style.color = '#5a3c1c';
+                    agentStatus.style.border = '2px solid #5a3c1c';
+                    agentStatus.innerHTML = `🎺 Los juglares están preparando los chismes de la corte...`;
+                }
+
+                try {
+                    const res = await fetch('/api/test/send-bulletin');
+                    const data = await safeJson(res, { success: false });
+                    if (data.success) {
+                        agentStatus.style.background = '#d4edda';
+                        agentStatus.style.color = '#155724';
+                        agentStatus.style.border = '1px solid #c3e6cb';
+                        agentStatus.innerHTML = `🛡️ <strong>¡Enviado!</strong> Boletín quincenal de novedades de la agenda disparado correctamente a los viajeros registrados.`;
+                    } else {
+                        throw new Error(data.error || "Fallo al silbar al cuervo mensajero.");
+                    }
+                } catch(err) {
+                    console.error("Error al disparar boletín de novedades:", err);
+                    agentStatus.style.background = '#f8d7da';
+                    agentStatus.style.color = '#721c24';
+                    agentStatus.style.border = '1px solid #f5c6cb';
+                    agentStatus.innerHTML = `❌ Falló la algarada: ${err.message}`;
+                } finally {
+                    btnTriggerEvents.disabled = false;
+                    btnTriggerEvents.textContent = "🎺 Ejecutar Boletín de Novedades (Quincenal)";
+                }
+            });
         }
 
     } else {

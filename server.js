@@ -5,6 +5,8 @@ const fs = require('fs');
 const cron = require('node-cron');
 const nodemailer = require('nodemailer');
 const { scrapeEvents } = require('./scraper');
+// Importar el Agente de Noticias y Boletín Mensual
+const { ejecutarAgenteNoticias } = require('./agente_noticias');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -30,6 +32,47 @@ app.get('/api/events', (req, res) => {
         res.json(events);
     } else {
         res.json([]);
+    }
+});
+
+/**
+ * Endpoint GET /api/news
+ * Obtiene y procesa las noticias de prensa más recientes sobre el románico en Cantabria
+ * utilizando el feed RSS de Google News. Limpia el HTML de la descripción y formatea el resultado en JSON.
+ */
+app.get('/api/news', async (req, res) => {
+    try {
+        const cheerio = require('cheerio');
+        const axios = require('axios');
+        const GOOGLE_NEWS_RSS = 'https://news.google.com/rss/search?q=romanico+cantabria&hl=es&gl=ES&ceid=ES:es';
+        
+        console.log(`WEB_API: Buscando noticias en RSS: ${GOOGLE_NEWS_RSS}`);
+        const response = await axios.get(GOOGLE_NEWS_RSS);
+        const $ = cheerio.load(response.data, { xmlMode: true });
+
+        const noticias = [];
+        $('item').each((idx, el) => {
+            const title = $(el).find('title').text();
+            const link = $(el).find('link').text();
+            const pubDateStr = $(el).find('pubDate').text();
+            const desc = $(el).find('description').text();
+
+            // Limpiamos etiquetas HTML de la descripción y limitamos su longitud para optimizar transferencia
+            const cleanDesc = desc.replace(/<[^>]*>?/gm, '').substring(0, 200);
+
+            noticias.push({
+                title,
+                link,
+                pubDate: pubDateStr,
+                desc: cleanDesc
+            });
+        });
+
+        console.log(`WEB_API: Enviando ${noticias.length} noticias al cliente.`);
+        res.json({ success: true, news: noticias.slice(0, 10) });
+    } catch (err) {
+        console.error("WEB_API: Error al obtener noticias RSS para la web:", err);
+        res.status(500).json({ error: "No se pudieron obtener las noticias del románico en este momento." });
     }
 });
 
@@ -552,6 +595,11 @@ app.post('/api/users/register', async (req, res) => {
         return res.status(400).json({ error: "El formato del correo electrónico no es válido." });
     }
 
+    // Validación de longitud mínima de la contraseña (mínimo 6 caracteres para garantizar seguridad)
+    if (password.length < 6) {
+        return res.status(400).json({ error: "La contraseña debe tener al menos 6 caracteres." });
+    }
+
     try {
         const users = readUsersFromFile();
         const exists = users.some(u => u.email.toLowerCase() === email.toLowerCase());
@@ -883,6 +931,28 @@ app.get('/api/test/send-bulletin', async (req, res) => {
     res.json({ success: true, message: "Boletín quincenal disparado para pruebas." });
 });
 
+// Endpoint de pruebas para disparar manualmente el Agente de Noticias y Boletín Mensual
+app.get('/api/test/send-news-bulletin', async (req, res) => {
+    console.log("Iniciando disparo manual del Agente de Noticias mensual...");
+    try {
+        const resultado = await ejecutarAgenteNoticias(
+            transporter,
+            path.join(__dirname, 'users.json'),
+            path.join(__dirname, 'events.json'),
+            path.join(__dirname, 'sent_news.json'),
+            PORT
+        );
+        res.json({ 
+            success: true, 
+            message: "Agente de Noticias y Boletín Mensual ejecutado manualmente con éxito.", 
+            details: resultado 
+        });
+    } catch (err) {
+        console.error("Error al ejecutar manualmente el Agente de Noticias:", err);
+        res.status(500).json({ error: "Error interno al ejecutar el Agente de Noticias.", detalle: err.message });
+    }
+});
+
 // =========================================================================
 // CRON QUINCENAL: BOLETÍN DE NOVEDADES DE LA AGENDA (INFORMAL Y DIVERTIDO)
 // =========================================================================
@@ -890,6 +960,25 @@ app.get('/api/test/send-bulletin', async (req, res) => {
 cron.schedule('0 0 1,15 * *', async () => {
     console.log("CRON QUINCENAL: Iniciando envío de novedades de la agenda a los aventureros...");
     await enviarBoletinNovedades();
+});
+
+// =========================================================================
+// CRON MENSUAL: AGENTE DE NOTICIAS DE PRENSA Y AGENDA (MEDIEVAL Y COMPLETO)
+// =========================================================================
+// Se ejecuta el día 19 de cada mes a las 00:00 (mensual)
+cron.schedule('0 0 19 * *', async () => {
+    console.log("CRON MENSUAL: Disparando Agente de Noticias y Boletín Mensual...");
+    try {
+        await ejecutarAgenteNoticias(
+            transporter,
+            path.join(__dirname, 'users.json'),
+            path.join(__dirname, 'events.json'),
+            path.join(__dirname, 'sent_news.json'),
+            PORT
+        );
+    } catch (err) {
+        console.error("CRON MENSUAL: Error al ejecutar el Agente de Noticias:", err);
+    }
 });
 
 // Función para enviar el boletín divertido a todos los usuarios

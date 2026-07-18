@@ -243,6 +243,21 @@
                         <!-- Inyectado dinámicamente vía JS -->
                     </div>
                 </div>
+
+                <!-- Controles del Agente de Noticias (Solo para Administrador) -->
+                <div class="admin-card" style="margin-top: 1.5625rem;">
+                    <h3>
+                        🤖 Agente de Noticias y Boletines del Reino
+                    </h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">
+                        Controla el Agente de Noticias autónomo y el envío de pergaminos reales por correo electrónico. La tarea automática se ejecuta según la agenda lunar configurada.
+                    </p>
+                    <div class="admin-agent-controls" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button id="btn-trigger-news-agent" class="btn-primary" style="background: #8c2512; border: 1px solid #751f0e; padding: 12px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">📜 Ejecutar Agente de Noticias (Mensual)</button>
+                        <button id="btn-trigger-events-agent" class="btn-primary" style="background: #d4a373; color: #2c1a04; border: 1px solid #bfa07a; padding: 12px 20px; font-weight: bold; border-radius: 6px; cursor: pointer;">🎺 Ejecutar Boletín de Novedades (Quincenal)</button>
+                    </div>
+                    <div id="admin-agent-status" style="margin-top: 15px; padding: 12px; border-radius: 6px; font-size: 0.9rem; display: none; line-height: 1.5;"></div>
+                </div>
             </section>
 
             <div id="cards-container" class="magical-grid"></div>
@@ -298,8 +313,26 @@
 
         <section id="agenda-view" class="view-container">
             <div class="agenda-panel">
-                <h2>📅 Agenda Románica 2026</h2>
-                <div id="agenda-container" class="magical-grid"></div>
+                <h2>📅 Agenda y Crónicas Románicas</h2>
+                <p class="agenda-intro" style="text-align: center; margin-bottom: 20px; color: var(--text-muted);">
+                    Descubre los próximos eventos y las noticias de prensa más recientes sobre el románico en Cantabria.
+                </p>
+                
+                <!-- Pestañas internas de la Agenda -->
+                <div class="agenda-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
+                    <button class="agenda-tab-btn active" data-agenda-tab="events" style="padding: 10px 20px; background: var(--primary); color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; font-family: 'Neue Montreal', sans-serif;">🏰 Eventos y Actividades</button>
+                    <button class="agenda-tab-btn" data-agenda-tab="news" style="padding: 10px 20px; background: rgba(0,0,0,0.05); color: var(--text); border: none; border-radius: 20px; cursor: pointer; font-weight: bold; font-family: 'Neue Montreal', sans-serif;">📰 Crónicas de Prensa</button>
+                </div>
+
+                <!-- Contenedor para Eventos de la Agenda -->
+                <div id="events-tab-content" class="agenda-tab-content">
+                    <div id="agenda-container" class="magical-grid"></div>
+                </div>
+
+                <!-- Contenedor para Noticias del Agente (RSS) -->
+                <div id="news-tab-content" class="agenda-tab-content" style="display: none;">
+                    <div id="news-container" class="magical-grid"></div>
+                </div>
             </div>
         </section>
 
