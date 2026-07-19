@@ -5,8 +5,8 @@
  * Puedes obtenerlos en Settings > API en tu panel de control de Supabase.
  */
 
-window.supabaseUrl = "TU_SUPABASE_URL_AQUI"; // Ejemplo: "https://xyzabc.supabase.co"
-window.supabaseAnonKey = "TU_SUPABASE_ANON_KEY_AQUI"; // Ejemplo: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+window.supabaseUrl = "https://dqbmaxdkblgqphjxzfvt.supabase.co";
+window.supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxYm1heGRrYmxncXBoanh6ZnZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwODMyMTYsImV4cCI6MjA5MzY1OTIxNn0.N4u8ji4TJtpiMl_6H0WP-hKrsugurMWKd7WLTnyl5dA";
 
 // Función auxiliar para comprobar si la configuración se ha inicializado correctamente
 window.checkSupabaseConfig = function() {

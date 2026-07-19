@@ -68,8 +68,17 @@ app.get('/api/news', async (req, res) => {
             });
         });
 
-        console.log(`WEB_API: Enviando ${noticias.length} noticias al cliente.`);
-        res.json({ success: true, news: noticias.slice(0, 10) });
+        // Filtrar las noticias para conservar únicamente las que tengan una antigüedad menor a 3 meses
+        const tresMesesAtras = new Date();
+        tresMesesAtras.setMonth(tresMesesAtras.getMonth() - 3);
+
+        const noticiasFiltradas = noticias.filter(n => {
+            const dateObj = new Date(n.pubDate);
+            return !isNaN(dateObj) && dateObj >= tresMesesAtras;
+        });
+
+        console.log(`WEB_API: Enviando ${noticiasFiltradas.length} noticias al cliente (filtradas por antigüedad < 3 meses).`);
+        res.json({ success: true, news: noticiasFiltradas.slice(0, 10) });
     } catch (err) {
         console.error("WEB_API: Error al obtener noticias RSS para la web:", err);
         res.status(500).json({ error: "No se pudieron obtener las noticias del románico en este momento." });
@@ -973,8 +982,8 @@ cron.schedule('0 0 1,15 * *', async () => {
 // =========================================================================
 // CRON MENSUAL: AGENTE DE NOTICIAS DE PRENSA Y AGENDA (MEDIEVAL Y COMPLETO)
 // =========================================================================
-// Se ejecuta el día 19 de cada mes a las 00:00 (mensual)
-cron.schedule('0 0 19 * *', async () => {
+// Se ejecuta el día 20 de cada mes a las 09:00 (mensual)
+cron.schedule('0 9 20 * *', async () => {
     console.log("CRON MENSUAL: Disparando Agente de Noticias y Boletín Mensual...");
     try {
         await ejecutarAgenteNoticias(
@@ -1079,9 +1088,9 @@ async function enviarBoletinNovedades() {
     }
 }
 
-// Programar tarea mensual de scraping (minuto 0, hora 0, día 1 del mes)
-cron.schedule('0 0 1 * *', async () => {
-    console.log("CRON: Actualizando agenda mensual de eventos...");
+// Programar tarea de scraping periódica cada 5 días (a las 00:00 del día cada 5 días del mes)
+cron.schedule('0 0 */5 * *', async () => {
+    console.log("CRON: Actualizando agenda de eventos cada 5 días...");
     await scrapeEvents();
 });
 

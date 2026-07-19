@@ -16,7 +16,7 @@
     "province": "Valencia",
     "createdAt": "2026-06-18T19:42:35.328Z",
     "verified": false,
-    "loginCount": 9
+    "loginCount": 10
   },
   {
     "username": "Test User",
@@ -125,5 +125,31 @@
     "visited": [],
     "role": "user",
     "loginCount": 1
+  },
+  {
+    "username": "Noble Gmail",
+    "email": "noble.gmail@gmail.com",
+    "passwordHash": "scrypt$82b2fd8221db3867b09f3c6c1410e430$458aa10840d58a5dc68585026eaec0feb3ce6905ca026344c0454764a915620d4ea2845d3f59de356e18e12228ceca3e99daf2a03c28e195d8c66aa3dd285408",
+    "country": "España",
+    "city": "Santander",
+    "province": "Cantabria",
+    "createdAt": "2026-07-18T16:29:16.122Z",
+    "verified": true,
+    "verificationToken": null,
+    "visited": [],
+    "role": "user"
+  },
+  {
+    "username": "Test Gmail User",
+    "email": "test.gmail.999@gmail.com",
+    "passwordHash": "scrypt$14e11d0744c3bbad5adc17b3d477a820$b88157b4c3f4f0ad8472fa76a063a0b1e9a919a2578ecbfa7b78d93a9ffcdc7089786bd2d766fbd1a94652270a58b36fa11ab89b229c0fc24b8065479b0457e4",
+    "country": "España",
+    "city": "Madrid",
+    "province": "Madrid",
+    "createdAt": "2026-07-18T16:31:07.033Z",
+    "verified": true,
+    "verificationToken": null,
+    "visited": [],
+    "role": "user"
   }
 ]
