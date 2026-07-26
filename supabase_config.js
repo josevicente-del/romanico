@@ -8,6 +8,9 @@
 window.supabaseUrl = "https://dqbmaxdkblgqphjxzfvt.supabase.co";
 window.supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRxYm1heGRrYmxncXBoanh6ZnZ0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgwODMyMTYsImV4cCI6MjA5MzY1OTIxNn0.N4u8ji4TJtpiMl_6H0WP-hKrsugurMWKd7WLTnyl5dA";
 
+// Para utilizar Google OAuth real a través de Supabase en producción (requiere configurar Client ID/Secret en Supabase Dashboard):
+// window.useSupabaseOAuthGoogle = true;
+
 // Función auxiliar para comprobar si la configuración se ha inicializado correctamente
 window.checkSupabaseConfig = function() {
     if (!window.supabaseUrl || window.supabaseUrl.includes("TU_SUPABASE_URL") ||

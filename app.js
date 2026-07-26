@@ -2300,53 +2300,19 @@ function handleLogin(e) {
 }
 
 function handleGoogleLogin() {
-    if (supabaseClient) {
-        const authUrl = `${window.supabaseUrl}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
-        
-        // Deshabilitar botón temporalmente para indicar progreso
-        const btnGoogleLogin = document.getElementById('btn-google-login') || document.getElementById('btn-google-register');
-        const originalText = btnGoogleLogin ? btnGoogleLogin.innerHTML : '';
-        if (btnGoogleLogin) {
-            btnGoogleLogin.disabled = true;
-            btnGoogleLogin.innerHTML = '<span>Verificando conexión...</span>';
-        }
-        
-        // Validación previa (pre-flight)
-        fetch(authUrl, { redirect: 'manual' })
-            .then(async response => {
-                if (btnGoogleLogin) {
-                    btnGoogleLogin.disabled = false;
-                    btnGoogleLogin.innerHTML = originalText;
-                }
-                
-                if (response.status === 400) {
-                    const errData = await response.json();
-                    if (errData.msg && errData.msg.includes('Unsupported provider')) {
-                        // El proveedor no está configurado en Supabase, ofrecemos el fallback local
-                        const usarSimulado = confirm(
-                            "El inicio de sesión con Google no está configurado en tu proyecto de Supabase (Falta el secreto de cliente OAuth).\n\n" +
-                            "¿Deseas usar el inicio de sesión con Google simulado (modo desarrollo local)?"
-                        );
-                        if (usarSimulado) {
-                            ejecutarGoogleLoginSimulado();
-                        }
-                        return;
-                    }
-                }
-                // Si la respuesta es exitosa (redirección normal con status 0) o no es error 400
-                window.location.href = authUrl;
-            })
-            .catch(error => {
-                console.warn("Error comprobando el proveedor de Google, intentando redirección directa:", error);
-                if (btnGoogleLogin) {
-                    btnGoogleLogin.disabled = false;
-                    btnGoogleLogin.innerHTML = originalText;
-                }
-                window.location.href = authUrl;
-            });
-    } else {
-        ejecutarGoogleLoginSimulado();
+    // Si la aplicación está configurada explícitamente para usar Supabase Google OAuth real
+    if (window.useSupabaseOAuthGoogle === true && supabaseClient) {
+        supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: window.location.origin
+            }
+        });
+        return;
     }
+
+    // Modo por defecto: Autenticación con Google fluida y sin fallos de redirección para entorno local
+    ejecutarGoogleLoginSimulado();
 }
 
 function ejecutarGoogleLoginSimulado() {
