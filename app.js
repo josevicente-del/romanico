@@ -2301,59 +2301,94 @@ function handleLogin(e) {
 
 function handleGoogleLogin() {
     if (supabaseClient) {
-        // Autenticación con Google usando Supabase OAuth
-        supabaseClient.auth.signInWithOAuth({
-            provider: 'google',
-            options: {
-                redirectTo: window.location.origin
-            }
-        })
-        .catch(err => {
-            console.error("Error en Google Auth Supabase:", err);
-            alert("❌ Error en Google Login: " + err.message);
-        });
-    } else {
-        // Autenticación con Google en Servidor Local Fallback (Simulada para desarrollo local)
-        const name = prompt("Google Auth (Simulado) - Introduce tu nombre completo:", "Viajero de Google");
-        if (!name) return;
-        const email = prompt("Google Auth (Simulado) - Introduce tu correo de Google:", "google-traveller@gmail.com");
-        if (!email) return;
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            alert("El correo de Google introducido no es válido.");
-            return;
+        const authUrl = `${window.supabaseUrl}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(window.location.origin)}`;
+        
+        // Deshabilitar botón temporalmente para indicar progreso
+        const btnGoogleLogin = document.getElementById('btn-google-login') || document.getElementById('btn-google-register');
+        const originalText = btnGoogleLogin ? btnGoogleLogin.innerHTML : '';
+        if (btnGoogleLogin) {
+            btnGoogleLogin.disabled = true;
+            btnGoogleLogin.innerHTML = '<span>Verificando conexión...</span>';
         }
-
-        fetch('/api/auth/google', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name, email })
-        })
-        .then(async response => {
-            if (!response.ok) {
-                const errData = await safeJson(response);
-                throw new Error(errData.error || "Error de autenticación.");
-            }
-            return safeJson(response);
-        })
-        .then(data => {
-            if (data.success) {
-                setCurrentUser(data.user);
-                document.getElementById('auth-modal').classList.remove('active');
-                alert("✅ Sesión iniciada correctamente con Google (Simulado).");
+        
+        // Validación previa (pre-flight)
+        fetch(authUrl, { redirect: 'manual' })
+            .then(async response => {
+                if (btnGoogleLogin) {
+                    btnGoogleLogin.disabled = false;
+                    btnGoogleLogin.innerHTML = originalText;
+                }
                 
-                // Redirigir al inicio
-                document.querySelector('[data-view="list"]').click();
-            }
-        })
-        .catch(error => {
-            console.error("Error al autenticar con Google local:", error);
-            alert("❌ Error: " + error.message);
-        });
+                if (response.status === 400) {
+                    const errData = await response.json();
+                    if (errData.msg && errData.msg.includes('Unsupported provider')) {
+                        // El proveedor no está configurado en Supabase, ofrecemos el fallback local
+                        const usarSimulado = confirm(
+                            "El inicio de sesión con Google no está configurado en tu proyecto de Supabase (Falta el secreto de cliente OAuth).\n\n" +
+                            "¿Deseas usar el inicio de sesión con Google simulado (modo desarrollo local)?"
+                        );
+                        if (usarSimulado) {
+                            ejecutarGoogleLoginSimulado();
+                        }
+                        return;
+                    }
+                }
+                // Si la respuesta es exitosa (redirección normal con status 0) o no es error 400
+                window.location.href = authUrl;
+            })
+            .catch(error => {
+                console.warn("Error comprobando el proveedor de Google, intentando redirección directa:", error);
+                if (btnGoogleLogin) {
+                    btnGoogleLogin.disabled = false;
+                    btnGoogleLogin.innerHTML = originalText;
+                }
+                window.location.href = authUrl;
+            });
+    } else {
+        ejecutarGoogleLoginSimulado();
     }
+}
+
+function ejecutarGoogleLoginSimulado() {
+    const name = prompt("Google Auth (Simulado) - Introduce tu nombre completo:", "Viajero de Google");
+    if (!name) return;
+    const email = prompt("Google Auth (Simulado) - Introduce tu correo de Google:", "google-traveller@gmail.com");
+    if (!email) return;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert("El correo de Google introducido no es válido.");
+        return;
+    }
+
+    fetch('/api/auth/google', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ name, email })
+    })
+    .then(async response => {
+        if (!response.ok) {
+            const errData = await safeJson(response);
+            throw new Error(errData.error || "Error de autenticación.");
+        }
+        return safeJson(response);
+    })
+    .then(data => {
+        if (data.success) {
+            setCurrentUser(data.user);
+            document.getElementById('auth-modal').classList.remove('active');
+            alert("✅ Sesión iniciada correctamente con Google (Simulado).");
+            
+            // Redirigir al inicio
+            document.querySelector('[data-view="list"]').click();
+        }
+    })
+    .catch(error => {
+        console.error("Error al autenticar con Google local:", error);
+        alert("❌ Error: " + error.message);
+    });
 }
 
 function checkEmailVerificationParams() {
