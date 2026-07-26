@@ -26,18 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
  * Inicializa el cliente Supabase y configura los escuchas de eventos.
  */
 function inicializarApp() {
-    // 1. Cargar sesión local previa de contingencia si existe en el navegador
-    const localSession = localStorage.getItem('local_auth_user');
-    if (localSession) {
-        console.log("Detectada sesión local previa de contingencia.");
-        modoContingenciaLocal = true;
-        currentSession = JSON.parse(localSession);
-        manejarUsuarioAutenticado(currentSession);
-        configurarEventosUI();
-        return;
-    }
-
-    // 2. Verificar si el SDK de Supabase está cargado
+    // 1. Verificar si el SDK de Supabase está cargado
     if (typeof supabase === 'undefined') {
         showToast('Error de Carga', 'No se pudo cargar el SDK de Supabase. Conmutando a modo local.', 'warning');
         activarModoLocalImprevisto();
@@ -45,18 +34,18 @@ function inicializarApp() {
         return;
     }
 
-    // 3. Verificar configuración del archivo de credenciales
+    // 2. Verificar configuración del archivo de credenciales
     if (!window.checkSupabaseConfig || !window.checkSupabaseConfig()) {
         // Si no está configurado, mostramos la guía informativa para configurarlo
         mostrarAlertaConfiguracion();
         return;
     }
 
+    // 3. Inicializar el cliente Supabase
     try {
-        // 4. Crear cliente oficial de Supabase
         supabaseClient = supabase.createClient(window.supabaseUrl, window.supabaseAnonKey);
         
-        // 5. Escuchar cambios de estado de autenticación en Supabase
+        // Configurar los escuchas de estado de autenticación en Supabase
         supabaseClient.auth.onAuthStateChange((event, session) => {
             console.log(`Supabase Auth Event: ${event}`);
             
@@ -70,16 +59,25 @@ function inicializarApp() {
                 manejarUsuarioNoAutenticado();
             }
         });
-
-        // 6. Configurar eventos de UI
-        configurarEventosUI();
-
     } catch (error) {
         console.error('Error al inicializar Supabase:', error);
         showToast('Error de Conexión', 'Fallo al iniciar Supabase. Activando modo demostración local.', 'warning');
         activarModoLocalImprevisto();
         configurarEventosUI();
+        return;
     }
+
+    // 4. Cargar sesión local previa de contingencia si existe en el navegador
+    const localSession = localStorage.getItem('local_auth_user');
+    if (localSession) {
+        console.log("Detectada sesión local previa de contingencia.");
+        modoContingenciaLocal = true;
+        currentSession = JSON.parse(localSession);
+        manejarUsuarioAutenticado(currentSession);
+    }
+
+    // 5. Configurar eventos de UI
+    configurarEventosUI();
 }
 
 /**

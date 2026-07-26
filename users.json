@@ -151,5 +151,31 @@
     "verificationToken": null,
     "visited": [],
     "role": "user"
+  },
+  {
+    "username": "Viajero Test Google",
+    "email": "test-google-auth@example.com",
+    "passwordHash": "GOOGLE_OAUTH_ACCOUNT",
+    "country": "España",
+    "city": "Santander",
+    "province": "Cantabria",
+    "createdAt": "2026-07-26T16:52:22.911Z",
+    "verified": true,
+    "visited": [],
+    "role": "user",
+    "loginCount": 1
+  },
+  {
+    "username": "Viajero de Google Test",
+    "email": "google-traveller-test@gmail.com",
+    "passwordHash": "GOOGLE_OAUTH_ACCOUNT",
+    "country": "España",
+    "city": "Santander",
+    "province": "Cantabria",
+    "createdAt": "2026-07-26T17:19:28.527Z",
+    "verified": true,
+    "visited": [],
+    "role": "user",
+    "loginCount": 1
   }
 ]
