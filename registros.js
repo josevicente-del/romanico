@@ -206,7 +206,9 @@ function esErrorProveedorDesactivado(error) {
     return msg.includes('provider is not enabled') || 
            msg.includes('validation_failed') || 
            msg.includes('unsupported provider') || 
-           error.status === 400;
+           msg.includes('signup is disabled') ||
+           msg.includes('signups are not allowed') ||
+           msg.includes('provider is disabled');
 }
 
 /**
@@ -813,13 +815,13 @@ function traducirErrorAuth(error) {
     if (msg.includes('invalid login credentials') || msg.includes('invalid credentials')) {
         return 'El correo electrónico o la contraseña son incorrectos.';
     }
-    if (msg.includes('user already exists') || msg.includes('email already registered')) {
+    if (msg.includes('user already exists') || msg.includes('user already registered') || msg.includes('email already registered') || msg.includes('email already exists') || msg.includes('email already in use') || msg.includes('already exists')) {
         return 'Ya existe una cuenta registrada con este correo electrónico.';
     }
-    if (msg.includes('password should be at least')) {
-        return 'La contraseña debe tener un tamaño mínimo de 6 caracteres.';
+    if (msg.includes('password should be') || msg.includes('password is too weak') || msg.includes('stronger password') || msg.includes('weak password')) {
+        return 'La contraseña es demasiado débil. Debe tener al menos 6 caracteres o cumplir con las políticas de seguridad.';
     }
-    if (msg.includes('email address is invalid') || msg.includes('unable to validate email')) {
+    if (msg.includes('email address is invalid') || msg.includes('unable to validate email') || msg.includes('invalid email')) {
         return 'Por favor, introduce un correo electrónico válido.';
     }
     
