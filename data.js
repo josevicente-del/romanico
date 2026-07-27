@@ -2057,3 +2057,39 @@ window.localidadesCantabria = [
     "comarca": "Campoo-Los Valles"
   }
 ];
+
+window.pressChronicles = [
+  {
+    "id": "el-diario-montanes-piasca-detalle",
+    "title": "Las joyas de Santa María de Piasca, vistas al detalle",
+    "media": "El Diario Montañés",
+    "badgeColor": "#1c3a6b",
+    "date": "11 de Julio de 2026",
+    "place": "Santa María de Piasca, Liébana",
+    "url": "https://www.eldiariomontanes.es/region/liebana/joyas-santa-maria-piasca-vistas-detalle-20260711075326-nt.html",
+    "summary": "Un análisis fotográfico e histórico exhaustivo que descubre la extraordinaria riqueza escultórica de la Colegiata de Santa María de Piasca en Liébana. Explora capiteles historiados, canecillos y las tallas del maestro Juan de Piasca del siglo XII.",
+    "image": "colegiata_santa_juliana_santillana_1777204517020.webp"
+  },
+  {
+    "id": "national-geographic-joya-romanico",
+    "title": "El diminuto pueblo de Cantabria que esconde una joya del románico (y es memoria viva del pueblo)",
+    "media": "National Geographic Viajes",
+    "badgeColor": "#8c2512",
+    "date": "Edición Especial 2026",
+    "place": "Cantabria Rural & Monasterios",
+    "url": "https://viajes.nationalgeographic.com.es/a/diminuto-pueblo-cantabria-que-esconde-joya-romanico-es-memoria-pueblo-que-durante-siglos-vivio-amparo-su-monasterio_23333",
+    "summary": "National Geographic destaca la belleza serena y el patrimonio vivo de las pequeñas aldeas de Cantabria erigidas a la sombra de sus monasterios medievales, resaltando la memoria y la tranquilidad del románico rural.",
+    "image": "hero_section_1777204140782.webp"
+  },
+  {
+    "id": "ifomo-valderredible-via-ciclable",
+    "title": "Valderredible adjudica la vía ciclable de la Ruta del Románico entre Rebollar y San Martín de Elines",
+    "media": "infoIFOMO Cantabria",
+    "badgeColor": "#2a9d8f",
+    "date": "16 de Diciembre de 2025",
+    "place": "Valderredible - San Martín de Elines",
+    "url": "https://www.ifomo.es/articulo/valderredible/cantabria-valderredible-adjudica-via-ciclable-ruta-romanico-que-va-rebollar-san-martin-elines/20251216125832338230.html",
+    "summary": "Aprobada la nueva vía cicloturística que unirá Rebollar con la icónica Colegiata de San Martín de Elines en Valderredible, impulsando la movilidad sostenible y el acceso de ciclistas y caminantes al patrimonio medieval.",
+    "image": "calles_santillana_del_mar_1777204641643.webp"
+  }
+];

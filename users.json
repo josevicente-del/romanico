@@ -177,5 +177,18 @@
     "visited": [],
     "role": "user",
     "loginCount": 1
+  },
+  {
+    "username": "Viajero de Google",
+    "email": "google-traveller@gmail.com",
+    "passwordHash": "GOOGLE_OAUTH_ACCOUNT",
+    "country": "España",
+    "city": "Santander",
+    "province": "Cantabria",
+    "createdAt": "2026-07-26T20:22:15.446Z",
+    "verified": true,
+    "visited": [],
+    "role": "user",
+    "loginCount": 2
   }
 ]

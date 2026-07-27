@@ -731,3 +731,72 @@ textarea::placeholder {
 .toast-close-btn:hover {
     color: var(--color-text-primary);
 }
+
+/* =========================================================================
+   OPTIMIZACIONES VISUALES RESPONSIVAS PARA MÓVILES (PANEL DE CONTROL REGISTROS)
+   ========================================================================= */
+
+@media (max-width: 640px) {
+    /* Touch target confort para botones y entradas */
+    .btn,
+    .auth-form input,
+    .dashboard-form input,
+    .dashboard-form select {
+        min-height: 44px;
+        font-size: 16px !important; /* Evita zoom automático en móviles */
+    }
+
+    .auth-card-wrapper,
+    .dashboard-wrapper {
+        padding: 12px 8px !important;
+    }
+
+    .auth-card {
+        padding: 20px 16px !important;
+        border-radius: 16px !important;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px 16px !important;
+    }
+
+    .user-profile-menu {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .btn-logout {
+        min-height: 40px;
+        padding: 8px 14px;
+    }
+
+    /* Tabla responsiva con scroll táctil suave */
+    .table-responsive-wrapper {
+        -webkit-overflow-scrolling: touch;
+        border-radius: 8px;
+    }
+
+    .custom-table th,
+    .custom-table td {
+        padding: 10px 12px !important;
+        font-size: 0.85rem;
+    }
+
+    .btn-edit,
+    .btn-danger {
+        min-width: 38px;
+        min-height: 38px;
+        padding: 6px;
+    }
+
+    /* Toasts adaptados a pantallas pequeñas */
+    .toast-container {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        max-width: calc(100vw - 24px);
+    }
+}

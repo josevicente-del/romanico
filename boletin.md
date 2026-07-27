@@ -27,4 +27,26 @@
 
 ---
 
+## 📰 CRÓNICAS DE PRENSA Y MEDIOS DESTACADOS
+
+### 📰 1. Las joyas de Santa María de Piasca, vistas al detalle
+* **Medio:** El Diario Montañés (11/07/2026)
+* **Lugar:** Santa María de Piasca, Liébana
+* **Enlace:** [Leer artículo original en El Diario Montañés](https://www.eldiariomontanes.es/region/liebana/joyas-santa-maria-piasca-vistas-detalle-20260711075326-nt.html)
+* **La Crónica:** Extenso reportaje y análisis escultórico sobre la deslumbrante iconografía de capiteles, arquivoltas y canecillos labrados por los antiguos canteros del siglo XII en la Colegiata de Santa María de Piasca.
+
+### 📰 2. El diminuto pueblo de Cantabria que esconde una joya del románico
+* **Medio:** National Geographic Viajes
+* **Lugar:** Cantabria Rural & Monasterios
+* **Enlace:** [Leer reportaje en National Geographic Viajes](https://viajes.nationalgeographic.com.es/a/diminuto-pueblo-cantabria-que-esconde-joya-romanico-es-memoria-pueblo-que-durante-siglos-vivio-amparo-su-monasterio_23333)
+* **La Crónica:** National Geographic rinde tributo a la memoria viva de las aldeas de Cantabria que florecieron a la sombra de los viejos monasterios medievales, manteniendo intacto su encanto de piedra y serenidad.
+
+### 📰 3. Valderredible adjudica la vía ciclable de la Ruta del Románico
+* **Medio:** infoIFOMO Cantabria (16/12/2025)
+* **Lugar:** Valderredible - San Martín de Elines
+* **Enlace:** [Leer noticia en infoIFOMO Cantabria](https://www.ifomo.es/articulo/valderredible/cantabria-valderredible-adjudica-via-ciclable-ruta-romanico-que-va-rebollar-san-martin-elines/20251216125832338230.html)
+* **La Crónica:** Adjudicadas las obras para la nueva vía cicloturística que conectará la localidad de Rebollar con la insigne Colegiata de San Martín de Elines, fomentando el turismo activo y la movilidad sostenible en el valle.
+
+---
+
 *¡Que la luz ilumine vuestros viajes, y que la buena sidra no falte en vuestras alforjas en el camino hacia estos templos!* 🦅
